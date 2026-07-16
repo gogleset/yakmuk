@@ -2,20 +2,21 @@
 description: Feature-Sliced Design (FSD) 6-layer architecture
 alwaysApply: false
 ---
+
 # Feature-Sliced Design
 
 코드는 **기술 기준이 아니라 비즈니스 책임**으로 나눈다.
 
 ## 레이어
 
-| Layer | 담당 | 의존 가능 |
-| ----- | ---- | --------- |
-| **app** | Provider, 앱 초기화 | shared |
-| **pages** | 라우트 1개 = 화면 조립 | widgets, features, entities, shared |
-| **widgets** | 여러 feature/entity UI 블록 | features, entities, shared |
-| **features** | 사용자 행동(Use Case) | entities, shared |
-| **entities** | 비즈니스 데이터(Entity) | shared |
-| **shared** | 공통 UI·lib·api·config | 없음 |
+| Layer        | 담당                        | 의존 가능                           |
+| ------------ | --------------------------- | ----------------------------------- |
+| **app**      | Provider, 앱 초기화         | shared                              |
+| **pages**    | 라우트 1개 = 화면 조립      | widgets, features, entities, shared |
+| **widgets**  | 여러 feature/entity UI 블록 | features, entities, shared          |
+| **features** | 사용자 행동(Use Case)       | entities, shared                    |
+| **entities** | 비즈니스 데이터(Entity)     | shared                              |
+| **shared**   | 공통 UI·lib·api·config      | 없음                                |
 
 의존 방향: **상위 → 하위** (pages → widgets → features → entities → shared)
 
@@ -47,14 +48,14 @@ Expo Router `mobile/app/` = **pages thin wrapper** (`export { HomePage as defaul
 
 ## 역할 분리
 
-| 레이어 | 담당 | 금지 |
-| ------ | ---- | ---- |
-| **shared** | Button, format, env, api client | User, Medication 등 비즈니스 개념 |
-| **entities** | CRUD api, types, **read queries**, entity UI | mutation UI, Alert, use-case 조합 |
-| **features** | mutation, 행동 UI, notifications 등 use case | supabase 직접 (entity api 경유) |
-| **widgets** | feature + entity 조합 블록 | 라우팅, 전역 state |
-| **pages** | widget/feature 배치 | supabase, 복잡한 비즈니스 로직 |
-| **app** (`src/providers`) | Provider, Auth | 화면 JSX |
+| 레이어                    | 담당                                         | 금지                              |
+| ------------------------- | -------------------------------------------- | --------------------------------- |
+| **shared**                | Button, format, env, api client              | User, Medication 등 비즈니스 개념 |
+| **entities**              | CRUD api, types, **read queries**, entity UI | mutation UI, Alert, use-case 조합 |
+| **features**              | mutation, 행동 UI, notifications 등 use case | supabase 직접 (entity api 경유)   |
+| **widgets**               | feature + entity 조합 블록                   | 라우팅, 전역 state                |
+| **pages**                 | widget/feature 배치                          | supabase, 복잡한 비즈니스 로직    |
+| **app** (`src/providers`) | Provider, Auth                               | 화면 JSX                          |
 
 ## features 네이밍 (use-case)
 
@@ -75,15 +76,15 @@ features/medication-notifications/
 
 ```typescript
 // pages → widgets + features + entities
-import { useHomeMedicationQueries } from '@/entities/medication/model/queries';
-import { useDailyMedicationCheckMutations } from '@/features/daily-medication-check';
-import { MedicationCalendarPanel } from '@/widgets/medication-calendar-panel';
+import { useHomeMedicationQueries } from "@/entities/medication/model/queries";
+import { useDailyMedicationCheckMutations } from "@/features/daily-medication-check";
+import { MedicationCalendarPanel } from "@/widgets/medication-calendar-panel";
 
 // features → entities
-import { toggleTaken } from '@/entities/medication/api/toggle-taken';
+import { toggleTaken } from "@/entities/medication/api/toggle-taken";
 
 // entities api → shared api
-import { supabase } from '@/shared/api/client';
+import { supabase } from "@/shared/api/client";
 ```
 
 ## cross-entity invalidation

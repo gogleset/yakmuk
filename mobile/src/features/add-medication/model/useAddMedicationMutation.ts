@@ -1,11 +1,11 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { addMedication } from '@/entities/medication/api/add-medication';
-import { addMedicationKeys } from '@/features/add-medication/model/queryKeys';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addMedication } from "@/entities/medication/api/add-medication";
+import { addMedicationKeys } from "@/features/add-medication/model/queryKeys";
 import {
   invalidateHomeActivity,
   invalidateMedicationLists,
-} from '@/shared/lib/query-invalidation';
-import { showMutationError } from '@/shared/lib/mutation';
+} from "@/shared/lib/query-invalidation";
+import { showMutationError } from "@/shared/lib/mutation";
 
 type AddMedicationInput = {
   userId: string;
@@ -29,11 +29,13 @@ export function useAddMedicationMutation({ onSuccess }: Params = {}) {
       await invalidateHomeActivity(qc);
       await onSuccess?.();
     },
-    onError: (error) => showMutationError('추가하지 못했어요', error),
+    onError: (error) => showMutationError("추가하지 못했어요", error),
   });
 }
 
-export async function refreshAfterMedicationChange(qc: ReturnType<typeof useQueryClient>) {
+export async function refreshAfterMedicationChange(
+  qc: ReturnType<typeof useQueryClient>,
+) {
   await invalidateMedicationLists(qc);
   await invalidateHomeActivity(qc);
 }

@@ -76,6 +76,15 @@ data/
 *.sqlite-journal
 logs/loop-escalate.log
 
+# Expo / mobile
+mobile/node_modules/
+mobile/.expo/
+mobile/dist/
+*.jks
+*.p8
+*.p12
+*.mobileprovision
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache

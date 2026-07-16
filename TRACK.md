@@ -14,4 +14,4 @@
 - **다음(prod):** hosted Supabase + EAS + OAuth/딥링크 프로덕션 + bound 하드캡 · [loop/prod/](loop/prod/)
 - 기획: `~/Downloads/prd_yakmeogeotyak_mvp.pdf`, `prd_yakmeogeotyak_mvp_v1.1.pdf`
 - 요약: [docs/prd/SUMMARY.md](docs/prd/SUMMARY.md)
-- 진입: [loop/pre/](loop/pre/)
+- 진입: [loop/pre/](loop/pre/) · 앱: [mobile/](mobile/) · DB: [supabase/](supabase/)

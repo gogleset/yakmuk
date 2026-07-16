@@ -17,11 +17,11 @@
 | bound | `max_iterations=10` + 당일 KST 윈도우 | — |
 | stuck | 미복용 해시 3회 → escalate | — |
 | verifier | 순수 함수 + SQL (reference) | — |
-| escalate | 로그 + 개발 콘솔 | — |
+| escalate | 로그 + `family_alerts` (가족 탭 배너) | — |
 | trigger | 인앱 버튼 + HTTP webhook | — |
 | 로컬 알림 | expo-notifications | FR-05 |
-| 원격 푸시 | DB webhook → Edge → Expo Push | FR-05 |
-| RLS | 동일 `family_id`만 · runs는 owner | Two-tier |
+| 원격 푸시 | **stub** (Realtime로 가족 연동 먼저) · Edge→Expo Push는 후속 | FR-05 부분 |
+| HTTP trigger | `supabase/functions/loop-trigger` | pre CONTRACT || RLS | 동일 `family_id`만 · runs는 owner | Two-tier |
 | 컨디션 | goal 필수 · message 선택 | FR-03 |
 | days_mask | `daily` \| `0..6` CSV (월=0) | — |
 | 체크 롤백 / SKIPPED | 롤백 허용 · SKIPPED≠success | PRD |
@@ -29,6 +29,8 @@
 | 가족 테스트 | 시뮬 2대 → 동일 local Supabase | — |
 | **시뮬 DB URL** | iOS Sim: `http://127.0.0.1:54321` · Android Emulator: `http://10.0.2.2:54321` · 실기기: LAN IP | localhost 함정 |
 | run 경계 | **run = 유저·날짜(KST) 하루 goal** · 탭=turn | 매 탭마다 새 run 금지 |
+| **앱 IA** | **홈 / 가족 / 설정** 3탭 | 홈=내 약+캘린더, 가족=상태·피드·초대 |
+| **내 약** | **전 역할** medications CRUD + TAKEN/컨디션 | 보호자도 본인 복약 |
 
 ## FR (P0)
 

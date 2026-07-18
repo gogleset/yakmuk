@@ -12,6 +12,7 @@ yakmuk/
 ├── AGENTS.md                 # 이 파일
 ├── TRACK.md                  # 트랙·스테이지
 ├── docs/design.md            # 시각·톤·카피 원칙
+├── docs/brand/               # 약콕·콕이 브랜드 플랜 (갭·beat·토스형 퍼널·design 수정안)
 ├── docs/prd/                 # PRD 요약
 ├── loop/pre/                 # CONTRACT · CHECKLIST · DECISIONS
 ├── supabase/                 # migrations · functions · seed

@@ -1,0 +1,92 @@
+# 에셋 → 브랜드 플로우 (beat)
+
+← [README](README.md) · 인벤토리 [gap.md](gap.md) · **입력 퍼널은 [funnels.md](funnels.md)**
+
+시트 UI열·표정·소품이 암시하는 **브랜드 순간(beat)**.  
+폼을 한 스텝씩 쪼개는 UX는 funnels.md (P1–P6).
+
+```mermaid
+flowchart LR
+  F1[F1_Welcome] --> F5[F5_FamilyBeat]
+  F5 --> F2[F2_EmptyMed]
+  F2 --> F6[F6_AllDone]
+  F6 --> F4[F4_Streak]
+  F6 -.->|미복용_escalate| F7[F7_StuckWorried]
+```
+
+F5 **beat**(가족 컷) ≠ 퍼널 **P1**(가족 입력).  
+**성공 피드백 = F6만** ([decisions.md](decisions.md) #1). 개별 체크엔 콕이 없음.
+
+---
+
+## F1 — 첫 만남 (Welcome) — [decisions.md](decisions.md) #7B
+
+- **시트:** 손흔들기
+- **현재:** Pill 아이콘 + `약먹었약` + 경로 선택
+- **beat:** `welcome` 컷 + 브랜드명 `약콕` + 기존 안부 Body + **콕이 초단문** (예: `콕이가 함께해요`)
+- **훅:** `mobile/src/pages/welcome/ui/WelcomePage.tsx`
+
+## F2 — 기록 없음 (Empty)
+
+- **시트:** Thinking
+- **현재:** `RichEmptyState` + Lucide + `COPY.med.emptyRegistered` 등
+- **beat:** illustration=`thinking`, 카피 = **기존 COPY** (시트 문장 이식 금지)
+- **대상:** 약 0개 · 오늘 스케줄 없음 · 가족 없음(→ F5)
+- **훅:** `RichEmptyState.tsx`, `TodayMedicationPanel.tsx`
+
+## F3 — (폐기) 개별 복용 성공
+
+[decisions.md](decisions.md) **#1** — 개별 체크 성공 beat **없음**.  
+오늘 전부 완료 시에만 피드백 → **F6**.
+
+## F4 — 연속 기록 (Streak) — [decisions.md](decisions.md) #3
+
+- **시트:** 캘린더✓
+- **규칙:** KST 기준 연속 all-done **N=3**. 스케줄 0일 = 연속 유지(스킵), 부분/미완 = 끊김
+- **beat:** 연속≥3일일 때 캘린더 영역에 `streak` 컷 (상시·매일 강제 노출 금지)
+- **차수:** 2차. 최소 연속일 계산 구현 (스킵 안 함)
+- **훅:** `medication-calendar-panel/`
+
+## F5 — 가족 empty / 초대 화면 (beat)
+
+- **시트:** 집+하트
+- **beat:** 가족 없음 empty · 초대 결과/공유 화면에 `family` 컷
+- **입력 쪼개기:** 가족 *만들기* 폼 = 퍼널 P1, *초대 코드 만들기* = 퍼널 P5 ([funnels.md](funnels.md))
+- **카피:** `COPY.family.emptyMembers` 유지
+- **훅:** `FamilyPage.tsx` · 초대 완료 화면
+
+## F6 — 오늘 전부 완료 (Done) — [decisions.md](decisions.md) #1 + #2B
+
+- **시트:** 클립보드 / (시트 Success와 동일 트리거)
+- **트리거:** `taken == total` (오늘 스케줄 있는 약 전부 체크)
+- **beat:** 리스트 **위에** `done` 컷 + `COPY.med.allDoneToday` (리스트 유지)
+- **아님:** 약 하나 체크할 때마다 콕이
+- **훅:** `TodayMedicationPanel` all-done 분기
+
+## F7 — stuck 안부 (Worried) — [decisions.md](decisions.md) #4A
+
+- **시트:** Worried 표정만 (UI열 없음)
+- **beat:** 보호자 stuck/미복용 안부에 `worried`. **경고·빨간 배너 대체** (병행 아님)
+- **훅:** `FamilyGuardianDashboard.tsx`
+
+## F8 — 예약만 (Action, UI열 없음)
+
+| 컷 | 시트 카피 | 나중에 | 이번 |
+|----|-----------|--------|------|
+| `pill` | 약 먹을 시간이에요 | 복용 전 nudge / 알림 랜딩 | 파일만 |
+| `cheer` | 힘내요! | 오후 미복용 soft CTA | 파일만 |
+| `lantern` | 함께 지켜요 | 보호자 온보딩 | 파일만 |
+| `heart` | 참 잘했어요 | F6 강화 후보 | 파일만 |
+
+---
+
+## 우선순위 (beat)
+
+| 차수 | Beat | 이유 |
+|------|------|------|
+| 1차 | F1, F2, F6 | 매일 경로. 성공=전부 완료만 |
+| 2차 | F5, F7, F4 | 가족·stuck·streak(N=3) |
+| 보류 | F8, F3(개별) | F8 에셋 예약. F3는 #1로 폐기 |
+
+입력 퍼널 차수 → [funnels.md](funnels.md)  
+작업 순서 SoT → [README.md](README.md)

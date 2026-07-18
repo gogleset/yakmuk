@@ -1,6 +1,6 @@
 # yakmuk — Agent guide
 
-가족 건강 안부 · 복약 체크 앱 (**약먹었약**).  
+가족 건강 안부 · 복약 체크 앱 (**약콕**).  
 stage: **pre** · store: **local-supabase** · app: Expo RN 57.
 
 이 파일이 에이전트 진입점이다. 세부 규칙은 `.agents/rules/`, 워크플로는 `.agents/skills/`를 본다.
@@ -44,6 +44,8 @@ providers/ → pages/ → widgets/ → features/ → entities/ → shared/
 - **`mobile/src/app/` 금지** (Expo 라우트 충돌) → FSD app = `providers/`
 - `features/<use-case>/` (도메인 slice 금지). entities api만 supabase 호출
 - 문구: `shared/copy/` · 숫자 한도: `shared/constants/` · 테마: `shared/config/theme.ts`
+- 테스트: `mobile/src/__tests__/` (FSD 미러, 소스 옆 금지) — [`.agents/rules/tdd.mdc`](.agents/rules/tdd.mdc)
+- 로컬 Supabase면 entity api·RPC는 `*.api.test.ts`로 실제 호출 (가능하면)
 
 Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 
@@ -58,6 +60,7 @@ Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 - 기준: [docs/design.md](docs/design.md) (§6.2 카피 — 짧음·해요체·안부 톤)
 - UI 작업 전 design.md 읽기: [`.agents/rules/design.mdc`](.agents/rules/design.mdc)
 - 상수/문구: [`.agents/rules/copy-constants.mdc`](.agents/rules/copy-constants.mdc)
+- TDD·테스트 위치: [`.agents/rules/tdd.mdc`](.agents/rules/tdd.mdc)
 
 ## Skills (워크플로)
 
@@ -75,6 +78,7 @@ Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 - FSD 의존 방향 지키기 · use-case feature 이름
 - 사용자 문구는 `shared/copy`, 매직넘버는 `shared/constants`
 - 실패/Alert는 안부 톤 (`강퇴` → `내보내기` 등)
+- 구현과 함께 `mobile/src/__tests__/` 테스트 (TDD)
 
 **Don’t**
 
@@ -82,6 +86,7 @@ Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 - pages에서 entity api 직접 / features에서 supabase client 직접
 - border 남발 · 설명 카피 남발 (design.md §6)
 - 마이그레이션 in-place 수정 · 시크릿 커밋
+- 소스 옆에 `*.test.ts` 흩뿌리기
 
 ## Quick start
 

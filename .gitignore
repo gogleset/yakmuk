@@ -80,6 +80,7 @@ logs/loop-escalate.log
 mobile/node_modules/
 mobile/.expo/
 mobile/dist/
+mobile/logs/
 *.jks
 *.p8
 *.p12

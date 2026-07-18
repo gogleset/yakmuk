@@ -34,10 +34,24 @@ mobile/src/
 ├── widgets/<block>/
 ├── features/<use-case>/{model,ui}/
 ├── entities/<entity>/{api,model,lib,ui}/
-└── shared/{api,ui,lib,copy,constants,config}/
+├── shared/{api,ui,lib,copy,constants,config}/
+└── __tests__/                  # 테스트 전용 — 레이어 미러 (소스 옆 금지)
+    ├── features/<use-case>/
+    ├── entities/<entity>/
+    ├── widgets/<block>/
+    ├── pages/<route>/
+    ├── shared/
+    └── providers/
 ```
 
 ⚠️ **`mobile/src/app/` 금지** — Expo가 라우트로 인식. FSD app = `providers/`.
+
+## 테스트 (TDD)
+
+- 규칙: [tdd.mdc](tdd.mdc) — 구현과 함께 테스트 작성
+- 위치: **`mobile/src/__tests__/`에만** (FSD 경로 미러). 소스 옆 `*.test.ts` 금지
+- 이름: 단위 `*.test.ts` / `*.test.tsx` · **API 통합 `*.api.test.ts`**
+- 로컬 Supabase 연결 시 entity `api/*`·RPC는 mock만이 아니라 **실제 호출 테스트** (가능하면)
 
 ## features 네이밍
 
@@ -50,3 +64,4 @@ use-case만: `add-medication`, `family-invite`, `guardian-auth` …
 - features → `@/shared/api/client` 직접
 - shared에 MedRow·Medication 타입
 - entity 간 무효화 흩뿌리기 → `shared/lib/query-invalidation.ts`
+- 테스트를 소스 slice 안에 두기 (`features/…/foo.test.ts` 등)

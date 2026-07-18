@@ -1,0 +1,81 @@
+---
+description: TDD — 구현과 함께 테스트 작성, 테스트는 mobile/src/__tests__에 모은다. 로컬 Supabase면 API 테스트도
+globs: mobile/**/*.{ts,tsx}, supabase/**/*
+alwaysApply: false
+---
+
+# TDD (mobile)
+
+코드를 추가·변경할 때 **테스트도 같이** 작성한다. 구현만 merge하지 않는다.
+
+## 워크플로
+
+1. **Red** — 실패하는 테스트 먼저 (`mobile/src/__tests__/…`)
+2. **Green** — 최소 구현으로 통과
+3. **Refactor** — 동작 유지하며 정리
+
+| 종류 | 대상 | 필수 |
+|------|------|------|
+| 단위 | lib·mapper·daysMask·에러 매핑 | 항상 |
+| UI | 핵심 분기·상태 (스냅샷 남발 금지) | 핵심만 |
+| **API** | entity `api/*` · RPC·RLS 계약 | **로컬 Supabase 연결 시 가능하면** |
+
+## API 테스트 (Supabase)
+
+로컬에 Supabase가 떠 있으면 (`supabase start` · `EXPO_PUBLIC_SUPABASE_*`) entity api·RPC는 **실제 호출로** 검증한다. mock만으로 끝내지 않는다.
+
+```
+mobile/src/__tests__/
+├── entities/<entity>/
+│   ├── mappers.test.ts           # 단위
+│   └── api/<action>.api.test.ts  # 통합 (로컬 DB)
+├── features/<use-case>/…
+└── …
+```
+
+- 파일명: 단위 `*.test.ts` · **API 통합 `*.api.test.ts`**
+- 전제: 로컬 Supabase + seed/마이그레이션 적용. 없으면 skip 사유를 테스트/주석에 남기고, 가능하면 돌리라고 안내
+- 범위: happy path + 권한 실패·한도·`raise exception` → `ERRORS`/`BACKEND_ERROR_MESSAGES` 매핑
+- 정리: 테스트가 만든 행은 가능하면 삭제·롤백. 시드 계정/가족 재사용 우선
+- service role 앱 코드 금지 — 테스트도 anon/authenticated 세션 경유 ([supabase.mdc](supabase.mdc))
+- SQL만으로 충분한 스키마 계약은 migration/loop와 중복 피하고, **앱 api 경계(매핑·가드·RPC 응답)** 를 앱 쪽에서 친다
+
+## 위치 — 한곳에 모은다
+
+소스 옆에 콜로케이트하지 않는다. FSD 레이어를 **미러**해서 `mobile/src/__tests__/`에 둔다.
+
+```
+mobile/src/__tests__/
+├── features/<use-case>/
+├── entities/<entity>/          # + api/*.api.test.ts
+├── widgets/<block>/
+├── pages/<route>/
+├── shared/{lib,api,copy,…}/
+└── providers/
+```
+
+| 소스 | 테스트 |
+|------|--------|
+| `…/add-medication/model/useAddMedMutation.ts` | `__tests__/features/add-medication/useAddMedMutation.test.ts` |
+| `…/user/api/mappers.ts` | `__tests__/entities/user/mappers.test.ts` |
+| `…/user/api/join-with-invite.ts` | `__tests__/entities/user/api/join-with-invite.api.test.ts` |
+| `…/shared/lib/errors.ts` | `__tests__/shared/lib/errors.test.ts` |
+
+- slice `index.ts`·Expo `app/*` thin wrapper는 생략 가능
+
+## Do / Don’t
+
+**Do**
+
+- feature/entity/shared 추가 시 대응 테스트 경로 먼저
+- entity api·RPC 변경 시 로컬 Supabase로 `*.api.test.ts` 작성·실행 (가능하면)
+- 기존 테스트 깨지면 구현과 함께 수정
+
+**Don’t**
+
+- 소스 트리에 `*.test.ts` 흩뿌리기
+- “나중에” 미루고 구현만 커밋
+- Supabase 떠 있는데도 api를 전부 mock으로만 처리
+- 프로덕션 번들에 테스트 import · service role 키를 앱/테스트에 하드코딩
+
+상세: [fsd-architecture.mdc](fsd-architecture.mdc) · [supabase.mdc](supabase.mdc) · [add-fsd-feature](../skills/add-fsd-feature/SKILL.md)

@@ -2,7 +2,17 @@ import { supabase } from '@/shared/api/client';
 import { throwIfError } from '@/shared/api/interceptor';
 import type { ConditionValue } from '@/entities/medication/model/types';
 import type { CareRecipientTodayStatus } from '@/entities/family/model/types';
-import { todayKstDateString } from '@/shared/lib/kst';
+import { weekdayMon0FromKstDate, todayKstDateString } from '@/shared/lib/kst';
+
+/** 오늘 days_mask에 스케줄된 약인지 */
+function isScheduledOnDate(daysMask: string, dateKst: string): boolean {
+  if (!daysMask || daysMask === 'daily') return true;
+  const weekday = weekdayMon0FromKstDate(dateKst);
+  return daysMask
+    .split(',')
+    .map((s) => s.trim())
+    .includes(String(weekday));
+}
 
 export async function listTodayStatus(
   familyId: string,
@@ -10,9 +20,8 @@ export async function listTodayStatus(
 ): Promise<CareRecipientTodayStatus[]> {
   const { data: members, error: membersError } = await supabase
     .from('users')
-    .select('id, nickname')
+    .select('id, nickname, invited_as, role')
     .eq('family_id', familyId)
-    .eq('role', 'care_recipient')
     .order('nickname');
   throwIfError(membersError);
   if (!members?.length) return [];
@@ -26,7 +35,7 @@ export async function listTodayStatus(
   ] = await Promise.all([
     supabase
       .from('medications')
-      .select('id, user_id')
+      .select('id, user_id, days_mask')
       .in('user_id', memberIds)
       .is('deleted_at', null),
     supabase
@@ -51,7 +60,12 @@ export async function listTodayStatus(
 
   return members.map((member) => {
     const userId = String(member.id);
-    const userMeds = (meds ?? []).filter((m) => String(m.user_id) === userId);
+    // 당일 스케줄만 카운트
+    const userMeds = (meds ?? []).filter(
+      (m) =>
+        String(m.user_id) === userId &&
+        isScheduledOnDate(String(m.days_mask ?? 'daily'), dateKst),
+    );
     const userLogs = (logs ?? []).filter((l) => String(l.user_id) === userId);
     const takenIds = new Set(
       userLogs
@@ -65,6 +79,8 @@ export async function listTodayStatus(
     return {
       userId,
       nickname: String(member.nickname),
+      invitedAs: member.invited_as ? String(member.invited_as) : null,
+      role: member.role as CareRecipientTodayStatus['role'],
       totalMeds,
       takenCount,
       pendingCount: Math.max(0, totalMeds - takenCount),

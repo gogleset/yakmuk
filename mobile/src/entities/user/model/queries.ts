@@ -2,11 +2,11 @@ import { type QueryClient, useQuery } from '@tanstack/react-query';
 import { listInvites } from '@/entities/user/api/list-invites';
 import { userKeys } from '@/entities/user/model/queryKeys';
 
-type CareInvitesQueryParams = {
+type FamilyInvitesQueryParams = {
   enabled: boolean;
 };
 
-export function useCareInvitesQuery({ enabled }: CareInvitesQueryParams) {
+export function useFamilyInvitesQuery({ enabled }: FamilyInvitesQueryParams) {
   return useQuery({
     queryKey: userKeys.invites(),
     queryFn: listInvites,
@@ -14,6 +14,6 @@ export function useCareInvitesQuery({ enabled }: CareInvitesQueryParams) {
   });
 }
 
-export async function invalidateCareInvites(qc: QueryClient): Promise<void> {
+export async function invalidateFamilyInvites(qc: QueryClient): Promise<void> {
   await qc.invalidateQueries({ queryKey: userKeys.invites() });
 }

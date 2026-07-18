@@ -1,4 +1,5 @@
 import type { ConditionValue } from '@/entities/medication/model/types';
+import type { UserRole } from '@/entities/user/model/types';
 
 export type FamilyAlertKind = 'bad_condition' | 'stuck_escalate';
 
@@ -14,9 +15,19 @@ export type FamilyAlert = {
   nickname?: string | null;
 };
 
+/** 가족 멤버 (프로필·캘린더 조회용) */
+export type FamilyMember = {
+  userId: string;
+  nickname: string;
+  invitedAs: string | null;
+  role: UserRole;
+};
+
 export type CareRecipientTodayStatus = {
   userId: string;
   nickname: string;
+  invitedAs: string | null;
+  role: UserRole;
   totalMeds: number;
   takenCount: number;
   pendingCount: number;

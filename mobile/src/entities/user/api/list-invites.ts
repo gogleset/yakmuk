@@ -1,13 +1,13 @@
 import { supabase } from '@/shared/api/client';
 import { throwIfError } from '@/shared/api/interceptor';
-import { mapCareInvite } from '@/entities/user/api/mappers';
-import type { CareInvite } from '@/entities/user/model/types';
+import { mapFamilyInvite } from '@/entities/user/api/mappers';
+import type { FamilyInvite } from '@/entities/user/model/types';
 
-export async function listInvites(): Promise<CareInvite[]> {
+export async function listInvites(): Promise<FamilyInvite[]> {
   const { data, error } = await supabase
-    .from('care_invites')
+    .from('family_invites')
     .select('*')
     .order('created_at', { ascending: false });
   throwIfError(error);
-  return (data ?? []).map(mapCareInvite);
+  return (data ?? []).map(mapFamilyInvite);
 }

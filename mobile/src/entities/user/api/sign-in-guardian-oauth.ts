@@ -1,5 +1,6 @@
 import { supabase } from '@/shared/api/client';
 import { throwIfError } from '@/shared/api/interceptor';
+import { appScheme } from '@/shared/config/env';
 
 export async function signInGuardianOAuth(
   provider: 'google' | 'apple',
@@ -7,7 +8,7 @@ export async function signInGuardianOAuth(
   const { error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
-      redirectTo: 'yakmuk://auth/callback',
+      redirectTo: `${appScheme}://auth/callback`,
       skipBrowserRedirect: false,
     },
   });

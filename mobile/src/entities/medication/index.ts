@@ -7,7 +7,7 @@ export type {
 } from './model/types';
 export { listMedications } from './api/list-medications';
 export { listMedicationsForCalendar } from './api/list-medications-for-calendar';
-export { addMedication } from './api/add-medication';
+export { addMedication, addMedications } from './api/add-medication';
 export { updateMedication } from './api/update-medication';
 export { deleteMedication } from './api/delete-medication';
 export { listLogsInRange } from './api/list-logs-in-range';
@@ -30,4 +30,26 @@ export {
   isMedScheduledOnDate,
 } from './lib/calendar';
 export type { CalendarMark, DayMedicationEntry } from './lib/calendar';
+export {
+  formatDaysMask,
+  formatDaysMaskLabel,
+  parseDaysMask,
+  expandSameSchedule,
+  expandPerWeekdaySchedule,
+} from './lib/daysMask';
+export type { DaysMode, MedScheduleSlot } from './lib/daysMask';
 export { MedRow } from './ui/MedRow';
+export { DaysModeToggle } from './ui/DaysModeToggle';
+export { WeekdayPicker } from './ui/WeekdayPicker';
+export { TimePicker } from './ui/TimePicker';
+export { ScheduleModeToggle } from './ui/ScheduleModeToggle';
+export type { ScheduleMode } from './ui/ScheduleModeToggle';
+export { TimeSlotList } from './ui/TimeSlotList';
+export { CONDITION_LABEL } from './lib/display';
+export { stepDayLoop } from './lib/loop/dayLoop';
+export type {
+  DayLoopActResult,
+  DayLoopStepResult,
+  StuckEscalateInfo,
+} from './lib/loop/dayLoop';
+export { verifyDay } from './lib/loop/verifyDay';

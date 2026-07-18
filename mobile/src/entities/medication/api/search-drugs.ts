@@ -1,4 +1,6 @@
 import { getDataGoKrServiceKey } from '@/shared/config/env';
+import { LIMITS } from '@/shared/constants';
+import { ERRORS } from '@/shared/copy';
 import type { DrugSearchItem } from '@/entities/medication/model/types';
 
 type EasyDrugRaw = {
@@ -42,7 +44,9 @@ export async function searchDrugsByName(
   options?: { pageNo?: number; numOfRows?: number },
 ): Promise<{ items: DrugSearchItem[]; totalCount: number }> {
   const q = query.trim();
-  if (q.length < 2) return { items: [], totalCount: 0 };
+  if (q.length < LIMITS.drugSearchMinQueryLength) {
+    return { items: [], totalCount: 0 };
+  }
 
   let serviceKey: string;
   try {
@@ -66,29 +70,27 @@ export async function searchDrugsByName(
   try {
     res = await fetch(url);
   } catch {
-    throw new Error('약 정보를 불러오지 못했어요. 네트워크를 확인해 주세요.');
+    throw new Error(ERRORS.med.searchNetwork);
   }
 
   const text = await res.text();
   if (!res.ok) {
     if (res.status === 403 || /forbidden/i.test(text)) {
-      throw new Error(
-        '공공 API 접근이 막혀 있어요. 포털에서 e약은요 활용신청·키 상태를 확인해 주세요.',
-      );
+      throw new Error(ERRORS.med.searchForbidden);
     }
-    throw new Error(`약 검색에 실패했어요 (${res.status})`);
+    throw new Error(`${ERRORS.med.searchFailed} (${res.status})`);
   }
 
   let json: EasyDrugResponse;
   try {
     json = JSON.parse(text) as EasyDrugResponse;
   } catch {
-    throw new Error('약 검색 응답을 해석하지 못했어요');
+    throw new Error(ERRORS.med.searchParse);
   }
 
   const code = json.header?.resultCode;
   if (code && code !== '00') {
-    throw new Error(json.header?.resultMsg ?? '약 검색에 실패했어요');
+    throw new Error(json.header?.resultMsg ?? ERRORS.med.searchFailed);
   }
 
   const rawItems = normalizeItems(json.body?.items);

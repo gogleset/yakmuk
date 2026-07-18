@@ -29,8 +29,8 @@
 
 ## 한줄 결론
 
-지금 앱 = **틸·아이콘·기능 안부 UI** + **한 화면에 필드 몰아넣기**.  
-목표 = **세이지·콕이 beat** + **토스형 입력 퍼널**.
+지금 앱 = **틸·콕이 beat·기록 탭(캘린더 셸 + empty/오늘 체크 스크롤)** + 토스형 퍼널.  
+홈 SoT 목업: [`mocks/home-empty.png`](mocks/home-empty.png) · [`mocks/home-today-check.png`](mocks/home-today-check.png).
 
 ---
 

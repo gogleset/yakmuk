@@ -29,10 +29,11 @@ F5 **beat**(가족 컷) ≠ 퍼널 **P1**(가족 입력).
 ## F2 — 기록 없음 (Empty)
 
 - **시트:** Thinking
-- **현재:** `RichEmptyState` + Lucide + `COPY.med.emptyRegistered` 등
-- **beat:** illustration=`thinking`, 카피 = **기존 COPY** (시트 문장 이식 금지)
-- **대상:** 약 0개 · 오늘 스케줄 없음 · 가족 없음(→ F5)
-- **훅:** `RichEmptyState.tsx`, `TodayMedicationPanel.tsx`
+- **현재:** `RichEmptyState` layout=`card` + 캘린더 아래
+- **beat:** illustration=`thinking`, 카피 = `COPY.med.emptyRegistered*` (hint: 복용 기록해볼까요)
+- **대상:** 약 0개
+- **훅:** `HomePage` empty 분기 · `RichEmptyState.tsx`
+- **목업:** `docs/brand/mocks/home-empty.png`
 
 ## F3 — (폐기) 개별 복용 성공
 
@@ -59,9 +60,10 @@ F5 **beat**(가족 컷) ≠ 퍼널 **P1**(가족 입력).
 
 - **시트:** 클립보드 / (시트 Success와 동일 트리거)
 - **트리거:** `taken == total` (오늘 스케줄 있는 약 전부 체크)
-- **beat:** 리스트 **위에** `done` 컷 + `COPY.med.allDoneToday` (리스트 유지)
+- **beat:** 오늘 체크 **인사 배너**에 `done` 컷 + `COPY.med.checkPromptDone` (시간대 리스트 유지)
 - **아님:** 약 하나 체크할 때마다 콕이
-- **훅:** `TodayMedicationPanel` all-done 분기
+- **훅:** `TodayMedicationPanel` (홈 스크롤 아래) · 목업 `docs/brand/mocks/home-today-check.png`
+- **일괄 CTA:** `다 먹었어요!` → pending 전부 taken (#9 홈 IA)
 
 ## F7 — stuck 안부 (Worried) — [decisions.md](decisions.md) #4A
 

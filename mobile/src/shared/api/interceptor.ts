@@ -1,3 +1,4 @@
+import { loggedFetch } from '@/shared/api/loggedFetch';
 import { formatUserFacingError } from '@/shared/lib/errors';
 import { ERRORS } from '@/shared/copy';
 
@@ -13,14 +14,14 @@ export function throwIfError(
   }
 }
 
-/** fetch JSON + 상태코드 검사 */
+/** fetch JSON + 상태코드 검사 (공공 API 등) */
 export async function fetchJson<T>(
   url: string,
   init?: RequestInit,
 ): Promise<T> {
   let res: Response;
   try {
-    res = await fetch(url, init);
+    res = await loggedFetch(url, init);
   } catch {
     throw new Error(ERRORS.network);
   }

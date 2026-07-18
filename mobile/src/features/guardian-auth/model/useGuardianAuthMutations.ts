@@ -3,7 +3,9 @@ import { createFamily } from '@/entities/user/api/create-family';
 import { signInGuardianDev } from '@/entities/user/api/sign-in-guardian-dev';
 import { signInGuardianOAuth } from '@/entities/user/api/sign-in-guardian-oauth';
 import { signOut } from '@/entities/user/api/sign-out';
+import { withdrawMyAccount } from '@/entities/user/api/withdraw-my-account';
 import { showMutationError } from '@/shared/lib/mutation';
+import { ERRORS } from '@/shared/copy';
 
 export const guardianAuthKeys = {
   all: ['guardian-auth'] as const,
@@ -11,6 +13,7 @@ export const guardianAuthKeys = {
   signInOAuth: () => [...guardianAuthKeys.all, 'sign-in-oauth'] as const,
   createFamily: () => [...guardianAuthKeys.all, 'create-family'] as const,
   signOut: () => [...guardianAuthKeys.all, 'sign-out'] as const,
+  withdraw: () => [...guardianAuthKeys.all, 'withdraw'] as const,
 };
 
 export function useGuardianSignInDevMutation() {
@@ -18,7 +21,7 @@ export function useGuardianSignInDevMutation() {
     mutationKey: guardianAuthKeys.signInDev(),
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       signInGuardianDev(email, password),
-    onError: (error) => showMutationError('로그인하지 못했어요', error),
+    onError: (error) => showMutationError(ERRORS.auth.loginFailed, error),
   });
 }
 
@@ -26,18 +29,24 @@ export function useGuardianSignInOAuthMutation() {
   return useMutation({
     mutationKey: guardianAuthKeys.signInOAuth(),
     mutationFn: (provider: 'google' | 'apple') => signInGuardianOAuth(provider),
-    onError: (error) => showMutationError('로그인하지 못했어요', error),
+    onError: (error) => showMutationError(ERRORS.auth.loginFailed, error),
   });
 }
 
 export function useCreateFamilyMutation(refreshProfile: () => Promise<void>) {
   return useMutation({
     mutationKey: guardianAuthKeys.createFamily(),
-    mutationFn: async (nickname: string) => {
-      await createFamily(nickname);
+    mutationFn: async ({
+      familyName,
+      nickname,
+    }: {
+      familyName: string;
+      nickname: string;
+    }) => {
+      await createFamily(familyName, nickname);
       await refreshProfile();
     },
-    onError: (error) => showMutationError('만들지 못했어요', error),
+    onError: (error) => showMutationError(ERRORS.family.createFailed, error),
   });
 }
 
@@ -45,6 +54,18 @@ export function useSignOutMutation() {
   return useMutation({
     mutationKey: guardianAuthKeys.signOut(),
     mutationFn: signOut,
-    onError: (error) => showMutationError('로그아웃하지 못했어요', error),
+    onError: (error) => showMutationError(ERRORS.auth.logoutFailed, error),
+  });
+}
+
+/** 탈퇴 후 세션도 정리 */
+export function useWithdrawAccountMutation() {
+  return useMutation({
+    mutationKey: guardianAuthKeys.withdraw(),
+    mutationFn: async () => {
+      await withdrawMyAccount();
+      await signOut();
+    },
+    onError: (error) => showMutationError(ERRORS.auth.withdrawFailed, error),
   });
 }

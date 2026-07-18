@@ -1,12 +1,18 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { upsertAlert } from '@/entities/family/api/upsert-alert';
 import { deleteMedication } from '@/entities/medication/api/delete-medication';
 import { toggleTaken } from '@/entities/medication/api/toggle-taken';
+import { stepDayLoop } from '@/entities/medication/lib/loop/dayLoop';
 import { dailyMedicationCheckKeys } from '@/features/daily-medication-check/model/queryKeys';
+import { createSupabaseLoopStore } from '@/shared/lib/loop/supabaseLoopStore';
 import {
   invalidateHomeActivity,
   invalidateMedicationLists,
 } from '@/shared/lib/query-invalidation';
 import { showMutationError } from '@/shared/lib/mutation';
+import { COPY, ERRORS } from '@/shared/copy';
+
+const loopStore = createSupabaseLoopStore();
 
 type Params = {
   userId: string | undefined;
@@ -28,21 +34,47 @@ export function useDailyMedicationCheckMutations({
   const toggle = useMutation({
     mutationKey: dailyMedicationCheckKeys.toggle(),
     mutationFn: async (medicationId: number) => {
-      if (!userId || !familyId) throw new Error('프로필을 불러오지 못했어요');
+      if (!userId || !familyId) throw new Error(ERRORS.auth.profileLoadFailed);
       const currentlyTaken = takenMedIds.has(medicationId);
       const pendingIdsAfter = currentlyTaken
         ? [...pendingIds, medicationId]
         : pendingIds.filter((id) => id !== medicationId);
+
       await toggleTaken({
         userId,
         familyId,
         medicationId,
         currentlyTaken,
-        pendingIdsAfter,
+      });
+
+      await stepDayLoop({
+        store: loopStore,
+        userId,
+        trigger: 'in_app',
+        plan: { action: 'toggle_medication', medicationId },
+        actResult: {
+          kind: 'toggle_medication',
+          payload: { medicationId, taken: !currentlyTaken },
+        },
+        pendingMedicationIds: pendingIdsAfter,
+        onStuckEscalate: async (info) => {
+          await upsertAlert({
+            familyId,
+            userId,
+            kind: 'stuck_escalate',
+            message: COPY.alert.medCheckStalled,
+            payload: {
+              runId: info.runId,
+              pendingHash: info.pendingHash,
+              pendingCount: info.pendingCount,
+              dateKst: info.dateKst,
+            },
+          });
+        },
       });
     },
     onSuccess: () => void invalidate(),
-    onError: (error) => showMutationError('체크하지 못했어요', error),
+    onError: (error) => showMutationError(ERRORS.med.checkFailed, error),
   });
 
   const remove = useMutation({
@@ -52,7 +84,7 @@ export function useDailyMedicationCheckMutations({
       await invalidateMedicationLists(qc);
       await invalidate();
     },
-    onError: (error) => showMutationError('삭제하지 못했어요', error),
+    onError: (error) => showMutationError(ERRORS.med.deleteFailed, error),
   });
 
   return { toggle, remove };

@@ -1,11 +1,13 @@
 import { Redirect, Tabs } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '@/providers/AuthProvider';
 import { ROUTES } from '@/shared/config/routes';
-import { COLORS } from '@/shared/config/theme';
+import { COLORS, NAV } from '@/shared/config/theme';
 import { Icons } from '@/shared/ui';
 
 export default function AppTabsLayout() {
   const { loading, profile } = useAuth();
+  const insets = useSafeAreaInsets();
 
   if (loading) return null;
   if (!profile?.familyId) return <Redirect href={ROUTES.welcome} />;
@@ -13,14 +15,18 @@ export default function AppTabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: COLORS.canvas },
-        headerTitleStyle: { color: COLORS.brand, fontWeight: '700' },
+        headerShown: false,
+        tabBarShowLabel: false,
         tabBarActiveTintColor: COLORS.brand,
         tabBarInactiveTintColor: COLORS.muted,
+        sceneStyle: { backgroundColor: COLORS.canvas },
         tabBarStyle: {
           backgroundColor: COLORS.canvas,
           borderTopWidth: 0,
-          elevation: 0, // Android 상단 그림자 제거
+          elevation: 0,
+          height: NAV.tabBarHeight + insets.bottom,
+          paddingBottom: insets.bottom,
+          paddingTop: NAV.tabBarPaddingTop,
         },
       }}
     >

@@ -1,46 +1,62 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createFamily } from '@/entities/user/api/create-family';
 import { createInvite } from '@/entities/user/api/create-invite';
-import { invalidateCareInvites } from '@/entities/user/model/queries';
+import { deleteInvite } from '@/entities/user/api/delete-invite';
+import { reissueInviteCode } from '@/entities/user/api/reissue-invite';
+import { invalidateFamilyInvites } from '@/entities/user/model/queries';
+import type { InviteTargetRole } from '@/entities/user/model/types';
 import { invalidateFamilyActivity } from '@/entities/family/model/queries';
 import { showMutationError } from '@/shared/lib/mutation';
+import { ERRORS } from '@/shared/copy';
 
 export const familyInviteKeys = {
   all: ['family-invite'] as const,
-  ensureFamily: () => [...familyInviteKeys.all, 'ensure-family'] as const,
   create: () => [...familyInviteKeys.all, 'create'] as const,
+  delete: () => [...familyInviteKeys.all, 'delete'] as const,
+  reissue: () => [...familyInviteKeys.all, 'reissue'] as const,
 };
 
-type Params = {
-  guardianNickname: string;
-  refreshProfile: () => Promise<void>;
-};
-
-/** 가족 초대 use case */
-export function useFamilyInviteMutations({
-  guardianNickname,
-  refreshProfile,
-}: Params) {
+/** 가족장 초대 use case */
+export function useFamilyInviteMutations() {
   const qc = useQueryClient();
-
-  const ensureFamily = useMutation({
-    mutationKey: familyInviteKeys.ensureFamily(),
-    mutationFn: async () => {
-      await createFamily(guardianNickname);
-      await refreshProfile();
-    },
-    onError: (error) => showMutationError('만들지 못했어요', error),
-  });
 
   const createInviteMutation = useMutation({
     mutationKey: familyInviteKeys.create(),
-    mutationFn: (nickname: string) => createInvite(nickname),
+    mutationFn: ({
+      invitedAs,
+      targetRole,
+    }: {
+      invitedAs: string;
+      targetRole: InviteTargetRole;
+    }) => createInvite(invitedAs, targetRole),
     onSuccess: async () => {
-      await invalidateCareInvites(qc);
+      await invalidateFamilyInvites(qc);
       await invalidateFamilyActivity(qc);
     },
-    onError: (error) => showMutationError('초대하지 못했어요', error),
+    onError: (error) => showMutationError(ERRORS.invite.createFailed, error),
   });
 
-  return { ensureFamily, createInvite: createInviteMutation };
+  const deleteInviteMutation = useMutation({
+    mutationKey: familyInviteKeys.delete(),
+    mutationFn: (inviteId: string) => deleteInvite(inviteId),
+    onSuccess: async () => {
+      await invalidateFamilyInvites(qc);
+      await invalidateFamilyActivity(qc);
+    },
+    onError: (error) => showMutationError(ERRORS.invite.deleteFailed, error),
+  });
+
+  const reissueInviteMutation = useMutation({
+    mutationKey: familyInviteKeys.reissue(),
+    mutationFn: (inviteId: string) => reissueInviteCode(inviteId),
+    onSuccess: async () => {
+      await invalidateFamilyInvites(qc);
+    },
+    onError: (error) => showMutationError(ERRORS.invite.reissueFailed, error),
+  });
+
+  return {
+    createInvite: createInviteMutation,
+    deleteInvite: deleteInviteMutation,
+    reissueInvite: reissueInviteMutation,
+  };
 }

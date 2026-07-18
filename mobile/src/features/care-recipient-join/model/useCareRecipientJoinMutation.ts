@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
-import { joinAsCareRecipient } from '@/entities/user/api/join-care-recipient';
+import { joinWithInviteCode } from '@/entities/user/api/join-with-invite';
 import { showMutationError } from '@/shared/lib/mutation';
+import { ERRORS } from '@/shared/copy';
 
 export const careRecipientJoinKeys = {
   all: ['care-recipient-join'] as const,
@@ -10,7 +11,13 @@ export const careRecipientJoinKeys = {
 export function useCareRecipientJoinMutation() {
   return useMutation({
     mutationKey: careRecipientJoinKeys.join(),
-    mutationFn: (inviteCode: string) => joinAsCareRecipient(inviteCode),
-    onError: (error) => showMutationError('참여하지 못했어요', error),
+    mutationFn: ({
+      inviteCode,
+      nickname,
+    }: {
+      inviteCode: string;
+      nickname?: string;
+    }) => joinWithInviteCode(inviteCode, nickname),
+    onError: (error) => showMutationError(ERRORS.invite.joinFailed, error),
   });
 }

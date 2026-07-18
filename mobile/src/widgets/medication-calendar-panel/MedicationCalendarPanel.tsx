@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 import type { CalendarMark } from '@/entities/medication/lib/calendar';
 import { COLORS } from '@/shared/config/theme';
-import { Caption, Card } from '@/shared/ui';
+import { Card } from '@/shared/ui';
 import { MedCalendar } from './MedCalendar';
 
 type Props = {
@@ -29,7 +29,9 @@ export function MedicationCalendarPanel({
         />
       </Card>
       <View className="flex-row gap-3">
-        <Caption>● 다 먹었어요</Caption>
+        <Text className="text-xs" style={{ color: COLORS.success }}>
+          ● 다 먹었어요
+        </Text>
         <Text className="text-xs" style={{ color: COLORS.warning }}>
           ● 일부만
         </Text>

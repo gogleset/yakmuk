@@ -1,13 +1,19 @@
-import { Pressable, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import type { ConditionValue, Medication } from '@/entities/medication/model/types';
+import { CONDITION_LABEL } from '@/entities/medication/lib/display';
 import { MedRow } from '@/entities/medication/ui/MedRow';
-import { Badge, Button, Caption, EmptyHint, Icons, Input } from '@/shared/ui';
+import { cn } from '@/shared/lib/cn';
+import { COPY } from '@/shared/copy';
+import {
+  Button,
+  Icons,
+  Input,
+  RichEmptyState,
+} from '@/shared/ui';
 
-const CONDITIONS: { value: ConditionValue; label: string }[] = [
-  { value: 'GOOD', label: '좋음' },
-  { value: 'NORMAL', label: '보통' },
-  { value: 'BAD', label: '아픔' },
-];
+const CONDITIONS = (
+  Object.entries(CONDITION_LABEL) as [ConditionValue, string][]
+).map(([value, label]) => ({ value, label }));
 
 type Props = {
   meds: Medication[];
@@ -21,6 +27,12 @@ type Props = {
   onSubmitCondition: () => void;
   /** 목록 조회 실패 시 안내 */
   isError?: boolean;
+  /** 등록은 있으나 오늘 스케줄 없음 */
+  emptyMessage?: string;
+  /** 약 0개일 때 CTA */
+  onAddPress?: () => void;
+  /** 캘린더 아래 진행 한 줄 */
+  progressLabel?: string;
 };
 
 /** 오늘 약 체크 + 컨디션 입력 */
@@ -35,19 +47,44 @@ export function TodayMedicationPanel({
   onDelete,
   onSubmitCondition,
   isError = false,
+  emptyMessage,
+  onAddPress,
+  progressLabel,
 }: Props) {
+  const hasNoMedsRegistered = !emptyMessage && meds.length === 0 && !isError;
+
   return (
     <View className="gap-2.5">
+      {progressLabel ? (
+        <Text className="text-sm font-semibold text-brand">{progressLabel}</Text>
+      ) : null}
+
       {isError ? (
-        <EmptyHint message="약 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요." />
+        <RichEmptyState
+          title={COPY.med.loadFailed}
+          message={COPY.common.retryLater}
+          icon={Icons.Pill}
+        />
+      ) : hasNoMedsRegistered ? (
+        <RichEmptyState
+          title={COPY.med.emptyRegistered}
+          message={COPY.med.emptyRegisteredHint}
+          icon={Icons.Pill}
+          ctaLabel={COPY.med.emptyRegisteredCta}
+          onCtaPress={onAddPress}
+        />
       ) : meds.length === 0 ? (
-        <EmptyHint message="아직 등록한 약이 없어요. 아래 + 버튼으로 추가해 보세요." />
+        <RichEmptyState
+          title={emptyMessage ?? COPY.med.emptyToday}
+          icon={Icons.Pill}
+        />
       ) : (
         meds.map((med) => (
           <MedRow
             key={med.id}
             name={med.name}
             scheduledTime={med.scheduledTime}
+            daysMask={med.daysMask}
             taken={takenMedIds.has(med.id)}
             onPress={() => onToggle(med.id)}
             onLongPress={() => onDelete(med.id, med.name)}
@@ -55,27 +92,47 @@ export function TodayMedicationPanel({
         ))
       )}
 
-      {meds.length > 0 ? (
-        <Caption>길게 누르면 삭제할 수 있어요</Caption>
-      ) : null}
-
-      <View className="flex-row gap-2">
-        {CONDITIONS.map((c) => (
-          <Pressable key={c.value} onPress={() => onConditionChange(c.value)}>
-            <Badge label={c.label} selected={condition === c.value} />
-          </Pressable>
-        ))}
+      <View className="mt-1 gap-2">
+        <Text className="text-sm font-semibold text-brand">
+          오늘 컨디션은 어때요?
+        </Text>
+        <View className="flex-row gap-2">
+          {CONDITIONS.map((c) => {
+            const selected = condition === c.value;
+            return (
+              <Pressable
+                key={c.value}
+                accessibilityRole="button"
+                accessibilityState={{ selected }}
+                onPress={() => onConditionChange(c.value)}
+                className={cn(
+                  'flex-1 items-center rounded-xl py-3',
+                  selected ? 'bg-brand' : 'bg-surface',
+                )}
+              >
+                <Text
+                  className={cn(
+                    'text-sm font-semibold',
+                    selected ? 'text-ink' : 'text-brand',
+                  )}
+                >
+                  {c.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        <Input
+          placeholder="가족에게 전할 한마디 (선택)"
+          value={message}
+          onChangeText={onMessageChange}
+        />
+        <Button
+          label="컨디션 남기기"
+          icon={Icons.Heart}
+          onPress={onSubmitCondition}
+        />
       </View>
-      <Input
-        placeholder="가족에게 전할 한마디 (선택)"
-        value={message}
-        onChangeText={onMessageChange}
-      />
-      <Button
-        label="컨디션 남기기"
-        icon={Icons.Heart}
-        onPress={onSubmitCondition}
-      />
     </View>
   );
 }

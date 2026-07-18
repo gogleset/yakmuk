@@ -1,2 +1,2 @@
 export { useFamilyInviteMutations } from './model/useFamilyInviteMutations';
-export { FamilyInviteSheet } from './ui/FamilyInviteSheet';
+export { FamilyInvitePanel } from './ui/FamilyInvitePanel';

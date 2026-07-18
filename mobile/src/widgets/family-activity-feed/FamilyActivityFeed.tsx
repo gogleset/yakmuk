@@ -1,6 +1,7 @@
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import type { DailyLog } from '@/entities/medication/model/types';
-import { CONDITION_LABEL, formatFeedTime } from '@/shared/lib/format';
+import { CONDITION_LABEL } from '@/entities/medication';
+import { formatFeedTime } from '@/shared/lib/format';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { Card, CardDescription, CardTitle, Icons } from '@/shared/ui';
 
@@ -17,11 +18,12 @@ function feedTitle(item: DailyLog): string {
 
 type Props = {
   item: DailyLog;
+  onPress?: (userId: string, nickname: string | null) => void;
 };
 
 /** 가족 피드 카드 1건 */
-export function FamilyActivityFeedItem({ item }: Props) {
-  return (
+export function FamilyActivityFeedItem({ item, onPress }: Props) {
+  const content = (
     <Card
       style={
         item.condition === 'BAD'
@@ -45,5 +47,16 @@ export function FamilyActivityFeedItem({ item }: Props) {
         {formatFeedTime(item.logDate, item.createdAt)}
       </Text>
     </Card>
+  );
+
+  if (!onPress) return content;
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={() => onPress(item.userId, item.nickname ?? null)}
+    >
+      {content}
+    </Pressable>
   );
 }

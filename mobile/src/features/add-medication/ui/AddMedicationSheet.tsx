@@ -4,14 +4,33 @@ import {
   Alert,
   FlatList,
   Pressable,
+  ScrollView,
   Text,
   View,
 } from 'react-native';
 import { searchDrugsByName } from '@/entities/medication/api/search-drugs';
+import {
+  expandPerWeekdaySchedule,
+  expandSameSchedule,
+  formatDaysMask,
+  scheduleValidationMessage,
+  validatePerWeekdaySchedule,
+  validateSameSchedule,
+  WEEKDAY_LABELS,
+  type DaysMode,
+} from '@/entities/medication/lib/daysMask';
 import type { DrugSearchItem } from '@/entities/medication/model/types';
+import {
+  DaysModeToggle,
+  ScheduleModeToggle,
+  TimeSlotList,
+  WeekdayPicker,
+  type ScheduleMode,
+} from '@/entities/medication';
 import { useAddMedicationMutation } from '@/features/add-medication/model/useAddMedicationMutation';
 import { DrugSearchPreview } from '@/features/add-medication/ui/DrugSearchPreview';
-import { COLORS } from '@/shared/config/theme';
+import { COLORS, LIMITS } from '@/shared/config/theme';
+import { COPY, ERRORS } from '@/shared/copy';
 import {
   Button,
   Caption,
@@ -19,11 +38,10 @@ import {
   EmptyHint,
   Icons,
   Input,
-  Muted,
   PageSheet,
 } from '@/shared/ui';
 
-type Step = 'search' | 'confirm';
+type Step = 'search' | 'schedule';
 
 type Props = {
   visible: boolean;
@@ -32,7 +50,9 @@ type Props = {
   onAdded: () => void | Promise<void>;
 };
 
-/** 약 추가: 공공 API 검색 → 선택 → 시간 확인 */
+const DEFAULT_TIMES: string[] = [LIMITS.defaultDoseTime];
+
+/** 약 추가: 검색/직접입력 → 같은일정 | 요일마다 → 배치 저장 */
 export function AddMedicationSheet({
   visible,
   userId,
@@ -48,9 +68,21 @@ export function AddMedicationSheet({
   const [selected, setSelected] = useState<DrugSearchItem | null>(null);
   const [manualMode, setManualMode] = useState(false);
   const [manualName, setManualName] = useState('');
-  const [medTime, setMedTime] = useState('08:00');
 
-  // 시트 닫힐 때 상태 초기화
+  const [scheduleMode, setScheduleMode] = useState<ScheduleMode>('same');
+  const [slotTimes, setSlotTimes] = useState<string[]>(DEFAULT_TIMES);
+  const [daysMode, setDaysMode] = useState<DaysMode>('daily');
+  const [weekdays, setWeekdays] = useState<number[]>([]);
+  const [timesByDay, setTimesByDay] = useState<Record<number, string[]>>({});
+
+  const resetSchedule = () => {
+    setScheduleMode('same');
+    setSlotTimes(DEFAULT_TIMES);
+    setDaysMode('daily');
+    setWeekdays([]);
+    setTimesByDay({});
+  };
+
   useEffect(() => {
     if (visible) return;
     setStep('search');
@@ -62,19 +94,20 @@ export function AddMedicationSheet({
     setSelected(null);
     setManualMode(false);
     setManualName('');
-    setMedTime('08:00');
+    resetSchedule();
   }, [visible]);
 
-  // 검색어 디바운스
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(query.trim()), 350);
+    const t = setTimeout(
+      () => setDebouncedQuery(query.trim()),
+      LIMITS.drugSearchDebounceMs,
+    );
     return () => clearTimeout(t);
   }, [query]);
 
-  // 공공 API 검색
   useEffect(() => {
     if (!visible || manualMode || step !== 'search') return;
-    if (debouncedQuery.length < 2) {
+    if (debouncedQuery.length < LIMITS.drugSearchMinQueryLength) {
       setResults([]);
       setSearchError(null);
       setSearching(false);
@@ -107,16 +140,45 @@ export function AddMedicationSheet({
   const pickDrug = (item: DrugSearchItem) => {
     setSelected(item);
     setManualMode(false);
-    setStep('confirm');
+    setStep('schedule');
   };
 
-  const goManualConfirm = () => {
+  const goManualSchedule = () => {
     if (!manualName.trim()) {
-      Alert.alert('약 이름', '약 이름을 입력해 주세요');
+      Alert.alert(COPY.med.nameAlertTitle, ERRORS.med.nameRequired);
       return;
     }
     setSelected(null);
-    setStep('confirm');
+    setStep('schedule');
+  };
+
+  const handleScheduleModeChange = (mode: ScheduleMode) => {
+    if (mode === scheduleMode) return;
+    setScheduleMode(mode);
+    if (mode === 'perWeekday') {
+      // same → perWeekday: 선택된 요일에 동일 타임 복제 (없으면 빈 상태)
+      const seed = slotTimes.length > 0 ? slotTimes : DEFAULT_TIMES;
+      setTimesByDay((prev) => {
+        const next: Record<number, string[]> = { ...prev };
+        for (const day of weekdays) {
+          if (!next[day]?.length) next[day] = [...seed];
+        }
+        return next;
+      });
+    }
+  };
+
+  const handleWeekdaysChange = (days: number[]) => {
+    setWeekdays(days);
+    if (scheduleMode !== 'perWeekday') return;
+    const seed = slotTimes.length > 0 ? slotTimes : DEFAULT_TIMES;
+    setTimesByDay((prev) => {
+      const next: Record<number, string[]> = {};
+      for (const day of days) {
+        next[day] = prev[day]?.length ? prev[day]! : [...seed];
+      }
+      return next;
+    });
   };
 
   const addMut = useAddMedicationMutation({
@@ -128,23 +190,41 @@ export function AddMedicationSheet({
 
   const submitAdd = () => {
     if (!userId) {
-      Alert.alert('추가하지 못했어요', '로그인이 필요해요');
+      Alert.alert(ERRORS.med.addFailed, ERRORS.auth.required);
       return;
     }
     const name = (selected?.itemName ?? manualName).trim();
     if (!name) {
-      Alert.alert('약 이름', '약 이름을 입력해 주세요');
+      Alert.alert(COPY.med.nameAlertTitle, ERRORS.med.nameRequired);
       return;
     }
-    if (!/^\d{2}:\d{2}$/.test(medTime.trim())) {
-      Alert.alert('시간', '시간은 HH:MM 형식으로 입력해 주세요');
+
+    let slots;
+    if (scheduleMode === 'same') {
+      const err = validateSameSchedule(slotTimes, daysMode, weekdays);
+      if (err) {
+        Alert.alert(COPY.med.scheduleAlertTitle, scheduleValidationMessage(err));
+        return;
+      }
+      slots = expandSameSchedule(
+        slotTimes,
+        formatDaysMask(daysMode, weekdays),
+      );
+    } else {
+      const err = validatePerWeekdaySchedule(weekdays, timesByDay);
+      if (err) {
+        Alert.alert(COPY.med.scheduleAlertTitle, scheduleValidationMessage(err));
+        return;
+      }
+      slots = expandPerWeekdaySchedule(timesByDay);
+    }
+
+    if (slots.length === 0) {
+      Alert.alert(COPY.med.scheduleAlertTitle, COPY.med.noScheduleToSave);
       return;
     }
-    addMut.mutate({
-      userId,
-      name,
-      scheduledTime: medTime.trim(),
-    });
+
+    addMut.mutate({ userId, name, slots });
   };
 
   const title =
@@ -152,7 +232,7 @@ export function AddMedicationSheet({
       ? manualMode
         ? '직접 입력'
         : '약 검색'
-      : '먹는 시간';
+      : '복용 일정';
 
   return (
     <PageSheet visible={visible} title={title} onClose={onClose}>
@@ -165,9 +245,6 @@ export function AddMedicationSheet({
             autoFocus
             returnKeyType="search"
           />
-          <Caption className="mt-2">
-            식약처 의약품 정보로 검색해요. 없으면 직접 입력할 수 있어요.
-          </Caption>
 
           {searching ? (
             <View className="mt-6 items-center">
@@ -177,7 +254,9 @@ export function AddMedicationSheet({
 
           {searchError ? (
             <EmptyHint message={searchError} />
-          ) : debouncedQuery.length >= 2 && !searching && results.length === 0 ? (
+          ) : debouncedQuery.length >= LIMITS.drugSearchMinQueryLength &&
+            !searching &&
+            results.length === 0 ? (
             <EmptyHint message="검색 결과가 없어요. 직접 입력해 보세요." />
           ) : null}
 
@@ -186,11 +265,7 @@ export function AddMedicationSheet({
             data={results}
             keyExtractor={(item) => item.itemSeq}
             keyboardShouldPersistTaps="handled"
-            ListEmptyComponent={
-              debouncedQuery.length < 2 ? (
-                <Muted className="mt-4">두 글자 이상 입력해 주세요</Muted>
-              ) : null
-            }
+            ListEmptyComponent={null}
             renderItem={({ item }) => (
               <Pressable
                 onPress={() => pickDrug(item)}
@@ -225,7 +300,7 @@ export function AddMedicationSheet({
             onChangeText={setManualName}
             autoFocus
           />
-          <Button label="다음" onPress={goManualConfirm} />
+          <Button label="다음" onPress={goManualSchedule} />
           <Button
             label="검색으로 돌아가기"
             variant="ghost"
@@ -234,23 +309,57 @@ export function AddMedicationSheet({
         </View>
       ) : null}
 
-      {step === 'confirm' ? (
-        <View className="gap-3 px-5">
+      {step === 'schedule' ? (
+        <ScrollView
+          className="flex-1"
+          contentContainerClassName="gap-4 px-5 pb-6"
+          keyboardShouldPersistTaps="handled"
+        >
           {selected ? (
             <Card>
               <DrugSearchPreview item={selected} variant="detail" />
             </Card>
           ) : (
             <Card className="gap-1">
-              <Text className="font-semibold text-brand">{manualName.trim()}</Text>
+              <Text className="font-semibold text-brand">
+                {manualName.trim()}
+              </Text>
             </Card>
           )}
-          <Input
-            placeholder="먹는 시간 (예: 08:00)"
-            value={medTime}
-            onChangeText={setMedTime}
-            keyboardType="numbers-and-punctuation"
+
+          <ScheduleModeToggle
+            value={scheduleMode}
+            onChange={handleScheduleModeChange}
           />
+
+          {scheduleMode === 'same' ? (
+            <>
+              <TimeSlotList value={slotTimes} onChange={setSlotTimes} />
+              <DaysModeToggle value={daysMode} onChange={setDaysMode} />
+              {daysMode === 'weekday' ? (
+                <WeekdayPicker value={weekdays} onChange={setWeekdays} />
+              ) : null}
+            </>
+          ) : (
+            <>
+              <WeekdayPicker value={weekdays} onChange={handleWeekdaysChange} />
+              {weekdays.length === 0 ? null : (
+                weekdays.map((day) => (
+                  <View key={day} className="gap-2">
+                    <Caption>{WEEKDAY_LABELS[day]}요일</Caption>
+                    <TimeSlotList
+                      value={timesByDay[day] ?? DEFAULT_TIMES}
+                      onChange={(times) =>
+                        setTimesByDay((prev) => ({ ...prev, [day]: times }))
+                      }
+                      label=""
+                    />
+                  </View>
+                ))
+              )}
+            </>
+          )}
+
           <Button
             label={addMut.isPending ? '추가 중…' : '추가하기'}
             icon={Icons.Pill}
@@ -262,7 +371,7 @@ export function AddMedicationSheet({
             variant="ghost"
             onPress={() => setStep('search')}
           />
-        </View>
+        </ScrollView>
       ) : null}
     </PageSheet>
   );

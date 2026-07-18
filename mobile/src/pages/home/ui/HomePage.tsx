@@ -6,6 +6,7 @@ import {
   buildDayMedicationEntries,
   buildMarkedDates,
   currentYearMonthKst,
+  isMedScheduledOnDate,
 } from '@/entities/medication';
 import { useHomeMedicationQueries } from '@/entities/medication/model/queries';
 import type { ConditionValue } from '@/entities/medication/model/types';
@@ -18,10 +19,11 @@ import { useDailyMedicationCheckMutations } from '@/features/daily-medication-ch
 import { syncMedicationNotifications } from '@/features/medication-notifications';
 import { todayKstDateString } from '@/shared/lib/kst';
 import { LAYOUT } from '@/shared/config/theme';
-import { Fab, FadeEdges, Screen } from '@/shared/ui';
+import { ACTIONS, COPY } from '@/shared/copy';
+import { Fab, FadeInView, Screen } from '@/shared/ui';
 import { MedicationCalendarPanel } from '@/widgets/medication-calendar-panel';
-import { PastDayMedicationPanel } from '@/widgets/past-day-medication-panel/PastDayMedicationPanel';
-import { TodayMedicationPanel } from '@/widgets/today-medication-panel/TodayMedicationPanel';
+import { PastDayMedicationPanel } from '@/widgets/past-day-medication-panel';
+import { TodayMedicationPanel } from '@/widgets/today-medication-panel';
 
 /** 홈 — 복약 캘린더·오늘 체크·컨디션 */
 export function HomePage() {
@@ -48,12 +50,17 @@ export function HomePage() {
     visibleMonth,
   });
 
+  // 오늘 days_mask에 해당하는 약만 체크/알림 대상
+  const todayMeds = useMemo(
+    () =>
+      (medsQuery.data ?? []).filter((m) => isMedScheduledOnDate(m, today)),
+    [medsQuery.data, today],
+  );
+
   const pendingIds = useMemo(() => {
     const taken = takenQuery.data ?? new Set<number>();
-    return (medsQuery.data ?? [])
-      .filter((m) => !taken.has(m.id))
-      .map((m) => m.id);
-  }, [medsQuery.data, takenQuery.data]);
+    return todayMeds.filter((m) => !taken.has(m.id)).map((m) => m.id);
+  }, [todayMeds, takenQuery.data]);
 
   const markedDates = useMemo(
     () =>
@@ -87,6 +94,7 @@ export function HomePage() {
 
   useEffect(() => {
     if (!medsQuery.data || !takenQuery.data) return;
+    // 전체 med 넘김 — sync 내부에서 days_mask로 WEEKLY/DAILY 분기
     void syncMedicationNotifications(medsQuery.data, takenQuery.data);
   }, [medsQuery.data, takenQuery.data]);
 
@@ -108,10 +116,10 @@ export function HomePage() {
   });
 
   const confirmDelete = (medId: number, name: string) => {
-    Alert.alert('약을 삭제할까요?', `"${name}" 일정을 지울게요.`, [
-      { text: '취소', style: 'cancel' },
+    Alert.alert(COPY.med.deleteTitle, COPY.med.deleteBody(name), [
+      { text: ACTIONS.cancel, style: 'cancel' },
       {
-        text: '삭제',
+        text: ACTIONS.delete,
         style: 'destructive',
         onPress: () => remove.mutate(medId),
       },
@@ -120,42 +128,67 @@ export function HomePage() {
 
   const refreshAfterMedChange = () => refreshAfterMedicationChange(qc);
 
-  return (
-    <Screen>
-      <ScrollView contentContainerClassName="gap-2.5 px-5 pb-24 pt-4">
-        <MedicationCalendarPanel
-          visibleMonth={visibleMonth}
-          markedDates={markedDates}
-          onDayPress={(day) => setSelectedDate(day.dateString)}
-          onMonthChange={(month) => {
-            const ym = `${month.year}-${String(month.month).padStart(2, '0')}`;
-            setVisibleMonth(ym);
-          }}
-        />
+  const takenCount = todayMeds.filter((m) => takenMedIds.has(m.id)).length;
+  const progressLabel =
+    todayMeds.length === 0
+      ? undefined
+      : pendingIds.length === 0
+        ? '오늘 다 먹었어요'
+        : `약 ${pendingIds.length}개 남았어요` +
+          (takenCount > 0 ? ` · ${takenCount}/${todayMeds.length}` : '');
 
-        {selectedDate !== today ? (
-          <PastDayMedicationPanel
-            entries={selectedDayEntries}
-            conditionLogs={selectedDayConditionLogs}
+  return (
+    <Screen
+      fadeTop={LAYOUT.fade.top}
+      fadeBottom={LAYOUT.fade.bottomWithFab}
+    >
+      <ScrollView
+        contentContainerClassName="gap-2.5 px-5 pt-4"
+        contentContainerStyle={{
+          paddingBottom: LAYOUT.scroll.paddingBottomWithFab,
+        }}
+      >
+        <FadeInView className="gap-2.5">
+          <MedicationCalendarPanel
+            visibleMonth={visibleMonth}
+            markedDates={markedDates}
+            onDayPress={(day) => setSelectedDate(day.dateString)}
+            onMonthChange={(month) => {
+              const ym = `${month.year}-${String(month.month).padStart(2, '0')}`;
+              setVisibleMonth(ym);
+            }}
           />
-        ) : (
-          <TodayMedicationPanel
-            meds={medsQuery.data ?? []}
-            takenMedIds={takenMedIds}
-            condition={condition}
-            message={message}
-            isError={medsQuery.isError}
-            onConditionChange={setCondition}
-            onMessageChange={setMessage}
-            onToggle={(id) => toggle.mutate(id)}
-            onDelete={confirmDelete}
-            onSubmitCondition={() => submitCondition.mutate()}
-          />
-        )}
+
+          {selectedDate !== today ? (
+            <PastDayMedicationPanel
+              entries={selectedDayEntries}
+              conditionLogs={selectedDayConditionLogs}
+            />
+          ) : (
+            <TodayMedicationPanel
+              meds={todayMeds}
+              takenMedIds={takenMedIds}
+              condition={condition}
+              message={message}
+              isError={medsQuery.isError}
+              progressLabel={progressLabel}
+              emptyMessage={
+                (medsQuery.data?.length ?? 0) > 0
+                  ? COPY.med.emptyToday
+                  : undefined
+              }
+              onConditionChange={setCondition}
+              onMessageChange={setMessage}
+              onToggle={(id) => toggle.mutate(id)}
+              onDelete={confirmDelete}
+              onSubmitCondition={() => submitCondition.mutate()}
+              onAddPress={() => setAddOpen(true)}
+            />
+          )}
+        </FadeInView>
       </ScrollView>
 
-      <FadeEdges top={LAYOUT.fade.top} bottom={LAYOUT.fade.bottomWithFab} />
-      <Fab label="약 추가" onPress={() => setAddOpen(true)} />
+      <Fab label={COPY.med.addFab} onPress={() => setAddOpen(true)} />
 
       <AddMedicationSheet
         visible={addOpen}

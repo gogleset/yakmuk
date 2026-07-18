@@ -8,6 +8,7 @@ import {
   Button,
   Icons,
   Input,
+  KokiIllustration,
   RichEmptyState,
 } from '@/shared/ui';
 
@@ -25,14 +26,12 @@ type Props = {
   onToggle: (medId: number) => void;
   onDelete: (medId: number, name: string) => void;
   onSubmitCondition: () => void;
-  /** 목록 조회 실패 시 안내 */
   isError?: boolean;
-  /** 등록은 있으나 오늘 스케줄 없음 */
   emptyMessage?: string;
-  /** 약 0개일 때 CTA */
   onAddPress?: () => void;
-  /** 캘린더 아래 진행 한 줄 */
   progressLabel?: string;
+  /** F6 — 오늘 전부 완료 */
+  allDone?: boolean;
 };
 
 /** 오늘 약 체크 + 컨디션 입력 */
@@ -50,12 +49,22 @@ export function TodayMedicationPanel({
   emptyMessage,
   onAddPress,
   progressLabel,
+  allDone = false,
 }: Props) {
   const hasNoMedsRegistered = !emptyMessage && meds.length === 0 && !isError;
 
   return (
     <View className="gap-2.5">
-      {progressLabel ? (
+      {allDone && meds.length > 0 ? (
+        <View className="items-center gap-1 py-2">
+          <KokiIllustration variant="done" size={100} />
+          {progressLabel ? (
+            <Text className="text-sm font-semibold text-brand">
+              {progressLabel}
+            </Text>
+          ) : null}
+        </View>
+      ) : progressLabel ? (
         <Text className="text-sm font-semibold text-brand">{progressLabel}</Text>
       ) : null}
 
@@ -63,20 +72,20 @@ export function TodayMedicationPanel({
         <RichEmptyState
           title={COPY.med.loadFailed}
           message={COPY.common.retryLater}
-          icon={Icons.Pill}
+          illustration={<KokiIllustration variant="thinking" size={96} />}
         />
       ) : hasNoMedsRegistered ? (
         <RichEmptyState
           title={COPY.med.emptyRegistered}
           message={COPY.med.emptyRegisteredHint}
-          icon={Icons.Pill}
+          illustration={<KokiIllustration variant="thinking" size={96} />}
           ctaLabel={COPY.med.emptyRegisteredCta}
           onCtaPress={onAddPress}
         />
       ) : meds.length === 0 ? (
         <RichEmptyState
           title={emptyMessage ?? COPY.med.emptyToday}
-          icon={Icons.Pill}
+          illustration={<KokiIllustration variant="thinking" size={96} />}
         />
       ) : (
         meds.map((med) => (
@@ -103,7 +112,6 @@ export function TodayMedicationPanel({
               <Pressable
                 key={c.value}
                 accessibilityRole="button"
-                accessibilityState={{ selected }}
                 onPress={() => onConditionChange(c.value)}
                 className={cn(
                   'flex-1 items-center rounded-xl py-3',
@@ -123,12 +131,13 @@ export function TodayMedicationPanel({
           })}
         </View>
         <Input
-          placeholder={COPY.condition.messagePlaceholder}
           value={message}
           onChangeText={onMessageChange}
+          placeholder={COPY.condition.messagePlaceholder}
         />
         <Button
           label={COPY.condition.submit}
+          variant="secondary"
           icon={Icons.Heart}
           onPress={onSubmitCondition}
         />

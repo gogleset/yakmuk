@@ -24,10 +24,12 @@ export {
 export {
   buildDayMedicationEntries,
   buildMarkedDates,
+  computeStreakDays,
   currentYearMonthKst,
   monthRange,
   isMedActiveOnDate,
   isMedScheduledOnDate,
+  addDaysKst,
 } from './lib/calendar';
 export type { CalendarMark, DayMedicationEntry } from './lib/calendar';
 export {

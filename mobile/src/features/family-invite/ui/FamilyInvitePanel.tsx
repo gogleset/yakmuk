@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -7,52 +6,32 @@ import {
   View,
 } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
-import type {
-  FamilyInvite,
-  InviteTargetRole,
-} from '@/entities/user/model/types';
+import { router } from 'expo-router';
+import type { FamilyInvite } from '@/entities/user/model/types';
 import { useFamilyInvitesQuery } from '@/entities/user/model/queries';
 import { ROLE_LABEL } from '@/entities/user';
 import { useFamilyInviteMutations } from '@/features/family-invite/model/useFamilyInviteMutations';
-import { joinDeepLink } from '@/shared/config/routes';
+import { joinDeepLink, ROUTES } from '@/shared/config/routes';
 import { COLORS, LAYOUT, LIMITS } from '@/shared/config/theme';
 import { ACTIONS, COPY, ERRORS } from '@/shared/copy';
-import { cn } from '@/shared/lib/cn';
-import {
-  BottomSheet,
-  Button,
-  Card,
-  Caption,
-  Icons,
-  Input,
-  Muted,
-} from '@/shared/ui';
+import { Card, Icons, Muted } from '@/shared/ui';
 
 const QR_SIZE = 88;
 
 type Props = {
-  /** 가족장만 초대 UI 노출 — page에서 주입 */
   isLeader: boolean;
 };
 
-/** 가족장 설정: 초대 슬롯 2x2 */
+/** 가족장 설정: 초대 슬롯 — 생성은 P5 `/invite-create` */
 export function FamilyInvitePanel({ isLeader }: Props) {
   const invitesQuery = useFamilyInvitesQuery({ enabled: isLeader });
-  const { createInvite, deleteInvite, reissueInvite } =
-    useFamilyInviteMutations();
-
-  const [sheetOpen, setSheetOpen] = useState(false);
-  const [targetRole, setTargetRole] = useState<InviteTargetRole>('guardian');
-  const [invitedAs, setInvitedAs] = useState('');
+  const { deleteInvite, reissueInvite } = useFamilyInviteMutations();
 
   if (!isLeader) return null;
 
   const invites = invitesQuery.data ?? [];
   const ordered = [...invites].reverse().slice(0, LIMITS.maxFamilyInvites);
-  const emptyCount = Math.max(
-    0,
-    LIMITS.maxFamilyInvites - ordered.length,
-  );
+  const emptyCount = Math.max(0, LIMITS.maxFamilyInvites - ordered.length);
   const slots: (FamilyInvite | null)[] = [
     ...ordered,
     ...Array.from({ length: emptyCount }, () => null),
@@ -63,10 +42,12 @@ export function FamilyInvitePanel({ isLeader }: Props) {
     rows.push(slots.slice(i, i + 2));
   }
 
-  const closeSheet = () => {
-    setSheetOpen(false);
-    setTargetRole('guardian');
-    setInvitedAs('');
+  const onOpenCreate = () => {
+    if (invites.length >= LIMITS.maxFamilyInvites) {
+      Alert.alert(COPY.invite.limitTitle, ERRORS.invite.limitReached);
+      return;
+    }
+    router.push(ROUTES.inviteCreate);
   };
 
   const onDelete = (invite: FamilyInvite) => {
@@ -102,132 +83,42 @@ export function FamilyInvitePanel({ isLeader }: Props) {
     ]);
   };
 
-  const onOpenCreate = () => {
-    if (invites.length >= LIMITS.maxFamilyInvites) {
-      Alert.alert(COPY.invite.limitTitle, ERRORS.invite.limitReached);
-      return;
-    }
-    setSheetOpen(true);
-  };
-
-  const onCreate = () => {
-    const trimmed = invitedAs.trim();
-    if (!trimmed) {
-      Alert.alert(COPY.invite.labelAlertTitle, COPY.invite.labelAlertBody);
-      return;
-    }
-
-    createInvite.mutate(
-      { invitedAs: trimmed, targetRole },
-      {
-        onSuccess: () => closeSheet(),
-      },
-    );
-  };
-
   return (
-    <>
-      <Card className="gap-3 p-4">
-        <View className="flex-row items-center gap-2">
-          <Icons.QrCode size={LAYOUT.icon.md} color={COLORS.brand} />
-          <Text className="text-base font-bold text-brand">가족 초대</Text>
-          <Muted className="text-xs">
-            {invites.length}/{LIMITS.maxFamilyInvites}
-          </Muted>
-        </View>
+    <Card className="gap-3 p-4">
+      <View className="flex-row items-center gap-2">
+        <Icons.QrCode size={LAYOUT.icon.md} color={COLORS.brand} />
+        <Text className="text-base font-bold text-brand">가족 초대</Text>
+        <Muted className="text-xs">
+          {invites.length}/{LIMITS.maxFamilyInvites}
+        </Muted>
+      </View>
 
-        {invitesQuery.isLoading ? (
-          <ActivityIndicator color={COLORS.brand} className="my-6" />
-        ) : (
-          <View className="gap-2.5">
-            {rows.map((row, rowIndex) => (
-              <View key={rowIndex} className="flex-row gap-2.5">
-                {row.map((slot, colIndex) => (
-                  <View key={colIndex} className="flex-1">
-                    {slot ? (
-                      <InviteSlot
-                        invite={slot}
-                        onDelete={() => onDelete(slot)}
-                        onReissue={() => onReissue(slot)}
-                        deleting={deleteInvite.isPending}
-                        reissuing={reissueInvite.isPending}
-                      />
-                    ) : (
-                      <EmptySlot
-                        busy={createInvite.isPending && !sheetOpen}
-                        onPress={onOpenCreate}
-                      />
-                    )}
-                  </View>
-                ))}
-              </View>
-            ))}
-          </View>
-        )}
-      </Card>
-
-      <BottomSheet
-        visible={sheetOpen}
-        title="초대코드 발급"
-        onClose={closeSheet}
-      >
-        <View className="gap-3">
-          <View className="gap-2">
-            <Caption>역할</Caption>
-            <View className="flex-row gap-2">
-              {(
-                [
-                  { role: 'guardian' as const },
-                  { role: 'care_recipient' as const },
-                ] as const
-              ).map((opt) => {
-                const selected = targetRole === opt.role;
-                return (
-                  <Pressable
-                    key={opt.role}
-                    accessibilityRole="button"
-                    accessibilityState={{ selected }}
-                    onPress={() => setTargetRole(opt.role)}
-                    className={cn(
-                      'flex-1 items-center rounded-xl py-3.5',
-                      selected ? 'bg-brand' : 'bg-surface',
-                    )}
-                  >
-                    <Text
-                      className={cn(
-                        'text-sm font-semibold',
-                        selected ? 'text-ink' : 'text-brand',
-                      )}
-                    >
-                      {ROLE_LABEL[opt.role]}
-                    </Text>
-                  </Pressable>
-                );
-              })}
+      {invitesQuery.isLoading ? (
+        <ActivityIndicator color={COLORS.brand} className="my-6" />
+      ) : (
+        <View className="gap-2.5">
+          {rows.map((row, rowIndex) => (
+            <View key={rowIndex} className="flex-row gap-2.5">
+              {row.map((slot, colIndex) => (
+                <View key={colIndex} className="flex-1">
+                  {slot ? (
+                    <InviteSlot
+                      invite={slot}
+                      onDelete={() => onDelete(slot)}
+                      onReissue={() => onReissue(slot)}
+                      deleting={deleteInvite.isPending}
+                      reissuing={reissueInvite.isPending}
+                    />
+                  ) : (
+                    <EmptySlot onPress={onOpenCreate} />
+                  )}
+                </View>
+              ))}
             </View>
-          </View>
-
-          <View className="gap-2">
-            <Caption>닉네임</Caption>
-            <Input
-              value={invitedAs}
-              onChangeText={setInvitedAs}
-              placeholder="예: 아빠, 할머니"
-              maxLength={LIMITS.nicknameMaxLength}
-              autoCorrect={false}
-              returnKeyType="done"
-            />
-          </View>
-
-          <Button
-            label={createInvite.isPending ? '발급 중…' : '초대코드 발급'}
-            disabled={createInvite.isPending || !invitedAs.trim()}
-            icon={Icons.QrCode}
-            onPress={() => void onCreate()}
-          />
+          ))}
         </View>
-      </BottomSheet>
-    </>
+      )}
+    </Card>
   );
 }
 
@@ -255,9 +146,7 @@ function InviteSlot({
           <Text className="text-sm font-bold text-brand" numberOfLines={1}>
             {invite.invitedAs}
           </Text>
-          <Muted className="text-xs">
-            {ROLE_LABEL[invite.targetRole]}
-          </Muted>
+          <Muted className="text-xs">{ROLE_LABEL[invite.targetRole]}</Muted>
         </View>
         {!claimed ? (
           <Pressable
@@ -294,28 +183,16 @@ function InviteSlot({
   );
 }
 
-type EmptySlotProps = {
-  busy: boolean;
-  onPress: () => void;
-};
-
-function EmptySlot({ busy, onPress }: EmptySlotProps) {
+function EmptySlot({ onPress }: { onPress: () => void }) {
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel="초대 추가"
-      disabled={busy}
       onPress={onPress}
       className="min-h-[168px] items-center justify-center gap-2 rounded-xl bg-brand-soft p-2.5"
     >
-      {busy ? (
-        <ActivityIndicator color={COLORS.brand} />
-      ) : (
-        <>
-          <Icons.Plus size={LAYOUT.icon.xl} color={COLORS.muted} />
-          <Muted className="text-xs">초대 추가</Muted>
-        </>
-      )}
+      <Icons.Plus size={LAYOUT.icon.xl} color={COLORS.muted} />
+      <Muted className="text-xs">초대 추가</Muted>
     </Pressable>
   );
 }

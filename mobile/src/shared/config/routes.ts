@@ -9,9 +9,31 @@ export const ROUTES = {
   settings: '/(tabs)/settings',
   /** 가족 운영 (초대·멤버·이름) */
   settingsFamily: '/settings-family',
+  /** P3 약 추가 퍼널 */
+  addMedication: '/add-medication',
+  /** P4 약 수정 퍼널 */
+  editMedication: '/edit-medication',
+  /** P5 초대 생성 퍼널 */
+  inviteCreate: '/invite-create',
 } as const;
 
 export type AppRoute = (typeof ROUTES)[keyof typeof ROUTES];
+
+export function addMedicationRoute(userId?: string): string {
+  if (!userId) return ROUTES.addMedication;
+  return `${ROUTES.addMedication}?userId=${encodeURIComponent(userId)}`;
+}
+
+export function editMedicationRoute(
+  medicationId: number,
+  userId?: string,
+): string {
+  const params = new URLSearchParams({
+    medicationId: String(medicationId),
+  });
+  if (userId) params.set('userId', userId);
+  return `${ROUTES.editMedication}?${params.toString()}`;
+}
 
 export function joinRoute(code?: string): string {
   if (!code) return ROUTES.join;

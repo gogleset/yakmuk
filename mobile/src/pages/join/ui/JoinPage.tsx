@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Pressable, Text } from 'react-native';
 import { useAuth } from '@/providers/AuthProvider';
 import {
   useCareRecipientJoinMutation,
@@ -8,22 +8,16 @@ import {
 } from '@/features/care-recipient-join';
 import { ROLE_LABEL } from '@/entities/user';
 import { ROUTES } from '@/shared/config/routes';
-import { COLORS, LAYOUT, LIMITS } from '@/shared/config/theme';
-import {
-  Body,
-  Button,
-  FadeInView,
-  Icons,
-  Input,
-  Muted,
-  PageTitle,
-  Screen,
-} from '@/shared/ui';
+import { LIMITS } from '@/shared/config/theme';
+import { Body, FunnelShell, Input, Muted } from '@/shared/ui';
 
-/** 보호자·피보호자: 초대코드 + 닉네임(선택) */
+type JoinStep = 0 | 1;
+
+/** P2 — 초대코드 → 닉네임 */
 export function JoinPage() {
   const { refreshProfile } = useAuth();
   const params = useLocalSearchParams<{ code?: string }>();
+  const [step, setStep] = useState<JoinStep>(0);
   const [code, setCode] = useState('');
   const [nickname, setNickname] = useState('');
   const join = useCareRecipientJoinMutation();
@@ -42,26 +36,43 @@ export function JoinPage() {
         ? '초대를 확인할 수 없어요'
         : null;
 
+  const codeReady =
+    code.trim().length === LIMITS.inviteCodeLength && !peekError;
+
   const onJoin = async () => {
     try {
-      await join.mutateAsync({
+      console.log('[join-debug] onJoin press', { code });
+      const joined = await join.mutateAsync({
         inviteCode: code,
         nickname: nickname.trim() || undefined,
       });
+      console.log('[join-debug] mutate ok → refreshProfile', {
+        familyId: joined.familyId,
+      });
       await refreshProfile();
+      console.log('[join-debug] refresh done → replace home');
       router.replace(ROUTES.home);
-    } catch {
+    } catch (e) {
+      console.warn('[join-debug] onJoin failed', e);
       /* mutation onError에서 처리 */
     }
   };
 
-  return (
-    <Screen className="justify-center gap-3 px-6">
-      <FadeInView className="gap-3">
-        <View className="flex-row items-center gap-2">
-          <Icons.QrCode size={LAYOUT.icon.xl} color={COLORS.brand} />
-          <PageTitle className="text-[28px]">초대코드를 입력해요</PageTitle>
-        </View>
+  const dirty = code.trim().length > 0 || nickname.trim().length > 0;
+
+  if (step === 0) {
+    return (
+      <FunnelShell
+        stepIndex={0}
+        stepCount={2}
+        title="초대코드를 입력해 주세요"
+        kokiVariant="welcome"
+        ctaLabel="다음"
+        ctaDisabled={!codeReady}
+        dirty={dirty}
+        onClose={() => router.back()}
+        onCtaPress={() => setStep(1)}
+      >
         <Input
           className="p-4 text-center text-2xl"
           style={{ letterSpacing: LIMITS.inviteCodeLetterSpacing }}
@@ -70,8 +81,8 @@ export function JoinPage() {
           value={code}
           onChangeText={setCode}
           placeholder="ABCDEF"
+          autoFocus
         />
-
         {peekLoading ? <Muted>초대 확인 중…</Muted> : null}
         {peekError ? (
           <Text className="text-sm text-destructive">{peekError}</Text>
@@ -83,32 +94,44 @@ export function JoinPage() {
               : `${peek.familyName} · ${peek.leaderNickname}의 ${peek.invitedAs}\n${ROLE_LABEL[peek.targetRole as 'guardian' | 'care_recipient']}(으)로 참여해요`}
           </Body>
         ) : null}
+      </FunnelShell>
+    );
+  }
 
-        <Input
-          value={nickname}
-          onChangeText={setNickname}
-          placeholder={
-            peek?.kind === 'recovery'
-              ? `내 닉네임 (비우면 ${peek.nickname ?? peek.invitedAs})`
-              : peek?.invitedAs
-                ? `내 닉네임 (비우면 ${peek.invitedAs})`
-                : '내 닉네임 (선택 · 비우면 초대 호칭)'
-          }
-          maxLength={LIMITS.nicknameMaxLength}
-          autoCorrect={false}
-        />
-        <Button
-          label={join.isPending ? '연결 중…' : '참여하기'}
-          disabled={
-            join.isPending ||
-            code.trim().length !== LIMITS.inviteCodeLength ||
-            !!peekError
-          }
-          icon={Icons.Check}
-          onPress={() => void onJoin()}
-        />
-        <Button label="뒤로" variant="ghost" onPress={() => router.back()} />
-      </FadeInView>
-    </Screen>
+  return (
+    <FunnelShell
+      stepIndex={1}
+      stepCount={2}
+      title="뭐라고 불러드릴까요?"
+      ctaLabel={join.isPending ? '연결 중…' : '참여하기'}
+      ctaDisabled={join.isPending}
+      ctaLoading={join.isPending}
+      dirty={dirty}
+      onBack={() => setStep(0)}
+      onClose={() => router.back()}
+      onCtaPress={() => void onJoin()}
+    >
+      <Input
+        value={nickname}
+        onChangeText={setNickname}
+        placeholder={
+          peek?.kind === 'recovery'
+            ? `비우면 ${peek.nickname ?? peek.invitedAs}`
+            : peek?.invitedAs
+              ? `비우면 ${peek.invitedAs}`
+              : '선택 · 비우면 초대 호칭'
+        }
+        maxLength={LIMITS.nicknameMaxLength}
+        autoCorrect={false}
+        autoFocus
+      />
+      <Pressable
+        accessibilityRole="button"
+        disabled={join.isPending}
+        onPress={() => void onJoin()}
+      >
+        <Muted className="mt-1 text-center text-sm underline">나중에</Muted>
+      </Pressable>
+    </FunnelShell>
   );
 }

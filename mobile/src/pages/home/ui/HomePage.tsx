@@ -1,22 +1,20 @@
+import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { Alert, ScrollView } from 'react-native';
-import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/providers/AuthProvider';
 import {
   buildDayMedicationEntries,
   buildMarkedDates,
+  computeStreakDays,
   currentYearMonthKst,
   isMedScheduledOnDate,
 } from '@/entities/medication';
 import { useHomeMedicationQueries } from '@/entities/medication/model/queries';
 import type { ConditionValue } from '@/entities/medication/model/types';
-import {
-  AddMedicationSheet,
-  refreshAfterMedicationChange,
-} from '@/features/add-medication';
 import { useConditionLogMutation } from '@/features/condition-log';
 import { useDailyMedicationCheckMutations } from '@/features/daily-medication-check';
 import { syncMedicationNotifications } from '@/features/medication-notifications';
+import { ROUTES } from '@/shared/config/routes';
 import { todayKstDateString } from '@/shared/lib/kst';
 import { LAYOUT } from '@/shared/config/theme';
 import { ACTIONS, COPY } from '@/shared/copy';
@@ -27,10 +25,8 @@ import { TodayMedicationPanel } from '@/widgets/today-medication-panel';
 
 /** 홈 — 복약 캘린더·오늘 체크·컨디션 */
 export function HomePage() {
-  const qc = useQueryClient();
   const { profile } = useAuth();
   const today = todayKstDateString();
-  const [addOpen, setAddOpen] = useState(false);
   const [condition, setCondition] = useState<ConditionValue>('GOOD');
   const [message, setMessage] = useState('');
   const [selectedDate, setSelectedDate] = useState(today);
@@ -44,6 +40,7 @@ export function HomePage() {
     calendarMeds: calendarMedsQuery,
     taken: takenQuery,
     logs: logsQuery,
+    streakLogs: streakLogsQuery,
   } = useHomeMedicationQueries({
     userId,
     todayKst: today,
@@ -82,6 +79,16 @@ export function HomePage() {
         logsQuery.data ?? [],
       ),
     [calendarMedsQuery.data, logsQuery.data, selectedDate],
+  );
+
+  const streakDays = useMemo(
+    () =>
+      computeStreakDays(
+        calendarMedsQuery.data ?? [],
+        streakLogsQuery.data ?? [],
+        today,
+      ),
+    [calendarMedsQuery.data, streakLogsQuery.data, today],
   );
 
   const selectedDayConditionLogs = useMemo(
@@ -126,7 +133,7 @@ export function HomePage() {
     ]);
   };
 
-  const refreshAfterMedChange = () => refreshAfterMedicationChange(qc);
+  const openAdd = () => router.push(ROUTES.addMedication);
 
   const takenCount = todayMeds.filter((m) => takenMedIds.has(m.id)).length;
   const progressLabel =
@@ -154,6 +161,8 @@ export function HomePage() {
           <MedicationCalendarPanel
             visibleMonth={visibleMonth}
             markedDates={markedDates}
+            showStreak={streakDays >= 3}
+            streakDays={streakDays}
             onDayPress={(day) => setSelectedDate(day.dateString)}
             onMonthChange={(month) => {
               const ym = `${month.year}-${String(month.month).padStart(2, '0')}`;
@@ -184,20 +193,16 @@ export function HomePage() {
               onToggle={(id) => toggle.mutate(id)}
               onDelete={confirmDelete}
               onSubmitCondition={() => submitCondition.mutate()}
-              onAddPress={() => setAddOpen(true)}
+              onAddPress={openAdd}
+              allDone={
+                todayMeds.length > 0 && pendingIds.length === 0
+              }
             />
           )}
         </FadeInView>
       </ScrollView>
 
-      <Fab label={COPY.med.addFab} onPress={() => setAddOpen(true)} />
-
-      <AddMedicationSheet
-        visible={addOpen}
-        userId={userId}
-        onClose={() => setAddOpen(false)}
-        onAdded={refreshAfterMedChange}
-      />
+      <Fab label={COPY.med.addFab} onPress={openAdd} />
     </Screen>
   );
 }

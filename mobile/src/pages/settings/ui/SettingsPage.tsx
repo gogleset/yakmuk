@@ -218,7 +218,7 @@ export function SettingsPage() {
             <SettingsRow
               label="문의하기"
               icon={Icons.Mail}
-              onPress={() => void openMail(supportMailTo("[약먹었약] 문의"))}
+              onPress={() => void openMail(supportMailTo("[약콕] 문의"))}
             />
             <SettingsRow
               label="광고·제휴 문의"

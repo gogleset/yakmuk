@@ -10,12 +10,12 @@ import {
 } from '@/entities/medication';
 import { useHomeMedicationQueries } from '@/entities/medication/model/queries';
 import type { Medication } from '@/entities/medication/model/types';
-import {
-  AddMedicationSheet,
-  refreshAfterMedicationChange,
-} from '@/features/add-medication';
+import { refreshAfterMedicationChange } from '@/features/add-medication';
 import { useDailyMedicationCheckMutations } from '@/features/daily-medication-check';
-import { EditMedicationSheet } from '@/features/edit-medication';
+import {
+  addMedicationRoute,
+  editMedicationRoute,
+} from '@/shared/config/routes';
 import { todayKstDateString } from '@/shared/lib/kst';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { ACTIONS, COPY } from '@/shared/copy';
@@ -51,8 +51,6 @@ export function FamilyMemberPage() {
   const today = todayKstDateString();
   const [selectedDate, setSelectedDate] = useState(today);
   const [visibleMonth, setVisibleMonth] = useState(currentYearMonthKst(today));
-  const [addOpen, setAddOpen] = useState(false);
-  const [editingMed, setEditingMed] = useState<Medication | null>(null);
 
   const {
     meds: medsQuery,
@@ -172,7 +170,9 @@ export function FamilyMemberPage() {
                 <GuardianMedManagePanel
                   meds={medsQuery.data ?? []}
                   isError={medsQuery.isError}
-                  onEdit={setEditingMed}
+                  onEdit={(med) =>
+                    router.push(editMedicationRoute(med.id, userId))
+                  }
                   onDelete={confirmDelete}
                 />
               </>
@@ -182,21 +182,10 @@ export function FamilyMemberPage() {
       </ScrollView>
 
       {canManageMeds ? (
-        <>
-          <Fab label={COPY.med.addFab} onPress={() => setAddOpen(true)} />
-          <AddMedicationSheet
-            visible={addOpen}
-            userId={userId}
-            onClose={() => setAddOpen(false)}
-            onAdded={refreshMeds}
-          />
-          <EditMedicationSheet
-            visible={editingMed != null}
-            medication={editingMed}
-            onClose={() => setEditingMed(null)}
-            onUpdated={refreshMeds}
-          />
-        </>
+        <Fab
+          label={COPY.med.addFab}
+          onPress={() => router.push(addMedicationRoute(userId))}
+        />
       ) : null}
     </Screen>
   );

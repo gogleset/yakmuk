@@ -1,10 +1,13 @@
-import { type QueryClient, useQueries } from '@tanstack/react-query';
 import { listLogsInRange } from '@/entities/medication/api/list-logs-in-range';
 import { listMedications } from '@/entities/medication/api/list-medications';
 import { listMedicationsForCalendar } from '@/entities/medication/api/list-medications-for-calendar';
 import { listTodayTaken } from '@/entities/medication/api/list-today-taken';
-import { monthRange } from '@/entities/medication/lib/calendar';
+import {
+  addDaysKst,
+  monthRange,
+} from '@/entities/medication/lib/calendar';
 import { medicationKeys } from '@/entities/medication/model/queryKeys';
+import { type QueryClient, useQueries } from '@tanstack/react-query';
 
 type HomeMedicationQueryParams = {
   userId: string | undefined;
@@ -19,8 +22,10 @@ export function useHomeMedicationQueries({
 }: HomeMedicationQueryParams) {
   const enabled = !!userId;
   const range = monthRange(visibleMonth);
+  // streak N=3용 — 오늘 포함 과거 ~45일
+  const streakFrom = addDaysKst(todayKst, -45);
 
-  const [meds, calendarMeds, taken, logs] = useQueries({
+  const [meds, calendarMeds, taken, logs, streakLogs] = useQueries({
     queries: [
       {
         queryKey: medicationKeys.list(userId!),
@@ -42,10 +47,15 @@ export function useHomeMedicationQueries({
         queryFn: () => listLogsInRange(userId!, range.from, range.to),
         enabled,
       },
+      {
+        queryKey: [...medicationKeys.logs(userId!, 'streak'), streakFrom, todayKst],
+        queryFn: () => listLogsInRange(userId!, streakFrom, todayKst),
+        enabled,
+      },
     ],
   });
 
-  return { meds, calendarMeds, taken, logs };
+  return { meds, calendarMeds, taken, logs, streakLogs };
 }
 
 export async function invalidateMedicationActivity(

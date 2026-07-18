@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { useIsFocused } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -22,22 +23,28 @@ import {
   Button,
   ChoiceCard,
   FadeInView,
+  FunnelShell,
   Icons,
   Input,
+  KokiIllustration,
   Muted,
   SectionTitle,
 } from '@/shared/ui';
 
 type Path = 'choose' | 'leader';
+type FamilyFunnelStep = 0 | 1;
 
 export function WelcomePage() {
   const { refreshProfile, sessionUserId, isAnonymous, profile, loading } =
     useAuth();
+  // join 스택 아래에서도 Welcome이 mount 유지됨 → focus일 때만 stale anon 정리
+  const isFocused = useIsFocused();
   const [path, setPath] = useState<Path>('choose');
   const [email, setEmail] = useState('guardian@yakmuk.local');
   const [password, setPassword] = useState('yakmuk-dev-123');
   const [familyName, setFamilyName] = useState('');
   const [nickname, setNickname] = useState('');
+  const [familyStep, setFamilyStep] = useState<FamilyFunnelStep>(0);
   const [showDevLogin, setShowDevLogin] = useState(false);
 
   const signInDev = useGuardianSignInDevMutation();
@@ -52,19 +59,39 @@ export function WelcomePage() {
     signOutPending;
 
   // 강퇴/복구 후 남은 anon 세션 정리 — 가족 생성 폼으로 빠지지 않게
+  // join 중 signInAnonymously 레이스: unfocused면 signOut 금지
   useEffect(() => {
-    if (loading) return;
+    console.log('[auth-debug] welcome gate', {
+      loading,
+      isFocused,
+      sessionUserId,
+      isAnonymous,
+      familyId: profile?.familyId ?? null,
+    });
+    if (!isFocused || loading) return;
     if (profile?.familyId) return;
     if (!sessionUserId || !isAnonymous) return;
+    console.warn(
+      '[auth-debug] welcome → anon + no familyId → signOut (stale anon)',
+    );
+    let cancelled = false;
     void (async () => {
       try {
         await signOutAsync();
+        if (cancelled) return;
         await refreshProfile();
-      } catch {
+        console.log('[auth-debug] welcome signOut done');
+      } catch (e) {
+        if (cancelled) return;
+        console.warn('[auth-debug] welcome signOut failed', e);
         /* mutation onError에서 처리 */
       }
     })();
+    return () => {
+      cancelled = true;
+    };
   }, [
+    isFocused,
     loading,
     sessionUserId,
     profile?.familyId,
@@ -114,6 +141,56 @@ export function WelcomePage() {
     }
   };
 
+  // P1 가족 만들기 퍼널
+  if (needsFamilySetup) {
+    const dirty = familyName.trim().length > 0 || nickname.trim().length > 0;
+    if (familyStep === 0) {
+      return (
+        <FunnelShell
+          stepIndex={0}
+          stepCount={2}
+          title="가족 이름을 알려주세요"
+          kokiVariant="family"
+          ctaLabel="다음"
+          ctaDisabled={!familyName.trim()}
+          dirty={dirty}
+          onClose={() => void signOutAsync().then(() => refreshProfile())}
+          onCtaPress={() => setFamilyStep(1)}
+        >
+          <Input
+            value={familyName}
+            onChangeText={setFamilyName}
+            placeholder="예: 우리집"
+            maxLength={LIMITS.familyNameMaxLength}
+            autoFocus
+          />
+        </FunnelShell>
+      );
+    }
+    return (
+      <FunnelShell
+        stepIndex={1}
+        stepCount={2}
+        title="뭐라고 불러드릴까요?"
+        ctaLabel={busy ? '잠시만요…' : '만들기'}
+        ctaDisabled={busy}
+        ctaLoading={busy}
+        dirty={dirty}
+        onBack={() => setFamilyStep(0)}
+        onClose={() => void signOutAsync().then(() => refreshProfile())}
+        onCtaPress={() => void onCreateFamily()}
+      >
+        <Input
+          value={nickname}
+          onChangeText={setNickname}
+          placeholder="예: 민수"
+          maxLength={LIMITS.nicknameMaxLength}
+          autoFocus
+        />
+      </FunnelShell>
+    );
+  }
+
   return (
     <KeyboardAvoidingView
       className="flex-1 bg-canvas"
@@ -124,39 +201,17 @@ export function WelcomePage() {
         contentContainerClassName="flex-grow justify-center gap-3 px-6 py-10"
       >
         <FadeInView>
-          <View className="mb-1 flex-row items-center gap-2.5">
-            <Icons.Pill size={LAYOUT.icon.hero} color={COLORS.brand} />
-            <Text className="text-4xl font-bold text-brand">약먹었약</Text>
+          <View className="mb-1 items-center gap-2">
+            <KokiIllustration variant="welcome" size={140} />
+            <Text className="text-4xl font-bold text-brand">약콕</Text>
           </View>
-          <Body className="mb-2">멀리 있는 가족과 안부를 나눠요.</Body>
+          <Body className="mb-1 text-center">
+            멀리 있는 가족과 안부를 나눠요.
+          </Body>
+          <Muted className="mb-2 text-center text-sm">콕이가 함께해요</Muted>
         </FadeInView>
 
-        {needsFamilySetup ? (
-          <FadeInView className="gap-2.5">
-            <View className="mt-2 flex-row items-center gap-1.5">
-              <Icons.Shield size={LAYOUT.icon.sm} color={COLORS.brand} />
-              <SectionTitle className="text-sm">가족 만들기</SectionTitle>
-            </View>
-            <Input
-              value={familyName}
-              onChangeText={setFamilyName}
-              placeholder="가족 이름 (예: 우리집)"
-              maxLength={LIMITS.familyNameMaxLength}
-            />
-            <Input
-              value={nickname}
-              onChangeText={setNickname}
-              placeholder="내 닉네임 (예: 민수)"
-              maxLength={LIMITS.nicknameMaxLength}
-            />
-            <Button
-              label={busy ? '잠시만요…' : '가족 만들기'}
-              disabled={busy || !familyName.trim()}
-              icon={Icons.Shield}
-              onPress={() => void onCreateFamily()}
-            />
-          </FadeInView>
-        ) : path === 'choose' ? (
+        {path === 'choose' ? (
           <FadeInView className="mt-2 gap-3">
             <ChoiceCard
               title="가족을 만들어요"

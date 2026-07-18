@@ -169,6 +169,41 @@ export function monthRange(yearMonth: string): { from: string; to: string } {
   };
 }
 
+export function addDaysKst(dateKst: string, delta: number): string {
+  const [y, m, d] = dateKst.split('-').map(Number);
+  if (!y || !m || !d) throw new Error(`invalid date_kst: ${dateKst}`);
+  const utc = Date.UTC(y, m - 1, d, 12, 0, 0);
+  const next = new Date(utc + delta * 24 * 60 * 60 * 1000);
+  const yy = next.getUTCFullYear();
+  const mm = String(next.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(next.getUTCDate()).padStart(2, '0');
+  return `${yy}-${mm}-${dd}`;
+}
+
+/**
+ * KST 기준 연속 all-done 일수.
+ * done=+1, empty(스케줄0)=스킵 유지, partial/missed=끊김.
+ */
+export function computeStreakDays(
+  medications: Medication[],
+  logs: DailyLog[],
+  todayKst: string,
+  maxLookback = 60,
+): number {
+  let streak = 0;
+  for (let i = 0; i < maxLookback; i++) {
+    const dateKst = addDaysKst(todayKst, -i);
+    const status = aggregateDayStatus(dateKst, medications, logs, todayKst);
+    if (status === 'empty') continue;
+    if (status === 'done') {
+      streak += 1;
+      continue;
+    }
+    break;
+  }
+  return streak;
+}
+
 export function currentYearMonthKst(dateKst: string): string {
   return dateKst.slice(0, 7);
 }

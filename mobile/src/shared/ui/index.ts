@@ -19,6 +19,11 @@ export { EmptyHint } from "./composites/EmptyHint";
 export { Fab } from "./composites/Fab";
 export { FadeEdge, FadeEdges } from "./composites/FadeEdge";
 export { FadeInView } from "./composites/FadeInView";
+export { FunnelShell } from "./composites/FunnelShell";
+export {
+  KokiIllustration,
+  type KokiVariant,
+} from "./composites/KokiIllustration";
 export { PressableScale } from "./composites/PressableScale";
 export { RichEmptyState } from "./composites/RichEmptyState";
 export { Screen } from "./composites/Screen";

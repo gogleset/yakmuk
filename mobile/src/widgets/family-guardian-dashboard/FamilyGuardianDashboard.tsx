@@ -7,22 +7,26 @@ import { CONDITION_LABEL } from '@/entities/medication';
 import { relationSubtitle } from '@/entities/user';
 import { COLORS } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
-import { AlertBanner, Card, Icons, Muted, RichEmptyState } from '@/shared/ui';
+import {
+  AlertBanner,
+  Button,
+  Card,
+  KokiIllustration,
+  Muted,
+  RichEmptyState,
+} from '@/shared/ui';
 
 type Props = {
   alerts: FamilyAlert[];
   members: CareRecipientTodayStatus[];
   leaderNickname?: string | null;
   myUserId?: string | null;
-  /** 리더일 때 빈 가족 empty CTA */
   showInviteCta?: boolean;
   onAckAlert: (alertId: string) => void;
   onPressMember: (userId: string, nickname: string) => void;
-  /** 초대 CTA — page에서 라우팅 주입 */
   onInviteCtaPress?: () => void;
 };
 
-/** 멤버 카드 우측 짧은 상태 문구 */
 function memberStatusLabel(member: CareRecipientTodayStatus): string | null {
   if (member.hasUnackedAlert) return '안부';
   if (member.pendingCount === 0 && member.totalMeds > 0) return '다 먹음';
@@ -43,25 +47,38 @@ export function FamilyGuardianDashboard({
 }: Props) {
   return (
     <>
-      {alerts.map((alert) => (
-        <AlertBanner
-          key={alert.id}
-          title={`${alert.nickname ?? '가족'} · ${
-            alert.kind === 'bad_condition'
-              ? '컨디션이 걱정돼요'
-              : '약 안부가 궁금해요'
-          }`}
-          message={alert.message}
-          onAck={() => onAckAlert(alert.id)}
-        />
-      ))}
+      {alerts.map((alert) =>
+        alert.kind === 'stuck_escalate' ? (
+          <Card key={alert.id} className="items-center gap-2 py-4">
+            <KokiIllustration variant="worried" size={96} />
+            <Text className="text-center text-base font-bold text-brand">
+              {`${alert.nickname ?? '가족'} · 약 안부가 궁금해요`}
+            </Text>
+            {alert.message ? (
+              <Muted className="text-center text-sm">{alert.message}</Muted>
+            ) : null}
+            <Button
+              label="확인했어요"
+              size="sm"
+              variant="outline"
+              onPress={() => onAckAlert(alert.id)}
+            />
+          </Card>
+        ) : (
+          <AlertBanner
+            key={alert.id}
+            title={`${alert.nickname ?? '가족'} · 컨디션이 걱정돼요`}
+            message={alert.message}
+            onAck={() => onAckAlert(alert.id)}
+          />
+        ),
+      )}
 
       {members.length === 0 ? (
         <RichEmptyState
           title={COPY.family.emptyMembers}
-          message="설정 → 가족 관리에서 초대코드를 만들면 가족이 들어올 수 있어요."
-          icon={Icons.Users}
-          ctaLabel={showInviteCta ? '가족 관리로 이동' : undefined}
+          illustration={<KokiIllustration variant="family" size={120} />}
+          ctaLabel={showInviteCta ? '가족 초대' : undefined}
           onCtaPress={showInviteCta ? onInviteCtaPress : undefined}
         />
       ) : (

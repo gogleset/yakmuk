@@ -9,8 +9,17 @@ export default function AppTabsLayout() {
   const { loading, profile } = useAuth();
   const insets = useSafeAreaInsets();
 
+  console.log('[auth-debug] tabs gate', {
+    loading,
+    familyId: profile?.familyId ?? null,
+    role: profile?.role ?? null,
+    userId: profile?.id ?? null,
+  });
   if (loading) return null;
-  if (!profile?.familyId) return <Redirect href={ROUTES.welcome} />;
+  if (!profile?.familyId) {
+    console.warn('[auth-debug] tabs → Redirect welcome (no familyId)');
+    return <Redirect href={ROUTES.welcome} />;
+  }
 
   return (
     <Tabs

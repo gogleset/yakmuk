@@ -1,0 +1,15 @@
+---
+description: UI·스타일·카피·테마 작업 시 docs/design.md를 따른다
+globs: mobile/**/*.{tsx,ts,css,js}, docs/design.md
+alwaysApply: false
+---
+
+# Design system
+
+UI·스타일·카피·테마(색/타이포/표면/모션) 작업 전에 **반드시** [`docs/design.md`](docs/design.md)를 읽고 따른다.
+
+- 토큰·계층·border·카피 규칙의 기준 소스
+- 화면/컴포넌트에 설명 문구를 추가하기 전에 §6.2 Copy 확인 — 직관 우선, 힌트는 placeholder/empty state
+- border는 focus 상태가 아니면 쓰지 않음 (§6.1)
+- 구현 토큰: `mobile/src/shared/config/theme.ts` / `mobile/tailwind.config.js` — design.md와 어긋나면 문서를 우선하고 코드를 맞춤
+- 제품 느낌: 잔소리 없는 가족 안부 · 틸 · 감시 UI 금지

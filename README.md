@@ -16,9 +16,11 @@
 
 | 문서 | 용도 |
 |------|------|
+| [AGENTS.md](AGENTS.md) | 에이전트·아키텍처 진입점 |
 | [TRACK.md](TRACK.md) | 트랙·스테이지 |
 | [loop/pre/](loop/pre/) | CONTRACT · CHECKLIST |
 | [docs/prd/SUMMARY.md](docs/prd/SUMMARY.md) | PRD |
+| [docs/design.md](docs/design.md) | 시각·톤 (틸 · 라이트/다크) |
 
 ## Stage
 

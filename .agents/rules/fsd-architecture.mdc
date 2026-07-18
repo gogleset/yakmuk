@@ -1,0 +1,52 @@
+---
+description: Feature-Sliced Design — mobile/src 레이어·의존·금지사항
+globs: mobile/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Feature-Sliced Design (mobile)
+
+코드는 **기술 기준이 아니라 비즈니스 책임**으로 나눈다.  
+경로: `mobile/` (Expo Router `app/` + FSD `src/`).
+
+## 레이어 · 의존
+
+```
+providers → pages → widgets → features → entities → shared
+```
+
+| Layer | 담당 | 금지 |
+|-------|------|------|
+| **providers** | Auth, QueryClient | 화면 JSX |
+| **pages** | 라우트 1 = 화면 조립 | supabase, 복잡한 비즈니스 로직 |
+| **widgets** | feature+entity 블록 | 라우팅, 전역 state |
+| **features** | use-case mutation·행동 UI | supabase client 직접 |
+| **entities** | api·types·read query·entity UI | mutation Alert 조합 |
+| **shared** | ui·lib·api client·copy·constants | User/Medication 비즈니스 타입 |
+
+## 디렉터리
+
+```
+mobile/app/                     # thin wrapper만
+mobile/src/
+├── providers/
+├── pages/<route>/ui/
+├── widgets/<block>/
+├── features/<use-case>/{model,ui}/
+├── entities/<entity>/{api,model,lib,ui}/
+└── shared/{api,ui,lib,copy,constants,config}/
+```
+
+⚠️ **`mobile/src/app/` 금지** — Expo가 라우트로 인식. FSD app = `providers/`.
+
+## features 네이밍
+
+use-case만: `add-medication`, `family-invite`, `guardian-auth` …  
+❌ `features/medication/` (domain slice)
+
+## 금지
+
+- pages → `@/entities/*/api` 직접 (query/mutation 경유)
+- features → `@/shared/api/client` 직접
+- shared에 MedRow·Medication 타입
+- entity 간 무효화 흩뿌리기 → `shared/lib/query-invalidation.ts`

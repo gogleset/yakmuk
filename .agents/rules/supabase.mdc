@@ -1,0 +1,29 @@
+---
+description: Supabase 마이그레이션·RPC·시드 규칙
+globs: supabase/**/*
+alwaysApply: false
+---
+
+# Supabase
+
+로컬: `supabase start` · 스키마: `supabase/migrations/` · 시드: `supabase/seed.sql`.
+
+## 마이그레이션
+
+- **새 파일만** 추가 (`YYYYMMDDHHMMSS_name.sql`). 이미 적용된 파일 수정 금지
+- RPC/`raise exception` 메시지는 앱 [`mobile/src/shared/copy/errors.ts`](mobile/src/shared/copy/errors.ts) `BACKEND_ERROR_MESSAGES`와 키 동기
+- 비즈니스 한도(초대 4·코드 길이 6 등) 변경 시 [`mobile/src/shared/constants/limits.ts`](mobile/src/shared/constants/limits.ts)도 맞춤
+
+## RPC · 보안
+
+- 클라이언트는 anon + RPC/RLS 경유. service role 앱 금지
+- 가족/멤버 권한은 SQL에서 검증 (family_leader 등)
+
+## 루프
+
+- day loop / verify / stuck: [loop/pre/CONTRACT.md](loop/pre/CONTRACT.md)
+- HTTP trigger(선택): `supabase/functions/`
+
+## 워크플로
+
+마이그레이션 추가 절차 → skill [`add-supabase-migration`](../skills/add-supabase-migration/SKILL.md)

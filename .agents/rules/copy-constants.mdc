@@ -1,0 +1,33 @@
+---
+description: 사용자 문구(shared/copy)와 매직넘버(shared/constants) 규칙
+globs: mobile/src/shared/copy/**/*, mobile/src/shared/constants/**/*, mobile/src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Copy & constants
+
+## 어디에 두나
+
+| 종류 | 위치 |
+|------|------|
+| 숫자 한도·레이아웃·모션 | `mobile/src/shared/constants/` (`LIMITS` `LAYOUT` `MOTION` `NAV` `OVERLAY`) |
+| 사용자 문구 | `mobile/src/shared/copy/` (`ACTIONS` `ERRORS` `COPY`) |
+| 역할·컨디션 라벨 | entities `display.ts` / `daysMask` (`ROLE_LABEL` `CONDITION_LABEL`) |
+| 테마 색 | `shared/config/theme.ts` + design.md |
+
+## 톤 (design.md §6.2)
+
+- 안부·해요체·짧은 Alert
+- 필드명 제목 금지 (`약 이름` → `약 이름을 알려 주세요`)
+- 사용자 노출 `강퇴` 금지 → `내보내기`
+- Button label 전량 dump 금지 — 중복·에러·Alert·알림만 copy로
+
+## ERRORS
+
+- mutation `showMutationError(ERRORS.…, error)`
+- client `throw new Error(ERRORS.…)` / `throwIfError(error, ERRORS.…)`
+- 백엔드 키 매핑은 `shared/copy/errors.ts`의 `BACKEND_ERROR_MESSAGES`
+
+## LIMITS 예
+
+`inviteCodeLength` `maxFamilyInvites` `defaultDoseTime` `drugSearchMinQueryLength` …

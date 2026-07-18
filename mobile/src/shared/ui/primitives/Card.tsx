@@ -9,7 +9,7 @@ type Props = ViewProps & {
 export function Card({ className, style, ...rest }: Props) {
   return (
     <View
-      className={cn('rounded-xl bg-white p-3.5', className)}
+      className={cn('rounded-xl bg-surface p-3.5', className)}
       style={style}
       {...rest}
     />

@@ -1,5 +1,11 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { View, type StyleProp, type ViewStyle } from 'react-native';
+import {
+  Platform,
+  StyleSheet,
+  View,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { cn } from '@/shared/lib/cn';
 
@@ -12,6 +18,23 @@ type Props = {
   className?: string;
   style?: StyleProp<ViewStyle>;
 };
+
+const styles = StyleSheet.create({
+  edge: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    width: '100%',
+    zIndex: LAYOUT.z.fade,
+    // Android는 zIndex만으로는 위에 안 그려질 수 있음
+    ...Platform.select({
+      android: { elevation: LAYOUT.z.fade },
+    }),
+  },
+  gradient: {
+    ...StyleSheet.absoluteFill,
+  },
+});
 
 /** 스크롤 가장자리 fade */
 export function FadeEdge({
@@ -32,19 +55,21 @@ export function FadeEdge({
   return (
     <View
       pointerEvents="none"
-      className={cn(
-        'absolute left-0 right-0',
-        edge === 'top' ? 'top-0' : 'bottom-0',
-        className,
-      )}
-      style={[{ height, zIndex: LAYOUT.z.fade }, style]}
+      collapsable={false}
+      className={cn(className)}
+      style={[
+        styles.edge,
+        edge === 'top' ? { top: 0 } : { bottom: 0 },
+        { height },
+        style,
+      ]}
     >
       <LinearGradient
         colors={[...colors]}
         locations={[0, 1]}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
-        style={{ flex: 1 }}
+        style={styles.gradient}
       />
     </View>
   );

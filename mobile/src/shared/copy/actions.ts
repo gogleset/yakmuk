@@ -1,0 +1,11 @@
+/** Alert·시트 공통 액션 라벨 */
+export const ACTIONS = {
+  cancel: '취소',
+  delete: '삭제',
+  close: '닫기',
+  back: '뒤로',
+  save: '저장',
+  export: '내보내기',
+  reissue: '재발급',
+  ack: '확인했어요',
+} as const;

@@ -1,59 +1,37 @@
-/** 디자인 토큰 — 매직 컬러 대신 사용 */
+/** 디자인 토큰 — docs/design.md SoT (light) */
+export { LAYOUT, LIMITS, MOTION, NAV, OVERLAY } from '@/shared/constants';
+
 export const COLORS = {
-  brand: '#1B4D3E',
-  brandSoft: '#DCEADF',
-  canvas: '#F3EFE6',
-  canvasTransparent: 'rgba(243, 239, 230, 0)',
-  ink: '#F7F3EA',
-  line: '#E2DCD0',
-  muted: '#8A938C',
+  brand: '#0F6B5C',
+  brandSoft: '#D8F0EA',
+  canvas: '#F4F7F6',
+  /** FadeEdge 투명 끝점 */
+  canvasTransparent: 'rgba(244, 247, 246, 0)',
+  surface: '#FFFFFF',
+  /** brand 위 텍스트·아이콘 */
+  ink: '#F5FFFC',
+  /** 본문·제목 (브랜드 영역 밖) */
+  text: '#1A2E29',
+  muted: '#6B7A76',
+  line: '#D5DED9',
+  disabled: '#B8C4BF',
   warning: '#A67C00',
   warningBorder: '#E8D48A',
   warningBg: '#FFF8E1',
   destructive: '#8B2E2E',
+  /** 완료·다 먹음 — brand와 동일 축 */
+  success: '#0F6B5C',
   white: '#FFFFFF',
-  disabled: '#C5C0B5',
-} as const;
-
-/** 레이아웃·사이즈 상수 */
-export const LAYOUT = {
-  fab: {
-    bottom: 16,
-    iconSize: 28,
-  },
-  fade: {
-    top: 36,
-    bottomWithFab: 80,
-    bottomPlain: 48,
-    defaultTop: 40,
-    defaultBottom: 72,
-    defaultHeight: 56,
-  },
-  icon: {
-    sm: 16,
-    md: 18,
-    lg: 22,
-    xl: 28,
-    hero: 36,
-  },
-  sheet: {
-    paddingBottomExtra: 16,
-  },
-  z: {
-    fade: 15,
-    fab: 20,
-    sheet: 20,
-  },
 } as const;
 
 /** react-native-calendars 테마 */
 export const CALENDAR_THEME = {
-  backgroundColor: COLORS.white,
-  calendarBackground: COLORS.white,
+  backgroundColor: COLORS.surface,
+  calendarBackground: COLORS.surface,
   selectedDayBackgroundColor: COLORS.brand,
   selectedDayTextColor: COLORS.ink,
   todayTextColor: COLORS.brand,
-  dayTextColor: COLORS.brand,
+  dayTextColor: COLORS.text,
   textDisabledColor: COLORS.disabled,
   arrowColor: COLORS.brand,
   monthTextColor: COLORS.brand,

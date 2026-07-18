@@ -6,34 +6,37 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          DEFAULT: '#1B4D3E',
-          soft: '#DCEADF',
-          muted: '#4A5A52',
-          faint: '#6B7A72',
+          DEFAULT: '#0F6B5C',
+          soft: '#D8F0EA',
+          // 기존 className 호환 → muted 축
+          muted: '#6B7A76',
+          faint: '#6B7A76',
         },
-        canvas: '#F3EFE6',
-        ink: '#F7F3EA',
-        line: '#D5CFC2',
-        // shadcn semantic aliases (기존 brand와 동일 계열)
-        background: '#F3EFE6',
-        foreground: '#1B4D3E',
+        canvas: '#F4F7F6',
+        surface: '#FFFFFF',
+        ink: '#F5FFFC',
+        text: '#1A2E29',
+        line: '#D5DED9',
+        background: '#F4F7F6',
+        foreground: '#1A2E29',
         primary: {
-          DEFAULT: '#1B4D3E',
-          foreground: '#F7F3EA',
+          DEFAULT: '#0F6B5C',
+          foreground: '#F5FFFC',
         },
         secondary: {
-          DEFAULT: '#DCEADF',
-          foreground: '#1B4D3E',
+          DEFAULT: '#D8F0EA',
+          foreground: '#0F6B5C',
         },
         muted: {
-          DEFAULT: '#D5CFC2',
-          foreground: '#6B7A72',
+          DEFAULT: '#D5DED9',
+          foreground: '#6B7A76',
         },
         destructive: {
           DEFAULT: '#8B2E2E',
           foreground: '#FFFFFF',
         },
-        border: '#D5CFC2',
+        border: '#D5DED9',
+        success: '#0F6B5C',
       },
       borderRadius: {
         lg: '12px',

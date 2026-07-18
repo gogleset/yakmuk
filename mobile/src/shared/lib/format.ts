@@ -1,17 +1,4 @@
-import type { ConditionValue } from '@/entities/medication/model/types';
-import type { UserRole } from '@/entities/user/model/types';
 import { todayKstDateString } from '@/shared/lib/kst';
-
-export const CONDITION_LABEL: Record<ConditionValue, string> = {
-  GOOD: '좋음',
-  NORMAL: '보통',
-  BAD: '아픔',
-};
-
-export const ROLE_LABEL: Record<UserRole, string> = {
-  guardian: '보호자',
-  care_recipient: '가족',
-};
 
 /** YYYY-MM-DD → "7월 16일 (목)" */
 export function formatFriendlyDate(dateYmd: string): string {

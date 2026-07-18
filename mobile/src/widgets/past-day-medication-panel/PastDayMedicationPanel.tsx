@@ -4,6 +4,7 @@ import type { DailyLog } from '@/entities/medication/model/types';
 import { CONDITION_LABEL } from '@/entities/medication';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { cn } from '@/shared/lib/cn';
+import { COPY } from '@/shared/copy';
 import { Body, EmptyHint, Icons, Muted } from '@/shared/ui';
 
 type Props = {
@@ -14,7 +15,7 @@ type Props = {
 /** 과거 날짜 복약·컨디션 기록 */
 export function PastDayMedicationPanel({ entries, conditionLogs }: Props) {
   if (entries.length === 0 && conditionLogs.length === 0) {
-    return <EmptyHint message="이 날에는 먹을 약이 없어요." />;
+    return <EmptyHint message={COPY.med.emptyPastDay} />;
   }
 
   return (

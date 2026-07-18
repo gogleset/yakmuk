@@ -133,9 +133,11 @@ export function HomePage() {
     todayMeds.length === 0
       ? undefined
       : pendingIds.length === 0
-        ? '오늘 다 먹었어요'
-        : `약 ${pendingIds.length}개 남았어요` +
-          (takenCount > 0 ? ` · ${takenCount}/${todayMeds.length}` : '');
+        ? COPY.med.allDoneToday
+        : COPY.med.remainingToday(pendingIds.length) +
+          (takenCount > 0
+            ? ` · ${COPY.med.progressFraction(takenCount, todayMeds.length)}`
+            : '');
 
   return (
     <Screen

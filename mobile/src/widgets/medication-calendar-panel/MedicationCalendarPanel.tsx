@@ -1,6 +1,7 @@
 import { Text, View } from 'react-native';
 import type { CalendarMark } from '@/entities/medication/lib/calendar';
 import { COLORS } from '@/shared/config/theme';
+import { COPY } from '@/shared/copy';
 import { Card } from '@/shared/ui';
 import { MedCalendar } from './MedCalendar';
 
@@ -30,13 +31,13 @@ export function MedicationCalendarPanel({
       </Card>
       <View className="flex-row gap-3">
         <Text className="text-xs" style={{ color: COLORS.success }}>
-          ● 다 먹었어요
+          ● {COPY.calendar.legendDone}
         </Text>
         <Text className="text-xs" style={{ color: COLORS.warning }}>
-          ● 일부만
+          ● {COPY.calendar.legendPartial}
         </Text>
         <Text className="text-xs" style={{ color: COLORS.destructive }}>
-          ● 안 먹었어요
+          ● {COPY.calendar.legendMissed}
         </Text>
       </View>
     </>

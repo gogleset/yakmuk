@@ -13,7 +13,14 @@ export const COPY = {
     emptyRegisteredHint: '먹는 약과 시간을 알려주면 체크할 수 있어요.',
     emptyRegisteredCta: '첫 약 등록하기',
     emptyToday: '오늘은 먹을 약이 없어요',
+    emptyPastDay: '이 날에는 먹을 약이 없어요.',
     addFab: '약 추가',
+    /** 오늘 진행 — 전부 완료 */
+    allDoneToday: '오늘 다 먹었어요',
+    /** 오늘 진행 — 남은 개수 */
+    remainingToday: (count: number) => `약 ${count}개 남았어요`,
+    /** 오늘 진행 — taken/total 분수 */
+    progressFraction: (taken: number, total: number) => `${taken}/${total}`,
   },
 
   family: {
@@ -39,6 +46,15 @@ export const COPY = {
     savedTitle: '저장했어요',
     savedBody: '오늘 컨디션을 가족에게 전했어요',
     defaultBadMessage: '오늘 컨디션이 좋지 않아요',
+    prompt: '오늘 컨디션은 어때요?',
+    messagePlaceholder: '가족에게 전할 한마디 (선택)',
+    submit: '컨디션 남기기',
+  },
+
+  calendar: {
+    legendDone: '다 먹었어요',
+    legendPartial: '일부만',
+    legendMissed: '안 먹었어요',
   },
 
   notif: {

@@ -94,7 +94,7 @@ export function TodayMedicationPanel({
 
       <View className="mt-1 gap-2">
         <Text className="text-sm font-semibold text-brand">
-          오늘 컨디션은 어때요?
+          {COPY.condition.prompt}
         </Text>
         <View className="flex-row gap-2">
           {CONDITIONS.map((c) => {
@@ -123,12 +123,12 @@ export function TodayMedicationPanel({
           })}
         </View>
         <Input
-          placeholder="가족에게 전할 한마디 (선택)"
+          placeholder={COPY.condition.messagePlaceholder}
           value={message}
           onChangeText={onMessageChange}
         />
         <Button
-          label="컨디션 남기기"
+          label={COPY.condition.submit}
           icon={Icons.Heart}
           onPress={onSubmitCondition}
         />

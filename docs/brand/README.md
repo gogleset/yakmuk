@@ -14,6 +14,7 @@
 | [design-edits.md](design-edits.md) | [docs/design.md](../design.md) 섹션별 수정안 |
 | [impl.md](impl.md) | 투두 체크리스트 · 하지 말 것 |
 | [decisions.md](decisions.md) | 기획 질문으로 **잠근 결정** |
+| [deferred.md](deferred.md) | 플랜 닫힘 후 **보류·후속** 백로그 |
 
 ## ID 용어 (헷갈리지 말 것)
 
@@ -115,13 +116,8 @@
 
 ### 8. 보류
 
-- F8 컷 (`pill`/`cheer`/`lantern`/`heart`) — 파일만 또는 skip  
-- 퍼널 **P6** 컨디션 승격  
-- 정식 콕이 일러스트 (오면 동일 파일명 overwrite)  
-- **sage 색 리샘플** ([decisions.md](decisions.md) #8B)  
-- `happy` 컷 UI 연결 (에셋만, #1)
-
-게이트: [goals.md](goals.md) §8 — 보류를 1·2차에 끌어오지 않음
+게이트: [goals.md](goals.md) §8 — 보류를 1·2차에 끌어오지 않음.  
+닫힘 후 목록·착수 순서: **[deferred.md](deferred.md)**
 
 ---
 

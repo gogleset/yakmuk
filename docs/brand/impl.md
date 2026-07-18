@@ -12,15 +12,15 @@ ID 용어(F / 퍼널 P / 1차·2차)도 README 참고.
 
 | ID | README 단계 | 내용 | 상태 |
 |----|-------------|------|------|
-| design-md-rewrite | 1 | design.md + Character + Flows + Funnel | pending |
-| asset-pipeline | 2 | koki placeholder + KokiIllustration (**sage theme 제외** #8B) | pending |
-| funnel-shell | 3 | FunnelShell **full page** (#5A) | pending |
-| funnel-wave1 | 4 | 퍼널 **P1·P2·P3** | pending |
-| beat-wave1 | 5 | beat **F1·F2·F6** (#1 — 개별 성공 없음) | pending |
-| rename-copy | 6 | 약콕 rename — UI+AGENTS/TRACK/design/PRD (#6B) | pending |
-| funnel-wave2 | 7 | 퍼널 **P4·P5** | pending |
-| beat-wave2 | 7 | beat **F5·F7·F4**(N=3) | pending |
-| deferred | 8 | F8 컷 + 퍼널 P6 보류 | pending |
+| design-md-rewrite | 1 | design.md + Character + Flows + Funnel | done |
+| asset-pipeline | 2 | koki placeholder + KokiIllustration (**sage theme 제외** #8B) | done |
+| funnel-shell | 3 | FunnelShell **full page** (#5A) | done |
+| funnel-wave1 | 4 | 퍼널 **P1·P2·P3** | done |
+| beat-wave1 | 5 | beat **F1·F2·F6** (#1 — 개별 성공 없음) | done |
+| rename-copy | 6 | 약콕 rename — UI+AGENTS/TRACK/design/PRD (#6B) | done |
+| funnel-wave2 | 7 | 퍼널 **P4·P5** | done |
+| beat-wave2 | 7 | beat **F5·F7·F4**(N=3) | done |
+| deferred | 8 | F8 컷 + 퍼널 P6 보류 (목록 → [deferred.md](deferred.md)) | done |
 
 ---
 

@@ -1,4 +1,4 @@
-# TRACK — yakmuk (약먹었약)
+# TRACK — yakmuk (약콕)
 
 - track: loop-engineering
 - stage: **pre**
@@ -8,7 +8,7 @@
 
 ## Notes
 
-- 제품: 가족 건강 안부 · 실시간 복약 ("약먹었약")
+- 제품: 가족 건강 안부 · 실시간 복약 ("약콕")
 - **지금:** Expo RN + `supabase start` + 루프 7축
 - Auth: **보호자 OAuth** · **피보호자 코드/QR** (초기 nickname은 보호자가 설정)
 - **다음(prod):** hosted Supabase + EAS + OAuth/딥링크 프로덕션 + bound 하드캡 · [loop/prod/](loop/prod/)

@@ -1,4 +1,4 @@
-# PRD 요약 — 약먹었약
+# PRD 요약 — 약콕
 
 원본: `~/Downloads/prd_yakmeogeotyak_mvp.pdf`, `prd_yakmeogeotyak_mvp_v1.1.pdf`
 

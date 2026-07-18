@@ -3,6 +3,7 @@ import {
   LocaleConfig,
   type CalendarProps,
 } from 'react-native-calendars';
+import { View } from 'react-native';
 import { CALENDAR_THEME } from '@/shared/config/theme';
 
 let koLocaleReady = false;
@@ -60,7 +61,14 @@ ensureKoCalendarLocale();
 
 type Props = CalendarProps;
 
-/** 복약 기록용 월 캘린더 — 한국어 로케일·기본 테마 포함 */
+/** 복약 기록용 월 캘린더 — 한국어·테마. 월 헤더는 MonthHeader가 담당 */
 export function MedCalendar({ theme, ...rest }: Props) {
-  return <Calendar theme={theme ?? CALENDAR_THEME} {...rest} />;
+  return (
+    <Calendar
+      theme={theme ?? CALENDAR_THEME}
+      hideArrows
+      renderHeader={() => <View />}
+      {...rest}
+    />
+  );
 }

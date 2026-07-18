@@ -24,7 +24,13 @@ export type DailyLog = {
   medicationName?: string | null;
 };
 
-export type DayMedStatus = 'done' | 'partial' | 'missed' | 'empty';
+export type DayMedStatus =
+  | 'done'
+  | 'partial'
+  | 'missed'
+  /** 스케줄 있음 · 오늘 미체크 또는 미래 */
+  | 'scheduled'
+  | 'empty';
 
 export type DrugSearchItem = {
   itemSeq: string;

@@ -1,5 +1,4 @@
-import { router } from 'expo-router';
-import { useIsFocused } from '@react-navigation/native';
+import { router, useIsFocused } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,

@@ -4,6 +4,7 @@ import { COLORS } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
 import { Card, KokiIllustration } from '@/shared/ui';
 import { MedCalendar } from './MedCalendar';
+import { MonthHeader } from './MonthHeader';
 
 type Props = {
   visibleMonth: string;
@@ -15,7 +16,18 @@ type Props = {
   streakDays?: number;
 };
 
-/** 캘린더 + 복약 상태 범례 (+ 조건부 streak) */
+function shiftYearMonth(visibleMonth: string, delta: number): {
+  year: number;
+  month: number;
+} {
+  const [yearRaw, monthRaw] = visibleMonth.split('-').map(Number);
+  const year = yearRaw || new Date().getFullYear();
+  const month = monthRaw || 1;
+  const date = new Date(year, month - 1 + delta, 1);
+  return { year: date.getFullYear(), month: date.getMonth() + 1 };
+}
+
+/** 월 헤더 + 캘린더 + 복약 상태 범례 (+ 조건부 streak) */
 export function MedicationCalendarPanel({
   visibleMonth,
   markedDates,
@@ -25,26 +37,38 @@ export function MedicationCalendarPanel({
   streakDays,
 }: Props) {
   return (
-    <>
+    <View className="gap-2.5">
       {showStreak ? (
         <View className="items-center gap-1 py-1">
           <KokiIllustration variant="streak" size={88} />
           {streakDays != null ? (
             <Text className="text-sm font-semibold text-brand">
-              {streakDays}일 연속이에요
+              {COPY.med.streakDays(streakDays)}
             </Text>
           ) : null}
         </View>
       ) : null}
-      <Card className="overflow-hidden p-0">
+
+      <MonthHeader
+        visibleMonth={visibleMonth}
+        onPrevMonth={() => onMonthChange(shiftYearMonth(visibleMonth, -1))}
+        onNextMonth={() => onMonthChange(shiftYearMonth(visibleMonth, 1))}
+      />
+
+      <Card className="overflow-hidden bg-canvas p-0">
         <MedCalendar
+          key={visibleMonth}
           current={`${visibleMonth}-01`}
           markedDates={markedDates}
           onDayPress={onDayPress}
           onMonthChange={onMonthChange}
         />
       </Card>
-      <View className="flex-row gap-3">
+
+      <View className="flex-row flex-wrap gap-3 px-0.5">
+        <Text className="text-xs" style={{ color: COLORS.muted }}>
+          ● {COPY.calendar.legendScheduled}
+        </Text>
         <Text className="text-xs" style={{ color: COLORS.success }}>
           ● {COPY.calendar.legendDone}
         </Text>
@@ -55,6 +79,6 @@ export function MedicationCalendarPanel({
           ● {COPY.calendar.legendMissed}
         </Text>
       </View>
-    </>
+    </View>
   );
 }

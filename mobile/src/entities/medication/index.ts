@@ -40,7 +40,21 @@ export {
   expandPerWeekdaySchedule,
 } from './lib/daysMask';
 export type { DaysMode, MedScheduleSlot } from './lib/daysMask';
+export {
+  groupMedsByScheduledTime,
+  groupTimedEntriesByScheduledTime,
+  parseTimeToMinutes,
+  timeOfDaySlot,
+  TIME_SLOT_ORDER,
+} from './lib/timeSlots';
+export type {
+  MedTimeGroup,
+  TimeOfDaySlot,
+  TimedEntry,
+  TimedEntryGroup,
+} from './lib/timeSlots';
 export { MedRow } from './ui/MedRow';
+export { TimeSlotMedAccordion } from './ui/TimeSlotMedAccordion';
 export { DaysModeToggle } from './ui/DaysModeToggle';
 export { WeekdayPicker } from './ui/WeekdayPicker';
 export { TimePicker } from './ui/TimePicker';

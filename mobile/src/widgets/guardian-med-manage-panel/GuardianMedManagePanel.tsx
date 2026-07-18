@@ -1,9 +1,10 @@
-import { Pressable, Text, View } from 'react-native';
+import { useMemo } from 'react';
 import { formatDaysMaskLabel } from '@/entities/medication/lib/daysMask';
+import { groupMedsByScheduledTime } from '@/entities/medication/lib/timeSlots';
 import type { Medication } from '@/entities/medication/model/types';
-import { COLORS, LAYOUT } from '@/shared/config/theme';
+import { TimeSlotMedAccordion } from '@/entities/medication/ui/TimeSlotMedAccordion';
 import { COPY } from '@/shared/copy';
-import { EmptyHint, Icons } from '@/shared/ui';
+import { EmptyHint } from '@/shared/ui';
 
 type Props = {
   meds: Medication[];
@@ -12,13 +13,35 @@ type Props = {
   isError?: boolean;
 };
 
-/** 보호자: 피보호자 등록 약 관리 목록 */
+/** 보호자: 피보호자 등록 약 관리 — 시간대 아코디언 */
 export function GuardianMedManagePanel({
   meds,
   onEdit,
   onDelete,
   isError = false,
 }: Props) {
+  const medById = useMemo(() => {
+    const map = new Map<number, Medication>();
+    for (const med of meds) map.set(med.id, med);
+    return map;
+  }, [meds]);
+
+  const groups = useMemo(
+    () =>
+      groupMedsByScheduledTime(meds).map((group) => ({
+        scheduledTime: group.scheduledTime,
+        slot: group.slot,
+        entries: group.meds.map((med) => ({
+          key: String(med.id),
+          name: med.name,
+          scheduledTime: med.scheduledTime,
+          taken: false,
+          caption: formatDaysMaskLabel(med.daysMask),
+        })),
+      })),
+    [meds],
+  );
+
   if (isError) {
     return <EmptyHint message={COPY.med.loadFailed} />;
   }
@@ -28,31 +51,17 @@ export function GuardianMedManagePanel({
   }
 
   return (
-    <View className="gap-2">
-      {meds.map((med) => (
-        <Pressable
-          key={med.id}
-          accessibilityRole="button"
-          accessibilityLabel={`${med.name} 수정`}
-          accessibilityHint={COPY.a11y.longPressDelete}
-          onPress={() => onEdit(med)}
-          onLongPress={() => onDelete(med)}
-          className="flex-row items-center justify-between rounded-xl bg-surface p-3.5 active:opacity-80"
-        >
-          <View className="flex-row items-center gap-2.5">
-            <Icons.Pill size={LAYOUT.icon.lg} color={COLORS.brand} />
-            <View>
-              <Text className="text-base font-semibold text-brand">
-                {med.name}
-              </Text>
-              <Text className="mt-0.5 text-xs text-brand-faint">
-                {formatDaysMaskLabel(med.daysMask)}
-              </Text>
-            </View>
-          </View>
-          <Text className="text-brand-faint">{med.scheduledTime}</Text>
-        </Pressable>
-      ))}
-    </View>
+    <TimeSlotMedAccordion
+      variant="manage"
+      groups={groups}
+      onPressKey={(key) => {
+        const med = medById.get(Number(key));
+        if (med) onEdit(med);
+      }}
+      onLongPressKey={(key) => {
+        const med = medById.get(Number(key));
+        if (med) onDelete(med);
+      }}
+    />
   );
 }

@@ -10,9 +10,10 @@ export const COPY = {
     noScheduleToSave: '저장할 일정이 없어요',
     loadFailed: '약 목록을 불러오지 못했어요',
     emptyRegistered: '아직 등록한 약이 없어요',
-    emptyRegisteredHint: '먹는 약과 시간을 알려주면 체크할 수 있어요.',
+    emptyRegisteredHint: '약을 등록하고 복용을 기록해볼까요?',
     emptyRegisteredCta: '첫 약 등록하기',
     emptyToday: '오늘은 먹을 약이 없어요',
+    emptyTodayHint: '다른 요일 일정은 캘린더에서 볼 수 있어요.',
     emptyPastDay: '이 날에는 먹을 약이 없어요.',
     addFab: '약 추가',
     /** 오늘 진행 — 전부 완료 */
@@ -21,6 +22,17 @@ export const COPY = {
     remainingToday: (count: number) => `약 ${count}개 남았어요`,
     /** 오늘 진행 — taken/total 분수 */
     progressFraction: (taken: number, total: number) => `${taken}/${total}`,
+    /** 오늘 체크 배너 */
+    checkPromptTitle: '약 복용 시간을\n체크해볼까요?',
+    checkPromptDone: '다 먹었어요! 잘했어요',
+    markAllTaken: '다 먹었어요!',
+    streakDays: (days: number) => `${days}일 연속이에요`,
+    timeSlot: {
+      morning: '아침',
+      lunch: '점심',
+      evening: '저녁',
+      bedtime: '취침 전',
+    },
   },
 
   family: {
@@ -55,6 +67,7 @@ export const COPY = {
     legendDone: '다 먹었어요',
     legendPartial: '일부만',
     legendMissed: '안 먹었어요',
+    legendScheduled: '약 있는 날',
   },
 
   notif: {

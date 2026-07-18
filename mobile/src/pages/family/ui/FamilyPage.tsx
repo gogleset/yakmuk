@@ -1,16 +1,18 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { FlatList, View } from 'react-native';
 import { router } from 'expo-router';
+import { useState } from 'react';
+import { FlatList, RefreshControl } from 'react-native';
 import { useAuth } from '@/providers/AuthProvider';
 import {
+  invalidateFamilyActivity,
   useFamilyFeedSubscription,
   useFamilyScreenQueries,
-} from '@/entities/family/model/queries';
+} from '@/entities/family';
 import { useAckFamilyAlertMutation } from '@/features/ack-family-alert';
 import { familyMemberRoute, ROUTES } from '@/shared/config/routes';
 import { formatDayLabel } from '@/shared/lib/format';
 import { todayKstDateString } from '@/shared/lib/kst';
-import { LAYOUT } from '@/shared/config/theme';
+import { COLORS, LAYOUT } from '@/shared/config/theme';
 import {
   FadeInView,
   Icons,
@@ -24,12 +26,13 @@ import { FamilyGuardianDashboard } from '@/widgets/family-guardian-dashboard';
 
 /** 가족 — 전원 복약 상태·활동 피드 (대칭) */
 export function FamilyPage() {
-  const { profile } = useAuth();
+  const { profile, refreshProfile } = useAuth();
   const qc = useQueryClient();
   const familyId = profile?.familyId;
   const today = todayKstDateString();
   const myUserId = profile?.id;
   const isLeader = profile?.role === 'family_leader';
+  const [refreshing, setRefreshing] = useState(false);
 
   const {
     status: statusQuery,
@@ -45,8 +48,21 @@ export function FamilyPage() {
 
   const ackMut = useAckFamilyAlertMutation();
 
-  const statusMembers = statusQuery.data ?? [];
-  const alerts = alertsQuery.data ?? [];
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([refreshProfile(), invalidateFamilyActivity(qc)]);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const statusMembers = (statusQuery.data ?? []).filter(
+    (member) => member.userId !== myUserId,
+  );
+  const alerts = (alertsQuery.data ?? []).filter(
+    (alert) => alert.userId !== myUserId,
+  );
   const feed = (feedQuery.data ?? []).filter((item) => item.userId !== myUserId);
 
   const leaderNickname =
@@ -67,6 +83,14 @@ export function FamilyPage() {
         data={feed}
         keyExtractor={(item) => String(item.id)}
         contentContainerClassName="gap-2.5 px-5 pb-10 pt-4"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => void onRefresh()}
+            tintColor={COLORS.brand}
+            colors={[COLORS.brand]}
+          />
+        }
         ListHeaderComponent={
           <FadeInView className="gap-3 pb-2">
             <Muted>{formatDayLabel(today)} · 가족 안부</Muted>

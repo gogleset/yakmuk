@@ -1,15 +1,15 @@
-import { Redirect, Tabs } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAuth } from '@/providers/AuthProvider';
-import { ROUTES } from '@/shared/config/routes';
-import { COLORS, NAV } from '@/shared/config/theme';
-import { Icons } from '@/shared/ui';
+import { Redirect, Tabs } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAuth } from "@/providers/AuthProvider";
+import { ROUTES } from "@/shared/config/routes";
+import { COLORS, NAV } from "@/shared/config/theme";
+import { Icons } from "@/shared/ui";
 
 export default function AppTabsLayout() {
   const { loading, profile } = useAuth();
   const insets = useSafeAreaInsets();
 
-  console.log('[auth-debug] tabs gate', {
+  console.log("[auth-debug] tabs gate", {
     loading,
     familyId: profile?.familyId ?? null,
     role: profile?.role ?? null,
@@ -17,7 +17,7 @@ export default function AppTabsLayout() {
   });
   if (loading) return null;
   if (!profile?.familyId) {
-    console.warn('[auth-debug] tabs → Redirect welcome (no familyId)');
+    console.warn("[auth-debug] tabs → Redirect welcome (no familyId)");
     return <Redirect href={ROUTES.welcome} />;
   }
 
@@ -25,12 +25,13 @@ export default function AppTabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarShowLabel: false,
+        tabBarShowLabel: true,
         tabBarActiveTintColor: COLORS.brand,
         tabBarInactiveTintColor: COLORS.muted,
+        tabBarLabelStyle: { fontSize: 11, fontWeight: "600" },
         sceneStyle: { backgroundColor: COLORS.canvas },
         tabBarStyle: {
-          backgroundColor: COLORS.canvas,
+          backgroundColor: COLORS.surface,
           borderTopWidth: 0,
           elevation: 0,
           height: NAV.tabBarHeight + insets.bottom,
@@ -42,7 +43,7 @@ export default function AppTabsLayout() {
       <Tabs.Screen
         name="home"
         options={{
-          title: '홈',
+          title: "기록",
           tabBarIcon: ({ color, size }) => (
             <Icons.Pill color={color} size={size} />
           ),
@@ -51,7 +52,7 @@ export default function AppTabsLayout() {
       <Tabs.Screen
         name="family"
         options={{
-          title: '가족',
+          title: "가족",
           tabBarIcon: ({ color, size }) => (
             <Icons.Users color={color} size={size} />
           ),
@@ -60,7 +61,7 @@ export default function AppTabsLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: '설정',
+          title: "설정",
           tabBarIcon: ({ color, size }) => (
             <Icons.Settings color={color} size={size} />
           ),

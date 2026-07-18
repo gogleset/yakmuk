@@ -4,13 +4,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useAuth } from '@/providers/AuthProvider';
 import {
-  buildDayMedicationEntries,
   buildMarkedDates,
   currentYearMonthKst,
 } from '@/entities/medication';
 import { useHomeMedicationQueries } from '@/entities/medication/model/queries';
 import type { Medication } from '@/entities/medication/model/types';
-import { refreshAfterMedicationChange } from '@/features/add-medication';
 import { useDailyMedicationCheckMutations } from '@/features/daily-medication-check';
 import {
   addMedicationRoute,
@@ -28,12 +26,10 @@ import {
 } from '@/shared/ui';
 import { GuardianMedManagePanel } from '@/widgets/guardian-med-manage-panel';
 import { MedicationCalendarPanel } from '@/widgets/medication-calendar-panel';
-import { PastDayMedicationPanel } from '@/widgets/past-day-medication-panel';
 import { canManageMemberMeds } from '@/entities/user';
 
-/** 가족 멤버 복약·컨디션 (가족장·보호자 → 피보호자 약 관리) */
+/** 가족 멤버 — 캘린더 이력 + 등록 약 관리 (체크는 본인 홈만) */
 export function FamilyMemberPage() {
-  const qc = useQueryClient();
   const { profile } = useAuth();
   const params = useLocalSearchParams<{
     userId: string;
@@ -80,26 +76,6 @@ export function FamilyMemberPage() {
       ),
     [visibleMonth, calendarMedsQuery.data, logsQuery.data, selectedDate, today],
   );
-
-  const selectedDayEntries = useMemo(
-    () =>
-      buildDayMedicationEntries(
-        selectedDate,
-        calendarMedsQuery.data ?? [],
-        logsQuery.data ?? [],
-      ),
-    [calendarMedsQuery.data, logsQuery.data, selectedDate],
-  );
-
-  const selectedDayConditionLogs = useMemo(
-    () =>
-      (logsQuery.data ?? []).filter(
-        (log) => log.logDate === selectedDate && log.condition,
-      ),
-    [logsQuery.data, selectedDate],
-  );
-
-  const refreshMeds = () => refreshAfterMedicationChange(qc);
 
   const confirmDelete = (med: Medication) => {
     Alert.alert(COPY.med.deleteTitle, COPY.med.deleteBody(med.name), [
@@ -157,11 +133,6 @@ export function FamilyMemberPage() {
                 const ym = `${month.year}-${String(month.month).padStart(2, '0')}`;
                 setVisibleMonth(ym);
               }}
-            />
-
-            <PastDayMedicationPanel
-              entries={selectedDayEntries}
-              conditionLogs={selectedDayConditionLogs}
             />
 
             {canManageMeds ? (

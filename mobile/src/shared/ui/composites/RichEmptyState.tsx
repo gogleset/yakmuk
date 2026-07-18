@@ -16,6 +16,8 @@ type Props = {
   ctaLabel?: string;
   onCtaPress?: () => void;
   className?: string;
+  /** stack=세로 중앙 · card=가로 카드(홈 empty) */
+  layout?: 'stack' | 'card';
 };
 
 /** 빈 상태 — 일러스트/아이콘 + 제목 + CTA 하나 (Low friction) */
@@ -27,14 +29,45 @@ export function RichEmptyState({
   ctaLabel,
   onCtaPress,
   className,
+  layout = 'stack',
 }: Props) {
+  const media = illustration ? (
+    illustration
+  ) : Icon ? (
+    <Icon size={LAYOUT.icon.hero} color={COLORS.brand} />
+  ) : null;
+
+  if (layout === 'card') {
+    return (
+      <View
+        className={cn(
+          'gap-4 rounded-2xl bg-surface-soft px-4 py-5',
+          className,
+        )}
+      >
+        <View className="flex-row items-center gap-3">
+          {media ? <View className="shrink-0">{media}</View> : null}
+          <View className="min-w-0 flex-1 gap-1">
+            <Text className="text-base font-bold text-brand">{title}</Text>
+            {message ? (
+              <Body className="text-sm text-brand-muted">{message}</Body>
+            ) : null}
+          </View>
+        </View>
+        {ctaLabel && onCtaPress ? (
+          <Button
+            label={ctaLabel}
+            onPress={onCtaPress}
+            className="rounded-2xl"
+          />
+        ) : null}
+      </View>
+    );
+  }
+
   return (
     <View className={cn('items-center gap-3 px-4 py-8', className)}>
-      {illustration ? (
-        illustration
-      ) : Icon ? (
-        <Icon size={LAYOUT.icon.hero} color={COLORS.brand} />
-      ) : null}
+      {media}
       <Text className="text-center text-base font-bold text-brand">{title}</Text>
       {message ? (
         <Body className="text-center text-sm text-brand-muted">{message}</Body>

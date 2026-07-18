@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  FlatList,
   Pressable,
   Text,
   View,
@@ -321,26 +320,23 @@ export function AddMedicationFunnel({ userId, onClose, onAdded }: Props) {
         results.length === 0 ? (
           <EmptyHint message="검색 결과가 없어요. 직접 입력해 보세요." />
         ) : null}
-        <FlatList
-          className="mt-2 max-h-80"
-          data={results}
-          keyExtractor={(item) => item.itemSeq}
-          keyboardShouldPersistTaps="handled"
-          renderItem={({ item }) => (
+        <View className="mt-2 gap-2">
+          {results.map((item) => (
             <Pressable
+              key={item.itemSeq}
               onPress={() => {
                 setSelected(item);
                 setManualName('');
                 setStep('mode');
               }}
-              className="mb-2 active:opacity-70"
+              className="active:opacity-70"
             >
               <Card>
                 <DrugSearchPreview item={item} variant="compact" />
               </Card>
             </Pressable>
-          )}
-        />
+          ))}
+        </View>
       </FunnelShell>
     );
   }

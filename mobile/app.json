@@ -6,9 +6,9 @@
   "icon": "./assets/icon.png",
   "scheme": "yakmuk",
   "userInterfaceStyle": "light",
-  "backgroundColor": "#F4F7F6",
+  "backgroundColor": "#FFFFFF",
   "androidStatusBar": {
-    "backgroundColor": "#F4F7F6",
+    "backgroundColor": "#FFFFFF",
     "translucent": false,
     "barStyle": "dark-content"
   },
@@ -25,7 +25,7 @@
     },
     "package": "com.yakmuk.app",
     "navigationBar": {
-      "backgroundColor": "#F4F7F6",
+      "backgroundColor": "#FFFFFF",
       "barStyle": "dark-content"
     }
   },

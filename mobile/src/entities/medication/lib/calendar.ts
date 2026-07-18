@@ -46,9 +46,10 @@ export function aggregateDayStatus(
 
   if (totalObligations === 0) return 'empty';
 
-  // 오늘은 아직 진행 중 · 미래는 미복용으로 치지 않음
   const today = todayKst ?? dateKst;
-  if (dateKst > today) return 'empty';
+
+  // 미래 · 오늘 미체크 → 스케줄 점 (createdAt 이후 days_mask만 isMedScheduledOnDate에 포함)
+  if (dateKst > today) return 'scheduled';
 
   const takenIds = new Set(
     dayLogs
@@ -60,7 +61,7 @@ export function aggregateDayStatus(
     scheduled.filter((med) => takenIds.has(med.id)).length + orphanTakenCount;
 
   if (dateKst === today) {
-    if (takenCount === 0) return 'empty'; // 오늘 미체크는 점 없이 (진행 중)
+    if (takenCount === 0) return 'scheduled';
     if (takenCount >= totalObligations) return 'done';
     return 'partial';
   }
@@ -123,6 +124,7 @@ const STATUS_DOT: Record<Exclude<DayMedStatus, 'empty'>, string> = {
   done: COLORS.success,
   partial: COLORS.warning,
   missed: COLORS.destructive,
+  scheduled: COLORS.muted,
 };
 
 /** react-native-calendars markedDates 생성 */
@@ -182,7 +184,7 @@ export function addDaysKst(dateKst: string, delta: number): string {
 
 /**
  * KST 기준 연속 all-done 일수.
- * done=+1, empty(스케줄0)=스킵 유지, partial/missed=끊김.
+ * done=+1, empty/scheduled=스킵 유지, partial/missed=끊김.
  */
 export function computeStreakDays(
   medications: Medication[],
@@ -194,7 +196,7 @@ export function computeStreakDays(
   for (let i = 0; i < maxLookback; i++) {
     const dateKst = addDaysKst(todayKst, -i);
     const status = aggregateDayStatus(dateKst, medications, logs, todayKst);
-    if (status === 'empty') continue;
+    if (status === 'empty' || status === 'scheduled') continue;
     if (status === 'done') {
       streak += 1;
       continue;

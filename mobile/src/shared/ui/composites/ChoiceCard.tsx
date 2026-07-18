@@ -29,7 +29,7 @@ export function ChoiceCard({
       accessibilityRole="button"
       onPress={onPress}
       className={cn(
-        'rounded-xl bg-surface p-4 active:opacity-80',
+        'rounded-xl bg-surface-soft p-4 active:opacity-80',
         className,
       )}
     >

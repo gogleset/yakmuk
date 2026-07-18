@@ -63,7 +63,7 @@ ID prefix **P** (Form funnel). 브랜드 F와 구분.
 ## P1 — 가족 만들기
 
 **진입:** Welcome → 가족장 경로 · 로그인 후 `needsFamilySetup`  
-**콕이:** 시작 `family` · 완료 `happy`(선택)
+**콕이:** 시작 `family` · 완료는 beat 생략 또는 `family` (1차에서 `happy` 미연결 — [decisions.md](decisions.md) #1)
 
 | Step | 질문(타이틀) | UI | CTA |
 |------|--------------|-----|-----|
@@ -175,7 +175,7 @@ GOOD/NORMAL은 step2 스킵 가능.
 
 | 퍼널 | 시작 컷 | 완료 컷 | flows.md |
 |------|---------|---------|----------|
-| P1 가족 만들기 | family | happy | F1 → F5 |
+| P1 가족 만들기 | family | family 또는 생략 | F1 → F5 |
 | P2 Join | welcome/family | — | F1 |
 | P3 약 추가 | thinking | done | F2 → (등록 후) F6 |
 | P5 초대 | family | family | F5 |

@@ -8,11 +8,11 @@
 | 스토어 | local `supabase start` | 멀티 클라 공유 |
 | 아키텍처 | FSD + Atomic `shared/ui` | PRD |
 | 상태관리 | TanStack Query | Optimistic + Realtime |
-| **Auth 보호자** | **OAuth** (Google · Apple, Supabase Auth) | 자녀/보호자 — 계정 회수·보안 |
-| **Auth 피보호자** | **초대코드 6자리 + QR** (OAuth·닉네임 입력 없음) | Low Friction |
-| 역할 | `users.role` = `guardian` \| `care_recipient` | 페르소나 B / A |
-| 가족·초대 | guardian OAuth → 가족 생성 → **피보호자 슬롯 추가 시 초기 nickname 설정** → 그 슬롯용 코드·QR 발급 | 보호자가 호칭 지정 (엄마/아빠) |
-| 피보호자 세션 | 코드/QR 검증만 → 사전 생성된 슬롯에 세션 연결 (비OAuth) | nickname은 guardian이 이미 넣음 |
+| **Auth 가족장** | **OAuth** (Google · Apple, Supabase Auth) | 가족 생성·관리 계정 |
+| **Auth 보호자·피보호자** | **초대코드 6자리 + QR** (anon) · 닉네임 선택 | Low Friction · 호칭은 리더가 사전 지정 |
+| 역할 | `users.role` = `family_leader` \| `guardian` \| `care_recipient` | 3역할 |
+| 가족·초대 | 가족장 OAuth → 가족 생성 → **호칭(`invited_as`)+target_role 슬롯** → 코드·QR | 리더만 초대 |
+| 조인 세션 | 코드/QR + 선택 닉네임 → claim | 비우면 invited_as |
 | QR 페이로드 | deep link `yakmuk://join?code=XXXXXX` (또는 Universal Link) | 스캔 = 코드 입력과 동일 |
 | bound | `max_iterations=10` + 당일 KST 윈도우 | — |
 | stuck | 미복용 해시 3회 → escalate | — |
@@ -36,7 +36,7 @@
 
 | ID | pre | prod |
 |----|-----|------|
-| FR-01 | guardian OAuth · 슬롯(nickname)+코드/QR · 피보호자 조인 | 탈퇴·약관 |
+| FR-01 | 가족장 OAuth · family_invites+코드/QR · 보호자/피보호자 조인 · 기기복구코드 | 탈퇴·약관 |
 | FR-02 | 스케줄 CRUD | — |
 | FR-03 | 홈 체크·컨디션·Optimistic | — |
 | FR-04 | Realtime 피드 | — |

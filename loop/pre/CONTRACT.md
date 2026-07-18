@@ -51,11 +51,16 @@ verify_day(user_id, date_kst) -> success | continue | failed_verify
 
 | 역할 | 가입/진입 |
 |------|-----------|
-| **보호자 (`guardian`)** | OAuth → 가족 생성 → **피보호자 추가(초기 nickname 설정)** → 해당 슬롯 코드·QR 표시 |
-| **피보호자 (`care_recipient`)** | 6자리 코드 **또는** QR만 → 세션 연결 (닉네임·OAuth 입력 없음) |
+| **가족장 (`family_leader`)** | OAuth → 가족 이름+닉네임 → 보호자/피보호자 초대(호칭+코드/QR) |
+| **보호자 (`guardian`)** | 6자리 코드/QR → anon 세션 · 닉네임 선택(비우면 초대 호칭) |
+| **피보호자 (`care_recipient`)** | 6자리 코드/QR → anon 세션 · 닉네임 선택(비우면 초대 호칭) |
 
-- 초기 nickname은 **보호자가 초대 발급 시** 설정 (예: 엄마, 아빠)
-- QR = 코드와 동일 (`yakmuk://join?code=…`) · 슬롯에 이미 nickname 바인딩
+- 초대는 **가족장만**. `family_invites.target_role` + `invited_as`
+- 표시명: `nickname` (없으면 `invited_as`) · 서브(P1): `{가족장닉}의 {invited_as}`
+- 약 관리: 가족장·보호자 → 피보호자만 / 본인 약은 각자 / 조회는 가족 전원
+- 가족 운영: 닉네임·가족이름 수정 · 미클레임 코드 재발급 · 강퇴 · 가족삭제 · Join peek
+- 기기 복구 (P2): 가족장이 복구코드 발급 → 새 기기 claim 시 auth.uid만 교체, 약·로그 유지
+- QR = 코드와 동일 (`yakmuk://join?code=…`)
 - RLS: 동일 `family_id` · 1 family / user
 - 다중 가족 그룹 금지
 

@@ -27,29 +27,31 @@ on trigger(event):  # in_app | http
 ## Auth · 초대 흐름
 
 ```text
-Guardian: OAuth -> create family
-       -> add care_recipient slot (set initial nickname)
-       -> issue invite_code + QR for that slot
-CareRecipient: scan QR | type code -> validate -> attach session to slot (no nickname UI, no OAuth)
-Both: same family_id -> RLS
+FamilyLeader: OAuth -> create family (name + nickname)
+       -> add guardian | care_recipient slot (invited_as + target_role)
+       -> issue invite_code + QR
+Guardian/CareRecipient: scan QR | type code + optional nickname
+       -> claim_family_invite -> anon session on slot
+All: same family_id -> RLS
 ```
 
-QR: `yakmuk://join?code=XXXXXX` (코드 입력과 동등). nickname은 슬롯에 이미 존재.
+QR: `yakmuk://join?code=XXXXXX`. 표시명 = nickname (없으면 invited_as).
 
 ## Postgres 스키마 스케치
 
 ```sql
 CREATE TABLE families (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  created_by uuid NOT NULL            -- guardian auth.users.id
+  name text NOT NULL,
+  created_by uuid NOT NULL            -- family_leader auth.users.id
 );
 
--- 피보호자 슬롯: guardian이 nickname·invite_code를 먼저 넣음. claimed_at NULL = 미연결
-CREATE TABLE care_invites (
+CREATE TABLE family_invites (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   family_id uuid NOT NULL REFERENCES families(id),
   invite_code text NOT NULL UNIQUE,  -- 6자 · QR 동일
-  nickname text NOT NULL,            -- 보호자가 설정한 초기 호칭
+  invited_as text NOT NULL,          -- 가족장이 지정한 호칭
+  target_role text NOT NULL CHECK (target_role IN ('guardian', 'care_recipient')),
   claimed_by uuid REFERENCES auth.users(id),
   claimed_at timestamptz,
   created_at timestamptz NOT NULL DEFAULT now()
@@ -57,15 +59,19 @@ CREATE TABLE care_invites (
 
 CREATE TABLE users (
   id uuid PRIMARY KEY REFERENCES auth.users(id),
-  nickname text NOT NULL,            -- care_recipient: invite의 nickname으로 시드
-  role text NOT NULL CHECK (role IN ('guardian', 'care_recipient')),
+  nickname text NOT NULL,
+  invited_as text,                   -- 리더는 null
+  role text NOT NULL CHECK (role IN ('family_leader', 'guardian', 'care_recipient')),
   family_id uuid REFERENCES families(id),
   expo_push_token text
 );
+```
 
+```sql
+-- medications / daily_logs / runs / turns — 기존과 동일 골격
 CREATE TABLE medications (
   id bigserial PRIMARY KEY,
-  user_id uuid NOT NULL REFERENCES users(id),  -- 보통 care_recipient
+  user_id uuid NOT NULL REFERENCES users(id),
   name text NOT NULL,
   scheduled_time time NOT NULL,
   days_mask text NOT NULL DEFAULT 'daily'

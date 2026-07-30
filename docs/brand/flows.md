@@ -19,11 +19,11 @@ F5 **beat**(가족 컷) ≠ 퍼널 **P1**(가족 입력).
 
 ---
 
-## F1 — 첫 만남 (Welcome) — [decisions.md](decisions.md) #7B
+## F1 — 첫 만남 (Welcome) — [decisions.md](decisions.md) #7C
 
-- **시트:** 손흔들기
-- **현재:** Pill 아이콘 + `약먹었약` + 경로 선택
-- **beat:** `welcome` 컷 + 브랜드명 `약콕` + 기존 안부 Body + **콕이 초단문** (예: `콕이가 함께해요`)
+- **시트:** 하트 완드 / 인사
+- **현재:** 좌상단 콕이 1인칭 인사 + 중앙 `welcome` 컷 + 하단 CTA 스택
+- **beat:** `welcome` 컷(히어로) + 타이틀 `안녕하세요. 저는 콕이에요` + 안부 서브 + CTA(`가족을 만들어요` / `초대코드를 받았어요`). 브랜드명 `약콕` 비표시
 - **훅:** `mobile/src/pages/welcome/ui/WelcomePage.tsx`
 
 ## F2 — 기록 없음 (Empty)

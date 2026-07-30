@@ -12,7 +12,7 @@
 | 4   | F7 Worried          | **A** — 경고/빨간 배너 **대신** Worried + 안부 카피                                                                                             |
 | 5   | 다필드 입력 표면    | **B** — FunnelShell = 온보딩·초대 등 **스텝형만 full page** (PageSheet 안 씀). **약 추가·수정 = BottomSheet progressive disclosure** (`design.md` §9) |
 | 6   | rename 범위         | **B** — UI 카피 + AGENTS / TRACK / design / PRD (`app.json` display name·스플래시 문구는 이번 제외, `yakmuk` 식별자 유지)                       |
-| 7   | Welcome 카피        | **B** — 기존 안부 Body + **콕이 초단문** (예: `콕이가 함께해요`)                                                                                |
+| 7   | Welcome 카피        | **C** — 콕이 1인칭 인사 타이틀(`안녕하세요. 저는 콕이에요`) + 안부 서브 + 하단 CTA. 브랜드명 `약콕` Welcome 비표시                               |
 | 8   | sage 색             | **B** — **지금 틸 유지**. Character·퍼널·beat 먼저. 색 리샘플은 나중                                                                            |
 | 9   | 홈 IA               | **기록 탭** = 캘린더 셸 고정. empty=아래 empty 카드 / 약 있음=스크롤 아래 오늘 체크 / 과거일=PastDay. 목업: `docs/brand/mocks/home-*.png`      |
 | 10  | 홈 헤더             | 탭 루트 **백·기어·날짜 타이틀 바 없음**. `MonthHeader`(◀ N월 YYYY ▶)는 캘린더와 함께 상시                                                       |

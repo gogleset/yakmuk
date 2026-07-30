@@ -73,7 +73,7 @@
 | 허용 | 규칙 |
 |------|------|
 | Empty / Success / Done 옆 | **기존 COPY 한 줄** + 콕이 컷 |
-| Welcome | 브랜드명 + 안부 Body + **콕이 초단문** ([decisions.md](../brand/decisions.md) #7B) |
+| Welcome | 콕이 1인칭 인사 + 안부 서브 + 하단 CTA ([decisions.md](../brand/decisions.md) #7C) |
 | Don’t | 시트 마케팅 문장 그대로 이식 |
 
 ## §7 Motion

@@ -123,7 +123,7 @@
 
 | 게이트 | PASS 조건 |
 |--------|-----------|
-| G5.1 | **F1** Welcome — `welcome` 컷 + 브랜드명 `약콕` + 안부 Body + 콕이 초단문 (#7B). *전역 rename은 §6* |
+| G5.1 | **F1** Welcome — `welcome` 컷 히어로 + 콕이 1인칭 인사 + 안부 서브 + 하단 CTA (#7C). *전역 rename은 §6* |
 | G5.2 | **F2** Empty — `thinking` + 기존 COPY (시트 문장 이식 금지) |
 | G5.3 | **F6** all-done — 리스트 유지 + 위 `done` 컷 (#2B) |
 | G5.4 | 개별 약 체크마다 happy/성공 컷 **없음** (#1) |

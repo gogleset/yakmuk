@@ -51,8 +51,8 @@ ID prefix **P** (Form funnel). 브랜드 F와 구분.
 
 | ID | 퍼널 | 현재 | 목표 스텝 수 | 차수 |
 |----|------|------|--------------|------|
-| P1 | 가족 만들기 | Welcome에 familyName+nickname 한 화면 | 2–3 | 1차 |
-| P2 | 초대 참여 (Join) | code+nickname 한 화면 | 2 | 1차 |
+| P1 | 가족 만들기 | 로그인 + FunnelShell 2스텝 (이름·호칭) | 2 (+로그인) | 1차 |
+| P2 | 초대 참여 (Join) | 6칸 코드 + 프리뷰 카드 → 호칭(선택) | 2 | 1차 |
 | P3 | 약 추가 | BottomSheet progressive | — | 1차 |
 | P4 | 약 수정 | BottomSheet full unlock + prefill | — | 2차 |
 | P5 | 가족 초대 생성 | role+invitedAs 한 시트 | 2 | 2차 |
@@ -63,20 +63,22 @@ ID prefix **P** (Form funnel). 브랜드 F와 구분.
 
 ## P1 — 가족 만들기
 
-**진입:** Welcome → 가족장 경로 · 로그인 후 `needsFamilySetup`  
-**콕이:** 시작 `family` · 완료는 beat 생략 또는 `family` (1차에서 `happy` 미연결 — [decisions.md](decisions.md) #1)
+**진입:** Welcome choose → 가족장 로그인 → OAuth 후 `needsFamilySetup`  
+**콕이:** step1 `family` · step2 `happy` (P1 슬롯만 — F6 성공 beat와 별개)  
+**셸:** `hideProgress` · X 없음 · back만 (step0 back = signOut → 로그인)
 
 | Step | 질문(타이틀) | UI | CTA |
 |------|--------------|-----|-----|
-| 1 | 가족 이름을 알려주세요 | Input (예: 우리집) | 다음 |
-| 2 | 뭐라고 불러드릴까요? | Input 닉네임 | 만들기 |
-| (3) | — | 짧은 완료 beat (콕이) → 홈 | 시작하기 |
+| 로그인 | 안부를 나누기 위해\n로그인이 필요해요 | Google/Apple (+dev) | — |
+| 1 | 우리 가족을\n어떻게 부를까요? | Input + `n/20` · placeholder 가족 이름 예 | 다음 |
+| 2 | 콕이는\n뭐라고 불러드릴까요? | Input + `n/10` · placeholder 호칭 예 | 만들기 |
 
-훅: `WelcomePage.tsx` 가족 생성 블록을 FunnelShell로 분리.
+훅: `WelcomePage.tsx` · `FunnelShell` (`stagger` = 콕이 → 타이틀 → 필드/CTA)
 
 ```mermaid
 flowchart LR
-  W[Welcome_path] --> S1[familyName]
+  choose[Welcome_choose] --> login[Leader_login]
+  login --> S1[familyName]
   S1 --> S2[nickname]
   S2 --> Done[createFamily]
   Done --> Home
@@ -86,15 +88,24 @@ flowchart LR
 
 ## P2 — 초대 참여 (Join)
 
-**진입:** Welcome → 초대코드 경로 / `JoinPage`  
-**콕이:** 시작 `welcome` 또는 `family`
+**진입:** Welcome → 「초대코드를 받았어요」 / `JoinPage` · deep link `?code=`  
+**콕이:** step0 없음 · step1 `happy`  
+**셸:** `hideProgress` · X 없음 · back만  
+**인증:** OAuth 없음 — `joinWithInviteCode` anon + `claim_join_code`
 
 | Step | 질문 | UI | CTA |
 |------|------|-----|-----|
-| 1 | 초대코드를 입력해 주세요 | wide tracking Input | 다음 |
-| 2 | 뭐라고 불러드릴까요? | Input (optional → `나중에` 허용) | 참여하기 |
+| 1 | 초대코드를 입력해 주세요 | 6칸 `InviteCodeInput` + peek `FamilyPeekCard` (`{리더}님의 가족` · 멤버 `·` 목록) | 다음 |
+| 2 | 콕이는\n뭐라고 불러드릴까요? | Input `0/10` · placeholder 호칭(선택) · **나중에 할게요** | 참여하기 |
 
-훅: `JoinPage.tsx`
+훅: `JoinPage.tsx` · peek=`peek_join_code` (`member_nicknames`)
+
+```mermaid
+flowchart LR
+  welcome[Welcome_hasInvite] --> code[P2_codeBoxes]
+  code -->|peek_ok| nick[P2_nickname]
+  nick --> home[Home]
+```
 
 ---
 
@@ -174,8 +185,8 @@ GOOD/NORMAL은 step2 스킵 가능.
 
 | 퍼널 | 시작 컷 | 완료 컷 | flows.md |
 |------|---------|---------|----------|
-| P1 가족 만들기 | family | family 또는 생략 | F1 → F5 |
-| P2 Join | welcome/family | — | F1 |
+| P1 가족 만들기 | family → happy | — (홈 직행) | F1 → F5 |
+| P2 Join | happy (step2) | — | F1 |
 | P3 약 추가 | thinking | done | F2 → (등록 후) F6 |
 | P5 초대 | family | family | F5 |
 | P6 컨디션 | — | happy 또는 done | F6 근처 (보류) |

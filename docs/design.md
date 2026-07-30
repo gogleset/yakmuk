@@ -129,11 +129,11 @@ hex/`theme.ts` 확정은 sage 리샘플 착수 시.
 ## 7. Typography
 
 커스텀 폰트 없음 — **시스템 기본**. 모드는 색만 교체, weight/size 동일.  
-Brand hero 존재감 = 콕이 이미지. 캐릭터 옆 카피는 Caption/짧은 Body **한 줄 초과 금지**.
+Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타이틀+서브), 브랜드명 `약콕`은 Welcome에 두지 않음 (#7C).
 
 | 역할                 | 스타일                 | 색                                  |
 | -------------------- | ---------------------- | ----------------------------------- |
-| Brand hero (Welcome) | `text-4xl` · bold      | `brand`                             |
+| Brand hero (Welcome) | 콕이 컷 + `text-3xl` 인사 · bold | `text` (타이틀) / `muted` (서브) |
 | Page title           | `text-2xl` · bold      | `brand` (또는 `text`)               |
 | Section / card title | `text-base` · bold     | `brand` / `text`                    |
 | Button               | `text-base` · semibold | `ink` on brand · `brand` on outline |
@@ -147,10 +147,10 @@ Brand hero 존재감 = 콕이 이미지. 캐릭터 옆 카피는 Caption/짧은 
 | -------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | Screen                     | `bg-canvas`, safe area                                                                                                 |
 | Card / empty 박스          | `bg-surface-soft`                                                                                                      |
-| Input / outline / 미선택 토글 | `bg-surface-soft` — **흰 fill 금지** (canvas·surface와 동일 hex라 안 보임). 시트 안 중첩은 `brandSoft` (`tone="soft"`) |
+| Input / outline / 미선택 토글 | Input default = `bg-surface`(흰) + `line` 보더(평소) / focus=`brand`. 시트 안 중첩은 `brandSoft` (`tone="soft"`). outline 버튼 = `surfaceSoft` |
 | Sheet                      | `bg-surface` (흰). 안쪽 컨트롤은 soft/brandSoft fill                                                                   |
 | Radius                     | sm 8 · md 10 · lg 12 (`rounded-xl` ≈ 12)                                                                               |
-| Button                     | `rounded-xl` — default(`brand`) / outline(`surfaceSoft`, **border 없음**) / secondary(`brandSoft`) / ghost / destructive |
+| Button                     | `rounded-xl` — default(`brand`) / outline(`surfaceSoft`) / oauth(흰+`line`, Google·Apple) / secondary(`brandSoft`) / ghost / destructive |
 | Taken row                  | `brandSoft` fill                                                                                                       |
 | FAB                        | `brand` circle, `ink` 아이콘                                                                                           |
 | Tabs                       | **label + icon** — `기록 \| 가족 \| 설정`, bar = `surface`, active = `brand`                                           |
@@ -212,6 +212,8 @@ Brand hero 존재감 = 콕이 이미지. 캐릭터 옆 카피는 Caption/짧은 
 - Success 스파클 = 이미지 bake-in만
 - 콕이 등장 = 짧은 fade. 캐릭터 bounce 금지
 - 모드와 무관하게 동일한 타이밍 커브
+- **순차 등장(stagger):** copy(멘션) → media(컷) → action(CTA).  
+  `FadeInView step={0|1|2}` (기본 `duration` = `normal` 300ms). 딜레이 = `step * MOTION.stagger.stepMs` (기본 55ms). 매직넘버 금지.
 
 ## 11. Do / Don’t
 

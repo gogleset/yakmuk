@@ -11,7 +11,7 @@ const badgeVariants = cva(
         default: 'bg-brand',
         secondary: 'bg-transparent',
         soft: 'bg-brand-soft',
-        outline: 'bg-surface',
+        outline: 'bg-surface-soft',
         warning: '',
       },
     },

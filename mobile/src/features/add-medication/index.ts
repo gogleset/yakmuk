@@ -1,3 +1,3 @@
 export { useAddMedicationMutation, refreshAfterMedicationChange } from './model/useAddMedicationMutation';
-export { AddMedicationFunnel } from './ui/AddMedicationFunnel';
+export { AddMedicationSheet } from './ui/AddMedicationSheet';
 export { DrugSearchPreview } from './ui/DrugSearchPreview';

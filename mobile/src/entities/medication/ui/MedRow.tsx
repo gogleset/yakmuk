@@ -33,7 +33,7 @@ export function MedRow({
       accessibilityHint={COPY.a11y.longPressDelete}
       className={cn(
         'flex-row items-center justify-between rounded-xl p-3.5',
-        taken ? 'bg-brand-soft' : 'bg-surface',
+        taken ? 'bg-brand-soft' : 'bg-surface-soft',
       )}
       onPress={onPress}
       onLongPress={onLongPress}

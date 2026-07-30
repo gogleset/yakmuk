@@ -9,8 +9,8 @@ export const COLORS = {
   /** FadeEdge 투명 끝점 */
   canvasTransparent: "rgba(255, 255, 255, 0)",
   surface: "#FFFFFF",
-  /** 카드·empty 박스 — brandSoft보다 훨씬 연한 fill */
-  surfaceSoft: "#F3F7F5",
+  /** 인풋·outline·미선택 토글 — canvas/surface 위 가시 fill (border 대체) */
+  surfaceSoft: "#E5EEE9",
   /** brand 위 텍스트·아이콘 */
   ink: "#F5FFFC",
   /** 본문·제목 (브랜드 영역 밖) */

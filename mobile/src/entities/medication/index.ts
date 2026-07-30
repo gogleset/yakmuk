@@ -8,6 +8,7 @@ export type {
 export { listMedications } from './api/list-medications';
 export { listMedicationsForCalendar } from './api/list-medications-for-calendar';
 export { addMedication, addMedications } from './api/add-medication';
+export { replaceMedicationSchedule } from './api/replace-medication-schedule';
 export { updateMedication } from './api/update-medication';
 export { deleteMedication } from './api/delete-medication';
 export { listLogsInRange } from './api/list-logs-in-range';
@@ -41,6 +42,13 @@ export {
 } from './lib/daysMask';
 export type { DaysMode, MedScheduleSlot } from './lib/daysMask';
 export {
+  createDefaultScheduleDraft,
+  expandScheduleDraft,
+  isSameScheduleDraft,
+  medsToScheduleDraft,
+} from './lib/scheduleDraft';
+export type { MedicationScheduleDraft } from './lib/scheduleDraft';
+export {
   groupMedsByScheduledTime,
   groupTimedEntriesByScheduledTime,
   parseTimeToMinutes,
@@ -53,13 +61,24 @@ export type {
   TimedEntry,
   TimedEntryGroup,
 } from './lib/timeSlots';
+export {
+  coerceHour12Digits,
+  coerceMinuteDigits,
+  hhmmToTime12h,
+  isValidHhmm,
+  isValidHour12,
+  isValidMinute,
+  normalizeDraft,
+  time12hToHhmm,
+} from './lib/time12h';
+export type { Period, Time12h } from './lib/time12h';
 export { MedRow } from './ui/MedRow';
 export { TimeSlotMedAccordion } from './ui/TimeSlotMedAccordion';
 export { DaysModeToggle } from './ui/DaysModeToggle';
 export { WeekdayPicker } from './ui/WeekdayPicker';
 export { TimePicker } from './ui/TimePicker';
 export { ScheduleModeToggle } from './ui/ScheduleModeToggle';
-export type { ScheduleMode } from './ui/ScheduleModeToggle';
+export type { ScheduleMode, ControlTone } from './ui/ScheduleModeToggle';
 export { TimeSlotList } from './ui/TimeSlotList';
 export { CONDITION_LABEL } from './lib/display';
 export { stepDayLoop } from './lib/loop/dayLoop';

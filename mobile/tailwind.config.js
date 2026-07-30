@@ -15,7 +15,7 @@ module.exports = {
         canvas: "#FFFFFF",
         surface: {
           DEFAULT: "#FFFFFF",
-          soft: "#F3F7F5",
+          soft: "#E5EEE9",
         },
         ink: "#F5FFFC",
         text: "#1A2E29",

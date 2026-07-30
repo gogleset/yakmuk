@@ -255,30 +255,33 @@ export function SettingsPage() {
         visible={nicknameSheetOpen}
         title="닉네임 변경"
         onClose={() => setNicknameSheetOpen(false)}
+        footer={
+          <View className="gap-2">
+            <Button
+              label={updateNickname.isPending ? '저장 중…' : '저장'}
+              disabled={
+                updateNickname.isPending ||
+                !nicknameDraft.trim() ||
+                nicknameDraft.trim() === profile?.nickname
+              }
+              onPress={onSaveNickname}
+            />
+            <Button
+              label="취소"
+              variant="outline"
+              onPress={() => setNicknameSheetOpen(false)}
+            />
+          </View>
+        }
       >
-        <View className="gap-3">
-          <Input
-            value={nicknameDraft}
-            onChangeText={setNicknameDraft}
-            placeholder="닉네임"
-            maxLength={LIMITS.nicknameMaxLength}
-            autoFocus
-          />
-          <Button
-            label={updateNickname.isPending ? "저장 중…" : "저장"}
-            disabled={
-              updateNickname.isPending ||
-              !nicknameDraft.trim() ||
-              nicknameDraft.trim() === profile?.nickname
-            }
-            onPress={onSaveNickname}
-          />
-          <Button
-            label="취소"
-            variant="outline"
-            onPress={() => setNicknameSheetOpen(false)}
-          />
-        </View>
+        <Input
+          tone="soft"
+          value={nicknameDraft}
+          onChangeText={setNicknameDraft}
+          placeholder="닉네임"
+          maxLength={LIMITS.nicknameMaxLength}
+          autoFocus
+        />
       </BottomSheet>
     </Screen>
   );

@@ -12,7 +12,7 @@ const buttonVariants = cva(
       variant: {
         default: "bg-brand",
         secondary: "bg-brand-soft",
-        outline: "bg-surface",
+        outline: "bg-surface-soft",
         ghost: "bg-transparent",
         destructive: "bg-destructive",
       },

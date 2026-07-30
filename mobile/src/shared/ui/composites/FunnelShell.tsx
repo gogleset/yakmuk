@@ -58,8 +58,6 @@ export function FunnelShell({
 }: Props) {
   const insets = useSafeAreaInsets();
   const showBack = stepIndex > 0 && !!onBack;
-  const progressLabel =
-    stepCount > 0 ? `${stepIndex + 1}/${stepCount}` : undefined;
 
   const handleClose = () => {
     if (!onClose) return;
@@ -86,7 +84,7 @@ export function FunnelShell({
           paddingBottom: insets.bottom + LAYOUT.sheet.paddingBottomExtra,
         }}
       >
-        {/* 상단: back · progress · close */}
+        {/* 상단: back · close */}
         <View className="mb-3 flex-row items-center justify-between px-5">
           {showBack ? (
             <Pressable
@@ -96,17 +94,13 @@ export function FunnelShell({
               onPress={onBack}
               className="min-w-[44px]"
             >
-              <Text className="text-sm text-brand-muted">← 뒤로</Text>
+              <Icons.ChevronLeft size={LAYOUT.icon.xl} color={COLORS.brand} />
             </Pressable>
           ) : (
             <View className="min-w-[44px]" />
           )}
 
-          {!hideProgress && progressLabel ? (
-            <Text className="text-xs text-brand-muted">{progressLabel}</Text>
-          ) : (
-            <View />
-          )}
+          <View className="flex-1" />
 
           {onClose ? (
             <Pressable

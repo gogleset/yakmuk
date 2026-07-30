@@ -73,7 +73,7 @@ export function InviteCreateFunnel({ onClose }: Props) {
                 onPress={() => setTargetRole(opt.role)}
                 className={cn(
                   'flex-1 items-center rounded-xl py-3.5',
-                  selected ? 'bg-brand' : 'bg-surface',
+                  selected ? 'bg-brand' : 'bg-surface-soft',
                 )}
               >
                 <Text

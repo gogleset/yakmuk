@@ -7,6 +7,7 @@ import {
   Modal,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -19,17 +20,40 @@ import { Icons } from '@/shared/ui/primitives/Icon';
 type SheetProps = {
   visible: boolean;
   title: string;
+  /** 닫기 요청 (× / 스크림) — visible=false로 바꾸는 쪽 */
   onClose: () => void;
+  /** 퇴장 애니 끝난 뒤 (router.back 등) */
+  onClosed?: () => void;
   children: ReactNode;
+  /** 타이틀 아래·스크롤 위 고정 (검색 인풋 등) */
+  header?: ReactNode;
+  footer?: ReactNode;
+  /**
+   * modal = RN Modal (설정 등)
+   * overlay = 투명 스택 absolute (약 등록 — nested Modal 애니 깨짐 방지)
+   */
+  presentation?: 'modal' | 'overlay';
 };
 
 /** 하단 시트 — 시트 슬라이드 + 배경 페이드 (MOTION 토큰) */
-export function BottomSheet({ visible, title, onClose, children }: SheetProps) {
+export function BottomSheet({
+  visible,
+  title,
+  onClose,
+  onClosed,
+  children,
+  header,
+  footer,
+  presentation = 'modal',
+}: SheetProps) {
   const insets = useSafeAreaInsets();
   const windowHeight = Dimensions.get('window').height;
+  const maxHeight = windowHeight * LAYOUT.sheet.maxHeightRatio;
   const [mounted, setMounted] = useState(visible);
   const sheetTranslateY = useRef(new Animated.Value(windowHeight)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
+  const onClosedRef = useRef(onClosed);
+  onClosedRef.current = onClosed;
 
   useEffect(() => {
     if (visible) {
@@ -37,31 +61,39 @@ export function BottomSheet({ visible, title, onClose, children }: SheetProps) {
       sheetTranslateY.setValue(windowHeight);
       backdropOpacity.setValue(0);
 
-      const openAnim = Animated.sequence([
-        Animated.timing(sheetTranslateY, {
-          toValue: 0,
-          duration: MOTION.duration.normal,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true,
-        }),
-        Animated.timing(backdropOpacity, {
-          toValue: 1,
-          duration: MOTION.duration.fast,
-          easing: Easing.out(Easing.quad),
-          useNativeDriver: true,
-        }),
-      ]);
+      let openAnim: Animated.CompositeAnimation | null = null;
+      const frame = requestAnimationFrame(() => {
+        openAnim = Animated.parallel([
+          Animated.timing(backdropOpacity, {
+            toValue: 1,
+            duration: MOTION.duration.normal,
+            easing: Easing.out(Easing.quad),
+            useNativeDriver: true,
+          }),
+          Animated.timing(sheetTranslateY, {
+            toValue: 0,
+            duration: MOTION.duration.normal,
+            easing: Easing.out(Easing.cubic),
+            useNativeDriver: true,
+          }),
+        ]);
+        openAnim.start();
+      });
 
-      openAnim.start();
-      return () => openAnim.stop();
+      return () => {
+        cancelAnimationFrame(frame);
+        openAnim?.stop();
+      };
     }
 
+    // 아직 한 번도 안 열렸으면 퇴장 스킵 (Settings 초기 visible=false)
     if (!mounted) return;
 
     const closeAnim = Animated.parallel([
       Animated.timing(backdropOpacity, {
         toValue: 0,
-        duration: MOTION.duration.instant,
+        duration: MOTION.duration.fast,
+        easing: Easing.in(Easing.quad),
         useNativeDriver: true,
       }),
       Animated.timing(sheetTranslateY, {
@@ -73,13 +105,79 @@ export function BottomSheet({ visible, title, onClose, children }: SheetProps) {
     ]);
 
     closeAnim.start(({ finished }) => {
-      if (finished) setMounted(false);
+      if (!finished) return;
+      setMounted(false);
+      onClosedRef.current?.();
     });
 
     return () => closeAnim.stop();
-  }, [visible, mounted, windowHeight, sheetTranslateY, backdropOpacity]);
+    // mounted는 의도적으로 deps 제외 — open 중 setMounted로 재실행되면 애니 끊김
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, windowHeight, sheetTranslateY, backdropOpacity]);
 
   if (!mounted) return null;
+
+  const body = (
+    <View style={styles.root} pointerEvents="box-none">
+      <Animated.View
+        pointerEvents={visible ? 'auto' : 'none'}
+        style={[styles.backdrop, { opacity: backdropOpacity }]}
+      >
+        <Pressable
+          style={styles.backdropPress}
+          accessibilityRole="button"
+          accessibilityLabel="닫기"
+          onPress={onClose}
+        />
+      </Animated.View>
+
+      <KeyboardAvoidingView
+        style={styles.sheetHost}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        pointerEvents="box-none"
+      >
+        <Animated.View
+          style={[
+            styles.sheet,
+            {
+              maxHeight,
+              paddingBottom: insets.bottom + LAYOUT.sheet.paddingBottomExtra,
+              transform: [{ translateY: sheetTranslateY }],
+            },
+          ]}
+        >
+          <View className="mb-1 flex-row items-center justify-between">
+            <Text className="text-lg font-bold text-brand">{title}</Text>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="닫기"
+              onPress={onClose}
+              className="h-10 w-10 items-center justify-center"
+            >
+              <Icons.X size={LAYOUT.icon.lg} color={COLORS.brand} />
+            </Pressable>
+          </View>
+
+          {header ? <View className="pb-2">{header}</View> : null}
+
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+            contentContainerStyle={{ gap: LAYOUT.sheet.contentGap }}
+          >
+            {children}
+          </ScrollView>
+
+          {footer ? <View className="pt-2">{footer}</View> : null}
+        </Animated.View>
+      </KeyboardAvoidingView>
+    </View>
+  );
+
+  if (presentation === 'overlay') {
+    return <View style={styles.overlayRoot}>{body}</View>;
+  }
 
   return (
     <Modal
@@ -89,53 +187,16 @@ export function BottomSheet({ visible, title, onClose, children }: SheetProps) {
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      <View style={styles.root}>
-        <Animated.View
-          pointerEvents={visible ? 'auto' : 'none'}
-          style={[styles.backdrop, { opacity: backdropOpacity }]}
-        >
-          <Pressable
-            style={styles.backdropPress}
-            accessibilityRole="button"
-            accessibilityLabel="닫기"
-            onPress={onClose}
-          />
-        </Animated.View>
-
-        <KeyboardAvoidingView
-          style={styles.sheetHost}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          pointerEvents="box-none"
-        >
-          <Animated.View
-            style={[
-              styles.sheet,
-              {
-                paddingBottom: insets.bottom + LAYOUT.sheet.paddingBottomExtra,
-                transform: [{ translateY: sheetTranslateY }],
-              },
-            ]}
-          >
-            <View className="mb-1 flex-row items-center justify-between">
-              <Text className="text-lg font-bold text-brand">{title}</Text>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="닫기"
-                onPress={onClose}
-                className="h-10 w-10 items-center justify-center"
-              >
-                <Icons.X size={LAYOUT.icon.lg} color={COLORS.brand} />
-              </Pressable>
-            </View>
-            {children}
-          </Animated.View>
-        </KeyboardAvoidingView>
-      </View>
+      {body}
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
+  overlayRoot: {
+    ...StyleSheet.absoluteFill,
+    zIndex: 50,
+  },
   root: {
     flex: 1,
     justifyContent: 'flex-end',

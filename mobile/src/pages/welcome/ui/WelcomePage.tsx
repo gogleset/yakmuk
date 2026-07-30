@@ -229,10 +229,12 @@ export function WelcomePage() {
           <FadeInView className="gap-2.5">
             <Pressable
               accessibilityRole="button"
+              accessibilityLabel="이전"
+              hitSlop={LAYOUT.hitSlop.md}
               onPress={() => setPath('choose')}
               className="mb-1 self-start"
             >
-              <Muted className="text-sm">← 뒤로</Muted>
+              <Icons.ChevronLeft size={LAYOUT.icon.xl} color={COLORS.brand} />
             </Pressable>
             <View className="flex-row items-center gap-1.5">
               <Icons.Shield size={LAYOUT.icon.sm} color={COLORS.brand} />

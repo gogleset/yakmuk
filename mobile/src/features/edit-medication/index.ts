@@ -1,2 +1,3 @@
 export { useUpdateMedicationMutation } from './model/useUpdateMedicationMutation';
-export { EditMedicationFunnel } from './ui/EditMedicationFunnel';
+export { useReplaceMedicationScheduleMutation } from './model/useReplaceMedicationScheduleMutation';
+export { EditMedicationSheet } from './ui/EditMedicationSheet';

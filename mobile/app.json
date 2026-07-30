@@ -6,9 +6,9 @@
   "icon": "./assets/icon.png",
   "scheme": "yakmuk",
   "userInterfaceStyle": "light",
-  "backgroundColor": "#FFFFFF",
+  "backgroundColor": "#F7F8F8",
   "androidStatusBar": {
-    "backgroundColor": "#FFFFFF",
+    "backgroundColor": "#F7F8F8",
     "translucent": false,
     "barStyle": "dark-content"
   },
@@ -18,14 +18,14 @@
   },
   "android": {
     "adaptiveIcon": {
-      "backgroundColor": "#0F6B5C",
+      "backgroundColor": "#4C8478",
       "foregroundImage": "./assets/android-icon-foreground.png",
       "backgroundImage": "./assets/android-icon-background.png",
       "monochromeImage": "./assets/android-icon-monochrome.png"
     },
     "package": "com.yakmuk.app",
     "navigationBar": {
-      "backgroundColor": "#FFFFFF",
+      "backgroundColor": "#F7F8F8",
       "barStyle": "dark-content"
     }
   },
@@ -42,7 +42,7 @@
       "expo-notifications",
       {
         "icon": "./assets/icon.png",
-        "color": "#0F6B5C"
+        "color": "#4C8478"
       }
     ],
     [

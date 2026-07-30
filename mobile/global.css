@@ -2,23 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-/* shadcn 토큰 → design.md light 팔레트 */
+/* shadcn 토큰 → design.md light soft 틸 팔레트 */
 @layer base {
   :root {
-    --background: 150 12% 96%;
-    --foreground: 162 28% 14%;
+    --background: 150 7% 97%;
+    --foreground: 162 14% 14%;
     --card: 0 0% 100%;
-    --card-foreground: 162 28% 14%;
-    --primary: 168 75% 24%;
+    --card-foreground: 162 14% 14%;
+    --primary: 166 27% 41%;
     --primary-foreground: 160 100% 98%;
-    --secondary: 164 40% 89%;
-    --secondary-foreground: 168 75% 24%;
-    --muted: 150 12% 85%;
-    --muted-foreground: 160 8% 45%;
-    --destructive: 0 50% 36%;
+    --secondary: 162 28% 92%;
+    --secondary-foreground: 166 27% 41%;
+    --muted: 150 8% 90%;
+    --muted-foreground: 160 5% 50%;
+    --destructive: 10 48% 56%;
     --destructive-foreground: 0 0% 100%;
-    --border: 150 12% 85%;
-    --ring: 168 75% 24%;
+    --border: 150 8% 86%;
+    --ring: 166 27% 41%;
     --radius: 0.75rem;
   }
 }

@@ -1,25 +1,25 @@
 import { Pressable, Text, View } from 'react-native';
 import { COLORS, LAYOUT, LIMITS } from '@/shared/config/theme';
 import { TimePicker } from '@/entities/medication/ui/TimePicker';
+import type { ControlTone } from '@/entities/medication/ui/ScheduleModeToggle';
 import { Button } from '@/shared/ui/primitives/Button';
 import { Icons } from '@/shared/ui/primitives/Icon';
-import { Caption } from '@/shared/ui/primitives/Typography';
 
 type Props = {
   value: string[]; // HH:MM[]
   onChange: (times: string[]) => void;
-  label?: string;
   minSlots?: number;
   maxSlots?: number;
+  tone?: ControlTone;
 };
 
 /** 하루 안 복용 시간 여러 개 */
 export function TimeSlotList({
   value,
   onChange,
-  label = '알림 시간',
   minSlots = 1,
   maxSlots = LIMITS.maxTimeSlots,
+  tone = 'default',
 }: Props) {
   const times = value.length > 0 ? value : [LIMITS.defaultDoseTime];
 
@@ -41,7 +41,6 @@ export function TimeSlotList({
 
   return (
     <View className="gap-3">
-      {label ? <Caption>{label}</Caption> : null}
       {times.map((time, index) => (
         <View key={`slot-${index}`} className="gap-1.5">
           <View className="flex-row items-center justify-between">
@@ -62,7 +61,7 @@ export function TimeSlotList({
           <TimePicker
             value={time}
             onChange={(hhmm) => setAt(index, hhmm)}
-            label=""
+            tone={tone}
           />
         </View>
       ))}

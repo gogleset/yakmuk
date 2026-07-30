@@ -33,6 +33,12 @@ export const COPY = {
       evening: '저녁',
       bedtime: '취침 전',
     },
+    timePicker: {
+      hour: '시',
+      minute: '분',
+      am: '오전',
+      pm: '오후',
+    },
   },
 
   family: {

@@ -40,13 +40,18 @@ export const LAYOUT = {
     horizontalPadding: 20,
     headerPaddingTop: 16,
     contentGap: 12,
+    /** 폼용 BottomSheet 최대 높이 (창 높이 비율) */
+    maxHeightRatio: 0.9,
   },
   z: {
     fade: 15,
     fab: 20,
   },
   timePicker: {
-    wheelHeight: 160,
+    /** 시·분 숫자 박스 높이 */
+    boxHeight: 72,
+    /** 오전/오후 토글 너비 */
+    periodWidth: 56,
   },
 } as const;
 

@@ -13,7 +13,16 @@ export type InvitePeek = {
   leaderNickname: string;
   /** 복구 시에만 — 기존 닉네임 */
   nickname?: string | null;
+  /** 가족 멤버 닉네임 (프리뷰 카드 서브) */
+  memberNicknames: string[];
 };
+
+function parseMemberNicknames(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((v) => (typeof v === 'string' ? v.trim() : ''))
+    .filter((v) => v.length > 0);
+}
 
 /** 조인 전 초대/복구 프리뷰 */
 export async function peekFamilyInvite(code: string): Promise<InvitePeek> {
@@ -37,5 +46,6 @@ export async function peekFamilyInvite(code: string): Promise<InvitePeek> {
     targetRole: row.target_role as InvitePeek['targetRole'],
     leaderNickname: String(row.leader_nickname ?? '가족장'),
     nickname: row.nickname ? String(row.nickname) : null,
+    memberNicknames: parseMemberNicknames(row.member_nicknames),
   };
 }

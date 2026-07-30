@@ -20,6 +20,7 @@ export { Fab } from "./composites/Fab";
 export { FadeEdge, FadeEdges } from "./composites/FadeEdge";
 export { FadeInView } from "./composites/FadeInView";
 export { FunnelShell } from "./composites/FunnelShell";
+export { InviteCodeInput } from "./composites/InviteCodeInput";
 export {
   KokiIllustration,
   type KokiVariant,

@@ -1,9 +1,9 @@
 import {
   createDefaultScheduleDraft,
   type MedicationScheduleDraft,
-} from '@/entities/medication/lib/scheduleDraft';
+} from "@/entities/medication/lib/scheduleDraft";
 
-export type FormSurfaceMode = 'create' | 'edit';
+export type FormSurfaceMode = "create" | "edit";
 
 export type FormVisibility = {
   showScheduleMode: boolean;
@@ -20,7 +20,7 @@ export function resolveFormVisibility(input: {
   nameConfirmed: boolean;
   draft: MedicationScheduleDraft;
 }): FormVisibility {
-  const unlocked = input.mode === 'edit' || input.nameConfirmed;
+  const unlocked = input.mode === "edit" || input.nameConfirmed;
   if (!unlocked) {
     return {
       showScheduleMode: false,
@@ -33,12 +33,12 @@ export function resolveFormVisibility(input: {
   }
 
   const { draft } = input;
-  if (draft.scheduleMode === 'same') {
+  if (draft.scheduleMode === "same") {
     return {
       showScheduleMode: true,
       showSameTimes: true,
       showDaysMode: true,
-      showWeekdayPicker: draft.daysMode === 'weekday',
+      showWeekdayPicker: draft.daysMode === "weekday",
       showPerWeekdayTimes: false,
       showSubmit: true,
     };

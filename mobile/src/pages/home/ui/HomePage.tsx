@@ -126,7 +126,7 @@ export function HomePage() {
 
   const takenMedIds = takenQuery.data ?? new Set<number>();
 
-  const { toggle, remove, markAllTaken } = useDailyMedicationCheckMutations({
+  const { toggle, remove } = useDailyMedicationCheckMutations({
     userId,
     familyId,
     takenMedIds,
@@ -201,7 +201,7 @@ export function HomePage() {
 
           {!hasRegisteredMeds ? (
             <RichEmptyState
-              layout="card"
+              layout="stack"
               title={
                 medsQuery.isError
                   ? COPY.med.loadFailed
@@ -213,7 +213,7 @@ export function HomePage() {
                   : COPY.med.emptyRegisteredHint
               }
               illustration={
-                <KokiIllustration variant="thinking" size={88} />
+                <KokiIllustration variant="thinking" size={112} />
               }
               ctaLabel={
                 medsQuery.isError ? undefined : COPY.med.emptyRegisteredCta
@@ -240,9 +240,6 @@ export function HomePage() {
               onToggle={(id) => toggle.mutate(id)}
               onDelete={confirmDelete}
               onSubmitCondition={() => submitCondition.mutate()}
-              onMarkAllTaken={() => markAllTaken.mutate()}
-              markAllPending={markAllTaken.isPending}
-              onAddPress={openAdd}
               allDone={allDone}
             />
           ) : null}

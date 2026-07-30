@@ -21,11 +21,11 @@ export const COPY = {
     /** 오늘 진행 — 남은 개수 */
     remainingToday: (count: number) => `약 ${count}개 남았어요`,
     /** 오늘 진행 — taken/total 분수 */
-    progressFraction: (taken: number, total: number) => `${taken}/${total}`,
+    progressFraction: (taken: number, total: number) =>
+      `${taken} / ${total}`,
     /** 오늘 체크 배너 */
-    checkPromptTitle: '약 복용 시간을\n체크해볼까요?',
+    checkPromptTitle: '약 복용 시간을 체크해볼까요?',
     checkPromptDone: '다 먹었어요! 잘했어요',
-    markAllTaken: '다 먹었어요!',
     streakDays: (days: number) => `${days}일 연속이에요`,
     timeSlot: {
       morning: '아침',

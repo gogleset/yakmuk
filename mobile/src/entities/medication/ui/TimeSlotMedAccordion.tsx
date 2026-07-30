@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import {
   timeOfDaySlot,
@@ -15,14 +15,37 @@ type Group = {
   entries: TimedEntry[];
 };
 
+type CollapseMode = 'expand-all' | 'incomplete-open' | 'all-collapsed';
+
 type Props = {
   groups: Group[];
   /** check=복용 토글 · manage=수정/삭제 */
   variant?: 'check' | 'manage';
+  /** incomplete-open: 첫 미완료만 펼침 · all-collapsed: 전부 접힘 */
+  collapseMode?: CollapseMode;
   onToggleKey?: (key: string) => void;
   onPressKey?: (key: string) => void;
   onLongPressKey?: (key: string, name: string) => void;
 };
+
+/** 초기 접힘 맵 — collapseMode 변경 시에만 재적용 */
+function initialCollapsed(
+  groups: Group[],
+  mode: CollapseMode,
+): Record<string, boolean> {
+  if (mode === 'expand-all') return {};
+  if (mode === 'all-collapsed') {
+    return Object.fromEntries(groups.map((g) => [g.scheduledTime, true]));
+  }
+  // incomplete-open: 첫 미완료 그룹만 펼침
+  const firstIncomplete = groups.find((g) =>
+    g.entries.some((e) => !e.taken),
+  );
+  const openTime = firstIncomplete?.scheduledTime;
+  return Object.fromEntries(
+    groups.map((g) => [g.scheduledTime, g.scheduledTime !== openTime]),
+  );
+}
 
 function slotIcon(slot: TimeOfDaySlot) {
   if (slot === 'morning' || slot === 'lunch') return Icons.Sun;
@@ -49,17 +72,26 @@ const CARD_SHADOW = {
   elevation: 1,
 } as const;
 
-/** 시간대 아코디언 리스트 — home-today-check 목업 */
+/** 시간대 아코디언 리스트 — 홈 오늘 체크 목업 */
 export function TimeSlotMedAccordion({
   groups,
   variant = 'check',
+  collapseMode = 'expand-all',
   onToggleKey,
   onPressKey,
   onLongPressKey,
 }: Props) {
   const [collapsedTimes, setCollapsedTimes] = useState<Record<string, boolean>>(
-    {},
+    () => initialCollapsed(groups, collapseMode),
   );
+
+  // collapseMode 전환 · 시간대 구성 변경 시에만 접힘 재적용 (개별 체크마다 리셋 금지)
+  const scheduleKey = groups.map((g) => g.scheduledTime).join('|');
+  useEffect(() => {
+    if (groups.length === 0) return;
+    setCollapsedTimes(initialCollapsed(groups, collapseMode));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- groups 스냅샷은 scheduleKey로 추적
+  }, [collapseMode, scheduleKey]);
 
   const toggleGroup = (time: string) => {
     setCollapsedTimes((prev) => ({ ...prev, [time]: !prev[time] }));
@@ -122,7 +154,9 @@ export function TimeSlotMedAccordion({
                         </View>
                         <View className="min-w-0 flex-1 gap-0.5">
                           <Text
-                            className="text-base font-semibold leading-5 text-text"
+                            className={`text-base font-semibold leading-5 ${
+                              entry.taken ? 'text-brand' : 'text-text'
+                            }`}
                             numberOfLines={2}
                           >
                             {entry.name}

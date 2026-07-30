@@ -16,7 +16,7 @@ type Props = {
   ctaLabel?: string;
   onCtaPress?: () => void;
   className?: string;
-  /** stack=세로 중앙 · card=가로 카드(홈 empty) */
+  /** stack=세로 중앙(홈 A empty) · card=가로 카드(홈 C 등) */
   layout?: 'stack' | 'card';
 };
 
@@ -48,7 +48,7 @@ export function RichEmptyState({
         <View className="flex-row items-center gap-3">
           {media ? <View className="shrink-0">{media}</View> : null}
           <View className="min-w-0 flex-1 gap-1">
-            <Text className="text-base font-bold text-brand">{title}</Text>
+            <Text className="text-base font-bold text-text">{title}</Text>
             {message ? (
               <Body className="text-sm text-brand-muted">{message}</Body>
             ) : null}
@@ -65,15 +65,25 @@ export function RichEmptyState({
     );
   }
 
+  // 홈 A empty — 세로 스택, 타이틀은 차콜(text), soft surface 카드
   return (
-    <View className={cn('items-center gap-3 px-4 py-8', className)}>
+    <View
+      className={cn(
+        'items-center gap-4 rounded-3xl bg-surface-soft px-5 py-6',
+        className,
+      )}
+    >
       {media}
-      <Text className="text-center text-base font-bold text-brand">{title}</Text>
+      <Text className="text-center text-lg font-bold text-text">{title}</Text>
       {message ? (
         <Body className="text-center text-sm text-brand-muted">{message}</Body>
       ) : null}
       {ctaLabel && onCtaPress ? (
-        <Button label={ctaLabel} onPress={onCtaPress} className="mt-1" />
+        <Button
+          label={ctaLabel}
+          onPress={onCtaPress}
+          className="mt-1 self-stretch rounded-full"
+        />
       ) : null}
     </View>
   );

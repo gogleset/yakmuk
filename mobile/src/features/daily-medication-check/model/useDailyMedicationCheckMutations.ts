@@ -87,51 +87,5 @@ export function useDailyMedicationCheckMutations({
     onError: (error) => showMutationError(ERRORS.med.deleteFailed, error),
   });
 
-  /** 오늘 남은 약 전부 taken */
-  const markAllTaken = useMutation({
-    mutationKey: dailyMedicationCheckKeys.markAll(),
-    mutationFn: async () => {
-      if (!userId || !familyId) throw new Error(ERRORS.auth.profileLoadFailed);
-      if (pendingIds.length === 0) return;
-
-      for (const medicationId of pendingIds) {
-        await toggleTaken({
-          userId,
-          familyId,
-          medicationId,
-          currentlyTaken: false,
-        });
-      }
-
-      await stepDayLoop({
-        store: loopStore,
-        userId,
-        trigger: 'in_app',
-        plan: { action: 'toggle_medication', medicationId: pendingIds[0]! },
-        actResult: {
-          kind: 'toggle_medication',
-          payload: { medicationId: pendingIds[0]!, taken: true },
-        },
-        pendingMedicationIds: [],
-        onStuckEscalate: async (info) => {
-          await upsertAlert({
-            familyId,
-            userId,
-            kind: 'stuck_escalate',
-            message: COPY.alert.medCheckStalled,
-            payload: {
-              runId: info.runId,
-              pendingHash: info.pendingHash,
-              pendingCount: info.pendingCount,
-              dateKst: info.dateKst,
-            },
-          });
-        },
-      });
-    },
-    onSuccess: () => void invalidate(),
-    onError: (error) => showMutationError(ERRORS.med.checkFailed, error),
-  });
-
-  return { toggle, remove, markAllTaken };
+  return { toggle, remove };
 }

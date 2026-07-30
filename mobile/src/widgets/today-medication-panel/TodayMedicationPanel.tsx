@@ -1,25 +1,14 @@
 import { useMemo } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import type {
   ConditionValue,
   Medication,
 } from '@/entities/medication/model/types';
-import { CONDITION_LABEL } from '@/entities/medication/lib/display';
 import { groupMedsByScheduledTime } from '@/entities/medication/lib/timeSlots';
 import { TimeSlotMedAccordion } from '@/entities/medication/ui/TimeSlotMedAccordion';
-import { cn } from '@/shared/lib/cn';
 import { COPY } from '@/shared/copy';
-import {
-  Button,
-  Icons,
-  Input,
-  KokiIllustration,
-  RichEmptyState,
-} from '@/shared/ui';
-
-const CONDITIONS = (
-  Object.entries(CONDITION_LABEL) as [ConditionValue, string][]
-).map(([value, label]) => ({ value, label }));
+import { KokiIllustration, RichEmptyState } from '@/shared/ui';
+import { ConditionLogSection } from './ConditionLogSection';
 
 type Props = {
   meds: Medication[];
@@ -31,14 +20,11 @@ type Props = {
   onToggle: (medId: number) => void;
   onDelete: (medId: number, name: string) => void;
   onSubmitCondition: () => void;
-  onMarkAllTaken?: () => void;
   isError?: boolean;
   emptyMessage?: string;
   emptyHint?: string;
-  onAddPress?: () => void;
   /** F6 — 오늘 전부 완료 */
   allDone?: boolean;
-  markAllPending?: boolean;
 };
 
 /** 오늘 약 체크(시간대 그룹) + 컨디션(스크롤 아래) */
@@ -52,16 +38,11 @@ export function TodayMedicationPanel({
   onToggle,
   onDelete,
   onSubmitCondition,
-  onMarkAllTaken,
   isError = false,
   emptyMessage,
   emptyHint,
-  onAddPress,
   allDone = false,
-  markAllPending = false,
 }: Props) {
-  const hasNoMedsRegistered = !emptyMessage && meds.length === 0 && !isError;
-
   const accordionGroups = useMemo(() => {
     return groupMedsByScheduledTime(meds).map((group) => ({
       scheduledTime: group.scheduledTime,
@@ -85,60 +66,42 @@ export function TodayMedicationPanel({
     );
   }
 
-  if (hasNoMedsRegistered) {
-    return (
-      <RichEmptyState
-        layout="card"
-        title={COPY.med.emptyRegistered}
-        message={COPY.med.emptyRegisteredHint}
-        illustration={<KokiIllustration variant="thinking" size={88} />}
-        ctaLabel={COPY.med.emptyRegisteredCta}
-        onCtaPress={onAddPress}
-      />
-    );
-  }
-
+  // C — 등록은 있는데 오늘 스케줄 0
   if (meds.length === 0) {
     return (
       <View className="gap-3">
-        <View className="flex-row items-center gap-3 rounded-2xl bg-surface-soft px-4 py-4">
-          <View className="min-w-0 flex-1 gap-1">
-            <Text className="text-lg font-bold leading-6 text-brand">
-              {COPY.med.checkPromptTitle}
-            </Text>
-            <Text className="text-sm text-brand-muted">
-              {emptyMessage ?? COPY.med.emptyToday}
-            </Text>
-          </View>
-          <KokiIllustration variant="thinking" size={88} />
-        </View>
-
-        {emptyHint ? (
-          <Text className="px-1 text-sm text-brand-muted">{emptyHint}</Text>
-        ) : null}
+        <RichEmptyState
+          layout="card"
+          title={emptyMessage ?? COPY.med.emptyToday}
+          message={emptyHint ?? COPY.med.emptyTodayHint}
+          illustration={<KokiIllustration variant="thinking" size={88} />}
+        />
+        <ConditionLogSection
+          condition={condition}
+          message={message}
+          onConditionChange={onConditionChange}
+          onMessageChange={onMessageChange}
+          onSubmit={onSubmitCondition}
+        />
       </View>
     );
   }
 
   return (
     <View className="gap-3">
-      {/* 인사 배너 — F6는 done 컷 */}
+      {/* 인사 배너 — 진행=cheer / 완료(F6)=done + 제목 스왑 */}
       <View className="flex-row items-center gap-3 rounded-2xl bg-surface-soft px-4 py-4">
         <View className="min-w-0 flex-1 gap-1">
           <Text className="text-lg font-bold leading-6 text-brand">
-            {COPY.med.checkPromptTitle}
+            {allDone ? COPY.med.checkPromptDone : COPY.med.checkPromptTitle}
           </Text>
-          {allDone ? (
-            <Text className="text-sm text-brand-muted">
-              {COPY.med.checkPromptDone}
-            </Text>
-          ) : null}
         </View>
         <KokiIllustration variant={allDone ? 'done' : 'cheer'} size={88} />
       </View>
 
       <TimeSlotMedAccordion
         groups={accordionGroups}
+        collapseMode={allDone ? 'all-collapsed' : 'incomplete-open'}
         onToggleKey={(key) => {
           const id = Number(key);
           if (!Number.isFinite(id)) return;
@@ -151,57 +114,13 @@ export function TodayMedicationPanel({
         }}
       />
 
-      {onMarkAllTaken && !allDone ? (
-        <Button
-          label={COPY.med.markAllTaken}
-          onPress={onMarkAllTaken}
-          disabled={markAllPending}
-          className="rounded-full"
-        />
-      ) : null}
-
-      {/* 컨디션 — 목업 1st viewport 밖 secondary */}
-      <View className="mt-2 gap-2">
-        <Text className="text-sm font-semibold text-brand">
-          {COPY.condition.prompt}
-        </Text>
-        <View className="flex-row gap-2">
-          {CONDITIONS.map((c) => {
-            const selected = condition === c.value;
-            return (
-              <Pressable
-                key={c.value}
-                accessibilityRole="button"
-                onPress={() => onConditionChange(c.value)}
-                className={cn(
-                  'flex-1 items-center rounded-xl py-3',
-                  selected ? 'bg-brand' : 'bg-surface-soft',
-                )}
-              >
-                <Text
-                  className={cn(
-                    'text-sm font-semibold',
-                    selected ? 'text-ink' : 'text-brand',
-                  )}
-                >
-                  {c.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-        <Input
-          value={message}
-          onChangeText={onMessageChange}
-          placeholder={COPY.condition.messagePlaceholder}
-        />
-        <Button
-          label={COPY.condition.submit}
-          variant="secondary"
-          icon={Icons.Heart}
-          onPress={onSubmitCondition}
-        />
-      </View>
+      <ConditionLogSection
+        condition={condition}
+        message={message}
+        onConditionChange={onConditionChange}
+        onMessageChange={onMessageChange}
+        onSubmit={onSubmitCondition}
+      />
     </View>
   );
 }

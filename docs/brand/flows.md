@@ -29,7 +29,7 @@ F5 **beat**(가족 컷) ≠ 퍼널 **P1**(가족 입력).
 ## F2 — 기록 없음 (Empty)
 
 - **시트:** Thinking
-- **현재:** `RichEmptyState` layout=`card` + 캘린더 아래
+- **현재:** `RichEmptyState` layout=`stack` (세로: 콕이 → 타이틀 → hint → pill CTA) + 캘린더 아래
 - **beat:** illustration=`thinking`, 카피 = `COPY.med.emptyRegistered*` (hint: 복용 기록해볼까요)
 - **대상:** 약 0개
 - **훅:** `HomePage` empty 분기 · `RichEmptyState.tsx`
@@ -62,8 +62,8 @@ F5 **beat**(가족 컷) ≠ 퍼널 **P1**(가족 입력).
 - **트리거:** `taken == total` (오늘 스케줄 있는 약 전부 체크)
 - **beat:** 오늘 체크 **인사 배너**에 `done` 컷 + `COPY.med.checkPromptDone` (시간대 리스트 유지)
 - **아님:** 약 하나 체크할 때마다 콕이
-- **훅:** `TodayMedicationPanel` (홈 스크롤 아래) · 목업 `docs/brand/mocks/home-today-check.png`
-- **일괄 CTA:** `다 먹었어요!` → pending 전부 taken (#9 홈 IA)
+- **훅:** `TodayMedicationPanel` (홈 스크롤 아래) · 목업 `docs/brand/mocks/home-today-done.png`
+- **체크:** 개별 토글만 (일괄「다 먹었어요!」CTA 없음)
 
 ## F7 — stuck 안부 (Worried) — [decisions.md](decisions.md) #4A
 

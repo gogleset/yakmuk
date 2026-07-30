@@ -30,7 +30,7 @@
 ## 한줄 결론
 
 지금 앱 = **틸·콕이 beat·기록 탭(캘린더 셸 + empty/오늘 체크 스크롤)** + 토스형 퍼널.  
-홈 SoT 목업: [`mocks/home-empty.png`](mocks/home-empty.png) · [`mocks/home-today-check.png`](mocks/home-today-check.png).
+홈 SoT 목업: [`mocks/home-empty.png`](mocks/home-empty.png) · [`mocks/home-today-progress.png`](mocks/home-today-progress.png) · [`mocks/home-today-done.png`](mocks/home-today-done.png) · [`mocks/home-today-none.png`](mocks/home-today-none.png).
 
 ---
 

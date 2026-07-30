@@ -28,11 +28,8 @@
 
 ## 갭 2 — 색
 
-현재: `brand` `#0F6B5C` 쿨 틸 · `canvas` `#F4F7F6` 쿨 민트.  
-시트: mid sage · pale mint · off-white.
-
-**할 일 (문서):** Why teal → Why sage 서사.  
-**구현 ([decisions.md](decisions.md) #8B):** hex/`theme.ts`는 **지금 안 바꿈** (틸 유지). 리샘플은 후속.
+**확정 (#8):** soft 틸 `brand #4C8478` · canvas `#F7F8F8` · surfaceSoft `#F0F5F3`.  
+진한 쿨 틸(`#0F6B5C`) 폐기. SoT: [design.md](../design.md) §6 ↔ `theme.ts` / NativeWind.
 
 ---
 
@@ -159,7 +156,7 @@ flowchart TB
 
 | 시트 느낌 | 현재 토큰 | 조정 |
 |-----------|-----------|------|
-| mid sage | `brand` `#0F6B5C` | 웜 sage 1스텝 |
+| mid sage | `brand` `#4C8478` | 목업 soft 틸 확정 (#8) |
 | pale mint | `brandSoft` | 유지~약간 웜 |
 | off-white | `canvas` | 뉴트럴 오프화이트 |
 | deep forest | 없음 | pressed용만, 토큰 남발 금지 |

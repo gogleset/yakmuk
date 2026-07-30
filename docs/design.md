@@ -54,7 +54,7 @@
 | ID  | Beat       | Variant                  | 트리거                                                    |
 | --- | ---------- | ------------------------ | --------------------------------------------------------- |
 | F1  | 첫 만남    | welcome                  | Welcome 진입                                              |
-| F2  | 기록 없음  | thinking                 | 기록 탭 empty — 가로 카드 (`RichEmptyState` layout=card)  |
+| F2  | 기록 없음  | thinking                 | 기록 탭 empty — 세로 스택 (`RichEmptyState` layout=stack) |
 | F3  | (폐기)     | —                        | 개별 체크 — 쓰지 않음. 성공은 F6                          |
 | F4  | 연속       | streak                   | 연속 all-done ≥3일 (KST) — **캘린더 영역**                |
 | F5  | 가족       | family                   | 가족 empty / 초대                                         |
@@ -62,42 +62,43 @@
 | F7  | stuck 안부 | worried                  | 보호자 pending/stuck                                      |
 | F8  | 예약       | pill/cheer/lantern/heart | 미연결                                                    |
 
-목업 SoT: [docs/brand/mocks/home-empty.png](brand/mocks/home-empty.png) · [home-today-check.png](brand/mocks/home-today-check.png)
+목업 SoT: [docs/brand/mocks/home-empty.png](brand/mocks/home-empty.png) · [home-today-progress.png](brand/mocks/home-today-progress.png) · [home-today-done.png](brand/mocks/home-today-done.png) · [home-today-none.png](brand/mocks/home-today-none.png)
 
 ## 5.1 Home (기록 탭)
 
 탭 루트. **헤더 크롬 없음** (뒤로·설정 기어·날짜 타이틀 바 금지).  
 **역할 대칭:** `family_leader` · `guardian` · `care_recipient` 모두 같은 `HomePage` (역할 분기 금지).
 
-| 상태                    | 구성                                                          | 비고                            |
-| ----------------------- | ------------------------------------------------------------- | ------------------------------- |
-| 약 0개                  | `MonthHeader` + 캘린더 + 범례 + 가로 empty 카드               | FAB 없음. CTA「첫 약 등록하기」 |
-| 약 있음 · 오늘 선택     | 같은 캘린더 셸 + **스크롤 아래** 인사 배너·시간대·「다 먹었어요!」 | 별도 화면 아님. F6 배너         |
-| 등록 있음·오늘 스케줄 0 | 캘린더 + 체크 셸(배너) + 오늘 없음 카피                       | days_mask로 오늘 제외된 경우    |
-| 과거일 선택             | 캘린더 + PastDay                                              | streak(F4)는 캘린더 영역. FAB   |
+| 상태                    | 구성                                                                 | 비고                            |
+| ----------------------- | -------------------------------------------------------------------- | ------------------------------- |
+| 약 0개                  | `MonthHeader` + 캘린더 + 범례 + **세로** empty 스택 + pill CTA       | FAB 없음. CTA「첫 약 등록하기」 |
+| 약 있음 · 오늘 선택     | 같은 캘린더 셸 + **스크롤 아래** 인사 배너·시간대·컨디션             | 별도 화면 아님. F6 배너. 개별 체크만 |
+| 등록 있음·오늘 스케줄 0 | 캘린더 + empty 가로 카드 + **컨디션**                                | days_mask로 오늘 제외된 경우    |
+| 과거일 선택             | 캘린더 + PastDay                                                     | streak(F4)는 캘린더 영역. FAB   |
 
 - 상태 도트(약 있는 날 / 다 먹었어요 / 일부만 / 안 먹었어요) = **안부 이력**. compliance 히트맵·알람 빨강 금지 (`destructive`는 점 색만, 배너 아님)
 - 시간대 = `scheduledTime` 클라 버킷 (아침/점심/저녁/취침 전). dosage 필드 없음
-- 컨디션 입력 = 오늘 체크 **스크롤 아래** secondary
+- 컨디션 입력 = 오늘 체크 **스크롤 아래** secondary (스케줄 0일도 동일)
 - 콕이: empty=`thinking` · 진행 배너=`cheer` · 완료=`done`. 본문·행 상시 장식 금지
+- 일괄「다 먹었어요!」CTA **없음** — 개별 체크만
 
 ## 6. Color system
 
 토큰명은 모드 불변. 값만 light / dark 맵.  
-**현행 light hex는 틸 유지** ([decisions.md](brand/decisions.md) #8B). sage 리샘플은 후속.
+**light = 목업 soft 틸** ([decisions.md](brand/decisions.md) #8). `theme.ts` / NativeWind와 동기.
 
 ### 6.1 Core tokens
 
 | Token         | Light     | Dark      | 용도                                            |
 | ------------- | --------- | --------- | ----------------------------------------------- |
-| `brand`       | `#0F6B5C` | `#3DBFA8` | CTA, 탭 active, 타이틀·아이콘 강조              |
-| `brandSoft`   | `#D8F0EA` | `#1A3D36` | taken row, secondary 버튼, soft fill            |
-| `canvas`      | `#FFFFFF` | `#0E1413` | 스크린 배경, 시스템 크롬                        |
+| `brand`       | `#4C8478` | `#3DBFA8` | CTA, 탭 active, 선택일·아이콘 강조              |
+| `brandSoft`   | `#E4F1ED` | `#1A3D36` | taken row, secondary 버튼, soft fill            |
+| `canvas`      | `#F7F8F8` | `#0E1413` | 스크린 배경, 시스템 크롬                        |
 | `surface`     | `#FFFFFF` | `#1A2421` | 인풋·시트·탭 bar                                |
-| `surfaceSoft` | `#F3F7F5` | `#15201D` | 카드·empty 박스 — brandSoft보다 훨씬 연한 fill  |
+| `surfaceSoft` | `#F0F5F3` | `#15201D` | 카드·empty 박스 — brandSoft보다 훨씬 연한 fill  |
 | `ink`         | `#F5FFFC` | `#0A1F1A` | `brand` 위 텍스트/아이콘                        |
-| `text`        | `#1A2E29` | `#E8F0ED` | 본문·제목(브랜드 영역 밖)                       |
-| `muted`       | `#6B7A76` | `#8A9A94` | 캡션, placeholder, 탭 inactive                  |
+| `text`        | `#1F2A27` | `#E8F0ED` | 본문·제목(브랜드 영역 밖)·empty 타이틀          |
+| `muted`       | `#7A8783` | `#8A9A94` | 캡션, placeholder, 탭 inactive                  |
 | `line`        | `#D5DED9` | `#2A3531` | (레거시) — **보더로 쓰지 말 것**. 계층은 fill로 |
 | `disabled`    | `#B8C4BF` | `#3D4A45` | 비활성                                          |
 
@@ -105,11 +106,11 @@
 
 | Token           | Light     | Dark      | 용도                                              |
 | --------------- | --------- | --------- | ------------------------------------------------- |
-| `success`       | `#0F6B5C` | `#3DBFA8` | 완료·“다 먹음” — brand와 동일 축 (이질 블루 금지) |
-| `warning`       | `#A67C00` | `#D4A84B` | 주의 텍스트/아이콘                                |
+| `success`       | `#4C8478` | `#3DBFA8` | 완료·“다 먹음” — brand와 동일 축 (이질 블루 금지) |
+| `warning`       | `#C49A3C` | `#D4A84B` | 주의 텍스트/아이콘 · 범례 “일부만”                |
 | `warningBorder` | `#E8D48A` | `#5C4A1A` | (레거시) — 보더 금지. 경고는 `warningBg` fill     |
 | `warningBg`     | `#FFF8E1` | `#2A2410` | 경고 배너 배경                                    |
-| `destructive`   | `#8B2E2E` | `#E07A7A` | 삭제·위험                                         |
+| `destructive`   | `#C46B5A` | `#E07A7A` | 삭제·위험 · 범례 “안 먹었어요” (soft coral)       |
 
 ### 6.3 Mode rules
 
@@ -119,12 +120,12 @@
 - 순수 `#000` 배경, 형광 민트, 네온 글로우 금지
 - 목표 런타임: `userInterfaceStyle: "automatic"` (현행 light-only는 legacy)
 
-### 6.4 Why sage
+### 6.4 Why soft teal
 
-간호·약·안심의 식물성 신뢰. 병원 블루 금지 유지.  
-목표 방향: `brand` 쿨 틸 → 웜 mid-sage (채도↓·황녹+), `canvas` → 뉴트럴 오프화이트/페일민트.  
+간호·약·안심의 식물성 신뢰. 병원 블루·진한 쿨 틸(`#0F6B5C`) 금지.  
+목업 soft 틸(`#4C8478`) + 오프화이트 canvas — 채도↓·명도↑.  
 헤어 브라운·윙 페일블루 = **illustration-only**, 토큰 추가 금지.  
-hex/`theme.ts` 확정은 sage 리샘플 착수 시.
+hex SoT: 이 문서 §6.1 ↔ `theme.ts` / `tailwind.config.js`.
 
 ## 7. Typography
 
@@ -154,12 +155,12 @@ Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타�
 | Taken row                  | `brandSoft` fill                                                                                                       |
 | FAB                        | `brand` circle, `ink` 아이콘                                                                                           |
 | Tabs                       | **label + icon** — `기록 \| 가족 \| 설정`, bar = `surface`, active = `brand`                                           |
-| Home empty CTA / 일괄 체크 | `rounded-full` pill CTA 허용                                                                                           |
+| Home empty CTA           | `rounded-full` pill CTA 허용                                                                                           |
 
 ### 8.1 Border
 
 **기본 금지.** 계층·구분·버튼 outline·카드 윤곽·리스트 divider에 border를 쓰지 않는다.  
-구분은 `canvas`(흰) → `surfaceSoft`(`#E5EEE9`) → `brandSoft` → `brand` **fill**로만.
+구분은 `canvas`(`#F7F8F8`) → `surfaceSoft`(`#F0F5F3`) → `brandSoft` → `brand` **fill**로만.
 
 | 허용           | 규칙                                                                                                 |
 | -------------- | ---------------------------------------------------------------------------------------------------- |
@@ -248,7 +249,7 @@ Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타�
 
 | 상태   | 내용                                                                                                                      |
 | ------ | ------------------------------------------------------------------------------------------------------------------------- |
-| Done   | light 토큰 맵 — `theme.ts` / `tailwind` = 현행 (`brand #0F6B5C` 등). 브랜드명 약콕 · Character · sage 토큰 **방향**       |
+| Done   | light soft 틸 — `theme.ts` / `tailwind` = `brand #4C8478` 등. 브랜드명 약콕 · Character · 목업 soft 팔레트 확정 |
 | Legacy | `userInterfaceStyle: "light"` only — dark 맵·시스템 크롬 automatic 미적용                                                 |
 | Next   | 1) dark 토큰 맵 2) 시스템 크롬 3) `userInterfaceStyle: "automatic"` QA 4) sage hex 리샘플 시 `theme.ts` / `tailwind` 동기 |
 

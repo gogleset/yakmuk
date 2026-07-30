@@ -49,4 +49,5 @@ G6 rename 범위 밖이라 남아 있음. 필요하면 별 커밋.
 - 개별 약 체크마다 `happy`  
 - stuck 배너 + `worried` 병행  
 - FunnelShell = PageSheet  
+- 약 추가·수정을 풀페이지 퍼널로 되돌리기 (BottomSheet progressive가 SoT — decisions #5B)  
 - F8을 “자리 있으니” 임의 연결

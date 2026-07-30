@@ -10,7 +10,7 @@
 | 2   | F6 오늘 다 먹음     | **B** — 약 리스트 **유지** + 위에 `done` 컷 (오늘 체크 **인사 배너**)                                                                           |
 | 3   | F4 Streak           | **N=3** (KST 기준 연속 all-done 3일). 2차에 **최소 로직 구현** (스킵 안 함). 상시 노출 금지 — 연속≥3일일 때 **캘린더 영역**에 `streak` 1회 |
 | 4   | F7 Worried          | **A** — 경고/빨간 배너 **대신** Worried + 안부 카피                                                                                             |
-| 5   | FunnelShell         | **A** — **전부 full page** (PageSheet 안 씀)                                                                                                    |
+| 5   | 다필드 입력 표면    | **B** — FunnelShell = 온보딩·초대 등 **스텝형만 full page** (PageSheet 안 씀). **약 추가·수정 = BottomSheet progressive disclosure** (`design.md` §9) |
 | 6   | rename 범위         | **B** — UI 카피 + AGENTS / TRACK / design / PRD (`app.json` display name·스플래시 문구는 이번 제외, `yakmuk` 식별자 유지)                       |
 | 7   | Welcome 카피        | **B** — 기존 안부 Body + **콕이 초단문** (예: `콕이가 함께해요`)                                                                                |
 | 8   | sage 색             | **B** — **지금 틸 유지**. Character·퍼널·beat 먼저. 색 리샘플은 나중                                                                            |

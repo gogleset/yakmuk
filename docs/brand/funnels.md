@@ -39,8 +39,9 @@
 └─────────────────────────┘
 ```
 
-- **전부 full page** ([decisions.md](decisions.md) #5A). PageSheet 안 씀
-- 상태: `stepIndex` + draft object. 제출은 마지막 스텝에서만
+- FunnelShell = **온보딩·초대 full page** ([decisions.md](decisions.md) #5B). PageSheet 안 씀
+- **약 추가·수정(P3·P4) = BottomSheet progressive** — 한 스텝 한 질문 FunnelShell 강제 아님
+- 상태: Funnel은 `stepIndex` + draft. Sheet는 reveal + draft. 제출은 CTA에서
 
 ---
 
@@ -52,8 +53,8 @@ ID prefix **P** (Form funnel). 브랜드 F와 구분.
 |----|------|------|--------------|------|
 | P1 | 가족 만들기 | Welcome에 familyName+nickname 한 화면 | 2–3 | 1차 |
 | P2 | 초대 참여 (Join) | code+nickname 한 화면 | 2 | 1차 |
-| P3 | 약 추가 | search → schedule(필드 몰림) | 4–5 | 1차 |
-| P4 | 약 수정 | name+time+days 한 화면 | 3–4 | 2차 |
+| P3 | 약 추가 | BottomSheet progressive | — | 1차 |
+| P4 | 약 수정 | BottomSheet full unlock + prefill | — | 2차 |
 | P5 | 가족 초대 생성 | role+invitedAs 한 시트 | 2 | 2차 |
 | P6 | 오늘 컨디션 | 홈 인라인 condition+message | 1–2 (시트 퍼널) | 보류 |
 | — | 닉네임만 / 가족이름만 | 단일 필드 | 퍼널 불필요 | skip |
@@ -97,45 +98,43 @@ flowchart LR
 
 ---
 
-## P3 — 약 추가 (가장 두꺼움)
+## P3 — 약 추가
 
-**진입:** FAB / empty CTA → `AddMedicationSheet`  
-**현재:** `search` \| `schedule`(모드·시간·요일 한 덩어리)  
-**콕이:** 시작 `thinking` (1차) · 완료 `done`  
-`pill`은 F8 예약 — 퍼널 1차에서 쓰지 않음.
+**진입:** FAB / empty CTA → `/add-medication` → `AddMedicationSheet` (BottomSheet)  
+**표면:** progressive disclosure — 처음부터 전체 폼 ❌  
+**콕이:** 완료 `done`만 (중간 블록 금지)
 
-| Step | 질문 | UI | CTA |
-|------|------|-----|-----|
-| 1 | 어떤 약인가요? | 검색 리스트 / 직접 입력 | 다음 (선택·이름 확정 시) |
-| 2 | 일정이 매일 같나요? | `same` \| `per-day` 선택 카드 | 다음 |
-| 3a | 몇 시에 먹나요? | TimeSlotList (same) | 다음 |
-| 3b | 요일마다 시간을 알려주세요 | 요일×시간 (per-day) | 다음 |
-| 4 | 어느 요일에 먹나요? | DaysMode / WeekdayPicker — **3a 경로만**. per-day면 스킵·병합 | 다음 |
-| 5 | 이 내용으로 등록할까요? | 요약 카드 (이름·시간·요일) | 저장 |
+| 단계 | 트리거 | UI |
+|------|--------|-----|
+| 1 | 시트 오픈 | 이름 검색 / 직접 입력+확인 CTA |
+| 2 | 이름 확정 (기본 `same`) | ScheduleModeToggle + TimeSlotList + DaysModeToggle **즉시** |
+| 2a | `daysMode=weekday` | WeekdayPicker |
+| 2b | `perWeekday` 전환 | 하위 collapse → WeekdayPicker → 요일별 TimeSlotList |
+| 3 | CTA | sticky `등록하기` (invalid면 disabled). confirm 스텝 없음 |
 
-분기: step2=`same` → 3a → 4 → 5 / `per-day` → 3b → 5  
-기존 validation (`scheduleValidationMessage`)은 해당 스텝 CTA disable에 연결.
+- 앞단계 변경 → 뒤 섹션 collapse + draft 리셋
+- soft fill: `surfaceSoft` (시트 안 Input/토글)
+- 훅: `AddMedicationSheet.tsx` · `MedicationScheduleFields` · `resolveFormVisibility`
 
 ```mermaid
 flowchart TB
-  S1[name_search] --> S2[scheduleMode]
-  S2 -->|same| S3a[times]
-  S3a --> S4[days]
-  S4 --> S5[confirm]
-  S2 -->|perDay| S3b[timesByDay]
-  S3b --> S5
-  S5 --> Saved[onAdded]
+  open[sheet_open] --> name[name_search]
+  name -->|confirmed_same_default| sameBlock[mode_times_days]
+  sameBlock -->|weekday| picker[weekdayPicker]
+  sameBlock -->|switch_perWeekday| perBlock[weekdays_timesByDay]
+  sameBlock --> save[submit_CTA]
+  picker --> save
+  perBlock --> save
 ```
-
-훅: `AddMedicationSheet.tsx` — step enum 확장, schedule 화면 분해.
 
 ---
 
 ## P4 — 약 수정
 
-**진입:** MedRow long-press / 수정  
-P3와 동일 축, 시작 값이 draft에 prefill.  
-스텝: 이름 → 시간 → 요일 → 확인(또는 이름 스킵하고 스케줄만).
+**진입:** MedRow 수정 → `EditMedicationSheet`  
+P3와 동일 BottomSheet 축. **진입 시 전체 섹션 펼침 + draft prefill.**  
+수정 중 모드 변경 시 collapse는 P3와 동일.  
+CTA: sticky `저장`.
 
 훅: `EditMedicationSheet.tsx`
 

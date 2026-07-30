@@ -98,8 +98,8 @@ flowchart TB
 |------|------|
 | Welcome 가족생성 familyName+nickname 한 화면 | 퍼널 P1 한 질문 한 스텝 |
 | Join code+nickname 한 화면 | 퍼널 P2 |
-| 약 추가 schedule 필드 몰림 | 퍼널 P3 (4–5스텝) |
-| 약 수정·초대 생성 한 시트 | 퍼널 P4·P5 (2차) |
+| 약 추가 schedule 필드 몰림 | BottomSheet P3 progressive (이름 확정 후 same 즉시) |
+| 약 수정·초대 생성 한 시트 | P4 = EditMedicationSheet / P5 = 초대 퍼널 |
 
 원칙·스텝표 → [funnels.md](funnels.md)
 

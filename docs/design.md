@@ -29,9 +29,10 @@
 3. **Low friction** — CTA 하나, 단계 최소. 배지·필·통계 스트립으로 불안을 만들지 않음
 4. **감시 ≠ 케어** — 상태 UI는 안부·안심. 경고 빨강·알람 과다를 기본으로 쓰지 않음
 5. **라이트·다크 동일 톤** — 모드가 바뀌어도 브랜드 성격(세이지·안부)은 유지. 다크 = 네온/순검이 아님
-6. **직관 > 설명** — 설명 문구를 최대한 줄인다. UI·라벨·아이콘만으로 읽혀야 한다
-7. **캐릭터는 슬롯에서만** — Welcome / Empty / Success / Done / Family / Streak / Stuck. MedRow·탭·본문 장식 금지
-8. **다필드 입력 = 한 질문 한 스텝 퍼널** (토스형). 상세는 `docs/brand/funnels.md`
+6. **직관 > 설명** — 좋은 UI/UX는 설명할 필요가 없는 디자인이다. UI·레이아웃·아이콘만으로 읽혀야 한다
+7. **아이콘 = 라벨 최소** — 의미가 통하는 아이콘(←, × 등)을 쓰면 보이는 텍스트 라벨은 생략한다. 스크린리더용 `accessibilityLabel`은 유지
+8. **캐릭터는 슬롯에서만** — Welcome / Empty / Success / Done / Family / Streak / Stuck. MedRow·탭·본문 장식 금지
+9. **다필드 입력 = 표면별** — 온보딩·초대 등 스텝형 = FunnelShell / 약 추가·수정 = BottomSheet progressive disclosure. 상세는 `docs/brand/funnels.md` · §9
 
 ## 4. Character — 콕이
 
@@ -145,9 +146,11 @@ Brand hero 존재감 = 콕이 이미지. 캐릭터 옆 카피는 Caption/짧은 
 | 요소                       | 규칙                                                                                                                   |
 | -------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | Screen                     | `bg-canvas`, safe area                                                                                                 |
-| Card / empty 박스          | `bg-surface-soft` (brandSoft보다 연함). 인풋·시트 = `bg-surface`                                                       |
+| Card / empty 박스          | `bg-surface-soft`                                                                                                      |
+| Input / outline / 미선택 토글 | `bg-surface-soft` — **흰 fill 금지** (canvas·surface와 동일 hex라 안 보임). 시트 안 중첩은 `brandSoft` (`tone="soft"`) |
+| Sheet                      | `bg-surface` (흰). 안쪽 컨트롤은 soft/brandSoft fill                                                                   |
 | Radius                     | sm 8 · md 10 · lg 12 (`rounded-xl` ≈ 12)                                                                               |
-| Button                     | `rounded-xl` — default(`brand`) / outline(`surface`만, **border 없음**) / secondary(`brandSoft`) / ghost / destructive |
+| Button                     | `rounded-xl` — default(`brand`) / outline(`surfaceSoft`, **border 없음**) / secondary(`brandSoft`) / ghost / destructive |
 | Taken row                  | `brandSoft` fill                                                                                                       |
 | FAB                        | `brand` circle, `ink` 아이콘                                                                                           |
 | Tabs                       | **label + icon** — `기록 \| 가족 \| 설정`, bar = `surface`, active = `brand`                                           |
@@ -156,7 +159,7 @@ Brand hero 존재감 = 콕이 이미지. 캐릭터 옆 카피는 Caption/짧은 
 ### 8.1 Border
 
 **기본 금지.** 계층·구분·버튼 outline·카드 윤곽·리스트 divider에 border를 쓰지 않는다.  
-구분은 `canvas` → `surfaceSoft` → `brandSoft` **fill**로만.
+구분은 `canvas`(흰) → `surfaceSoft`(`#E5EEE9`) → `brandSoft` → `brand` **fill**로만.
 
 | 허용           | 규칙                                                                                                 |
 | -------------- | ---------------------------------------------------------------------------------------------------- |
@@ -166,11 +169,12 @@ Brand hero 존재감 = 콕이 이미지. 캐릭터 옆 카피는 Caption/짧은 
 
 ### 8.2 Copy (설명 문구)
 
-**최대한 제거.** 화면·컨트롤은 레이아웃·라벨·아이콘만으로 직관적이어야 한다.
+**최대한 제거.** 좋은 UI/UX는 설명할 필요가 없는 디자인이다. 화면·컨트롤은 레이아웃·짧은 라벨·아이콘만으로 직관적이어야 한다.
 
 | Do                                                        | Don’t                                 |
 | --------------------------------------------------------- | ------------------------------------- |
-| 짧은 액션 라벨 (`초대`, `저장`, `복용`)                   | 부연 설명 문단·헬퍼 텍스트 남발       |
+| 짧은 액션 라벨 (`초대`, `저장`, `복용`)                   | 부연 설명 문단·헬퍼 텍스트·Caption 남발 |
+| 아이콘만으로 통하는 네비(←, ×) — `accessibilityLabel` 유지 | 아이콘 옆 중복 텍스트 (`← 뒤로` 등)   |
 | 필요하면 **placeholder** / empty state 한 줄              | 필드 위·아래 중복 설명                |
 | 한 화면 한 일 — 타이틀만으로 충분하면 본문 카피 생략      | “이렇게 하세요” 튜토리얼 톤 상시 노출 |
 | Empty / Success / Done 옆 — **기존 COPY 한 줄** + 콕이 컷 | 시트 마케팅 문장 그대로 이식          |
@@ -178,19 +182,32 @@ Brand hero 존재감 = 콕이 이미지. 캐릭터 옆 카피는 Caption/짧은 
 
 힌트가 꼭 필요하면 Caption/Body가 아니라 **placeholder·empty state** 쪽에 둔다.
 
-## 9. Funnel — 입력
+## 9. 입력 — Funnel & Sheet
 
-- 필드 2개 이상 = FunnelShell로 한 질문 한 스텝
-- 큰 질문 타이틀 · 하단 CTA(`다음`/`완료`) · 약한 progress
-- 뒤로 = 이전 스텝. 작성 중 닫기 = confirm
-- 콕이 = 퍼널 입구·완료만 (중간 스텝 금지)
-- 단일 필드(닉네임만 등)는 퍼널 강제 금지
-- 전부 **full page** (PageSheet 아님)
-- 상세 스텝표: [docs/brand/funnels.md](brand/funnels.md)
+### FunnelShell (온보딩·초대)
+
+- Welcome / Join / InviteCreate — 한 질문 한 스텝
+- 큰 질문 타이틀 · 하단 CTA · 약한 progress bar (숫자 라벨 `2/4` 금지)
+- 뒤로 = chevron 아이콘만. 작성 중 닫기 = confirm
+- 퍼널 본문 Caption·필드 라벨 금지 — 타이틀·토글·placeholder로 충분
+- 콕이 = 입구·완료만 (중간 스텝 금지)
+- 단일 필드(닉네임만 등)는 퍼널 강제 금지 → BottomSheet
+- **full page** (PageSheet로 FunnelShell 쓰지 않음)
+
+### BottomSheet (약 추가·수정)
+
+- 약 등록/수정 = **BottomSheet + progressive disclosure** (풀페이지 퍼널 강제 금지)
+- 추가: 이름 확정 전엔 인풋만. 확정 후(기본 same) 모드·시간·DaysMode **즉시** 공개. perWeekday 전환 시 분기 전환
+- 앞단계 변경 → 뒤 섹션 collapse + draft 의존 필드 리셋
+- 수정 진입 = 전체 섹션 펼침(prefill)
+- sticky CTA — 스케줄 섹션 공개 후 항상 노출, invalid면 disabled
+- Caption·필드 라벨 금지 — placeholder/토글만. 시트 안 컨트롤 fill = `surfaceSoft`
+- 콕이 = 성공 순간만. dirty close = confirm
+- 상세: [docs/brand/funnels.md](brand/funnels.md) P3·P4
 
 ## 10. Motion
 
-- 존재감·계층용 **짧은** fade / sheet present 정도
+- 존재감·계층용 **짧은** fade / sheet present / **섹션 reveal fade** 정도
 - bounce·과한 spring·장식 파티클 금지
 - Success 스파클 = 이미지 bake-in만
 - 콕이 등장 = 짧은 fade. 캐릭터 bounce 금지
@@ -206,6 +223,8 @@ Brand hero 존재감 = 콕이 이미지. 캐릭터 옆 카피는 Caption/짧은 
 - 정식 컷 교체 시 `assets/koki` 파일명 유지
 - 라이트/다크 모두에서 “따뜻한 신뢰”가 같은지 검증
 - 설명 없이 직관 — 힌트는 placeholder / empty state
+- 아이콘 네비는 텍스트 라벨 없이
+- 약 CRUD는 BottomSheet progressive
 
 **Don’t**
 
@@ -216,9 +235,12 @@ Brand hero 존재감 = 콕이 이미지. 캐릭터 옆 카피는 Caption/짧은 
 - “다 먹음” 등 success를 이질 블루로 분리
 - **border** — focus 상태가 아니면 쓰지 않음 (카드·버튼·divider·토글 윤곽 포함)
 - **설명 문구 남발** — 라벨·레이아웃으로 충분한데 Caption/Body로 풀어쓰기
+- **아이콘 + 중복 라벨** — `← 뒤로`, `× 닫기` 등 아이콘 옆 보조 텍스트
 - 홈 본문·MedRow에 콕이 상시 (empty 카드·오늘 배너·streak 슬롯만 허용)
 - Worried를 공포/알람 UI로 (안부만)
 - 시트 긴 설명 카피 이식
+- **약 등록/수정을 풀페이지 퍼널로 강제**
+- FunnelShell을 PageSheet로 만들기
 
 ## 12. Migration note
 

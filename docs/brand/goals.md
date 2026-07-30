@@ -89,7 +89,7 @@
 | 게이트 | PASS 조건 |
 |--------|-----------|
 | G3.1 | FunnelShell: back / progress / 질문 타이틀 / 하단 CTA |
-| G3.2 | **전부 full page** — PageSheet 아님 (#5A) |
+| G3.2 | FunnelShell = **온보딩·초대 full page**. 약 CRUD = BottomSheet (#5B) |
 | G3.3 | `stepIndex` + draft 패턴으로 최소 1개 스모크(또는 스토리/데모) 가능 |
 | G3.4 | 아직 P1–P3 전체 마이그레이션 필수는 아님 — **셸만** 완성 |
 
@@ -105,7 +105,7 @@
 |--------|-----------|
 | G4.1 | **P1** 가족 만들기 — 한 스텝 한 질문, 제출은 마지막 |
 | G4.2 | **P2** Join — 동일 |
-| G4.3 | **P3** 약 추가 — schedule 분해, same/per-day 분기, 요약 후 저장 |
+| G4.3 | **P3** 약 추가 — BottomSheet progressive, same/perWeekday 분기, sticky 저장 |
 | G4.4 | 중간 스텝에 콕이 없음. 시작·완료만. F8 예약컷(`pill` 등) **미사용** |
 | G4.5 | 완료 컷에 `happy` **미연결** (#1·파생 — 에셋만). P1 완료는 beat 생략 또는 `family` 등 1차 허용 variant |
 | G4.6 | FunnelShell 재사용 (화면마다 셸 복붙 금지) |
@@ -154,7 +154,7 @@
 
 | 게이트 | PASS 조건 |
 |--------|-----------|
-| G7.1 | 퍼널 **P4** 약 수정 · **P5** 초대 생성 — 한 질문 한 스텝 |
+| G7.1 | **P4** 약 수정 BottomSheet(prefill) · **P5** 초대 생성 퍼널 |
 | G7.2 | beat **F5** family · **F7** worried (빨간 배너 **대체**, 병행 금지 #4A) |
 | G7.3 | beat **F4** streak — N=3, 연속≥3일일 때만 노출. 스케줄 0일=연속 유지 (#3) |
 | G7.4 | [impl.md](impl.md) `funnel-wave2` **그리고** `beat-wave2` 둘 다 `done` |

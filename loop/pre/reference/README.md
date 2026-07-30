@@ -174,9 +174,9 @@ WHERE d.user_id = :user_id
 ```text
 supabase start
 EXPO_PUBLIC_SUPABASE_URL:
-  iOS Simulator     -> http://127.0.0.1:54321
-  Android Emulator  -> http://10.0.2.2:54321
-  실기기            -> http://<LAN_IP>:54321
+  iOS Simulator     -> http://127.0.0.1:54421
+  Android Emulator  -> http://10.0.2.2:54421
+  실기기            -> http://<LAN_IP>:54421
 
 A care_recipient: join via code/QR (nickname already set) -> TAKEN
 B guardian: OAuth -> Realtime feed sees event

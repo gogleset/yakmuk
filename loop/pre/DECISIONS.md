@@ -27,7 +27,7 @@
 | 체크 롤백 / SKIPPED | 롤백 허용 · SKIPPED≠success | PRD |
 | 타임존 | KST | — |
 | 가족 테스트 | 시뮬 2대 → 동일 local Supabase | — |
-| **시뮬 DB URL** | iOS Sim: `http://127.0.0.1:54321` · Android Emulator: `http://10.0.2.2:54321` · 실기기: LAN IP | localhost 함정 |
+| **시뮬 DB URL** | iOS Sim: `http://127.0.0.1:54421` · Android Emulator: `http://10.0.2.2:54421` · 실기기: LAN IP · BE(54321)와 포트 분리 | localhost 함정 |
 | run 경계 | **run = 유저·날짜(KST) 하루 goal** · 탭=turn | 매 탭마다 새 run 금지 |
 | **앱 IA** | **홈 / 가족 / 설정** 3탭 | 홈=내 약+캘린더, 가족=상태·피드·초대 |
 | **내 약** | **전 역할** medications CRUD + TAKEN/컨디션 | 보호자도 본인 복약 |

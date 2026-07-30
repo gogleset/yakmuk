@@ -8,7 +8,7 @@ export type InputTone = 'default' | 'soft';
 type Props = TextInputProps & {
   className?: string;
   /**
-   * default = surfaceSoft (흰 배경 위 가시)
+   * default = 흰 surface (canvas 위 line 보더로 가시)
    * soft = brandSoft — BottomSheet(surface) 안 더 강한 대비
    */
   tone?: InputTone;
@@ -29,14 +29,15 @@ export function Input({
     <TextInput
       className={cn(
         'rounded-[10px] px-3.5 py-3 text-base text-text',
-        tone === 'soft' ? 'bg-brand-soft' : 'bg-surface-soft',
+        // default=흰 surface · soft=시트 안 brandSoft
+        tone === 'soft' ? 'bg-brand-soft' : 'bg-surface',
         className,
       )}
       style={[
         {
-          // focus일 때만 보더. NativeWind focus:border는 remount/blur 유발 → style로 처리
+          // 흰 배경 가시성: 평소 line, focus만 brand
           borderWidth: 1,
-          borderColor: focused ? COLORS.brand : 'transparent',
+          borderColor: focused ? COLORS.brand : COLORS.line,
         },
         style,
       ]}

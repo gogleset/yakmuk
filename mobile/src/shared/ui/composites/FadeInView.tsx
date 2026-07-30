@@ -7,26 +7,46 @@ import Animated, {
   withDelay,
   withTiming,
 } from 'react-native-reanimated';
-import { MOTION } from '@/shared/constants';
+import {
+  MOTION,
+  staggerDelay,
+  type MotionDuration,
+} from '@/shared/constants/motion';
 
 type Props = {
   children: ReactNode;
-  /** 등장 딜레이(ms). stagger용 */
+  /**
+   * 순차 등장 비트 (0=copy, 1=media, 2=action…).
+   * delayMs 미지정 시 `step * MOTION.stagger.stepMs`.
+   */
+  step?: number;
+  /** 등장 딜레이(ms). 있으면 step보다 우선 */
   delayMs?: number;
+  /** 페이드 길이 — stagger 화면은 보통 `fast` */
+  duration?: MotionDuration;
   className?: string;
   style?: StyleProp<ViewStyle>;
 };
 
-/** 화면·블록 등장 — opacity + 살짝 위로 (design §7) */
+/** 화면·블록 등장 — opacity + 살짝 위로 (design §10) */
 export function FadeInView({
   children,
-  delayMs = 0,
+  step,
+  delayMs,
+  duration = 'normal',
   className,
   style,
 }: Props) {
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(MOTION.offset.enterY as number);
   const [reduceMotion, setReduceMotion] = useState(false);
+  const resolvedDelay =
+    delayMs !== undefined
+      ? delayMs
+      : step !== undefined
+        ? staggerDelay(step)
+        : 0;
+  const durationMs = MOTION.duration[duration];
 
   useEffect(() => {
     let cancelled = false;
@@ -50,11 +70,16 @@ export function FadeInView({
       return;
     }
 
-    const duration = MOTION.duration.normal;
     const easing = Easing.out(Easing.cubic);
-    opacity.value = withDelay(delayMs, withTiming(1, { duration, easing }));
-    translateY.value = withDelay(delayMs, withTiming(0, { duration, easing }));
-  }, [reduceMotion, delayMs, opacity, translateY]);
+    opacity.value = withDelay(
+      resolvedDelay,
+      withTiming(1, { duration: durationMs, easing }),
+    );
+    translateY.value = withDelay(
+      resolvedDelay,
+      withTiming(0, { duration: durationMs, easing }),
+    );
+  }, [reduceMotion, resolvedDelay, durationMs, opacity, translateY]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,

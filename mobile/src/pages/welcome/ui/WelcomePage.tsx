@@ -1,13 +1,11 @@
 import { router, useIsFocused } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
-  ScrollView,
   Text,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '@/providers/AuthProvider';
 import {
   useCreateFamilyMutation,
@@ -17,17 +15,15 @@ import {
 } from '@/features/guardian-auth';
 import { ROUTES } from '@/shared/config/routes';
 import { COLORS, LAYOUT, LIMITS } from '@/shared/config/theme';
+import { COPY } from '@/shared/copy';
 import {
-  Body,
   Button,
-  ChoiceCard,
   FadeInView,
   FunnelShell,
   Icons,
   Input,
   KokiIllustration,
   Muted,
-  SectionTitle,
 } from '@/shared/ui';
 
 type Path = 'choose' | 'leader';
@@ -38,6 +34,7 @@ export function WelcomePage() {
     useAuth();
   // join 스택 아래에서도 Welcome이 mount 유지됨 → focus일 때만 stale anon 정리
   const isFocused = useIsFocused();
+  const insets = useSafeAreaInsets();
   const [path, setPath] = useState<Path>('choose');
   const [email, setEmail] = useState('guardian@yakmuk.local');
   const [password, setPassword] = useState('yakmuk-dev-123');
@@ -140,6 +137,19 @@ export function WelcomePage() {
     }
   };
 
+  const onLeaveFamilySetup = () => {
+    void (async () => {
+      try {
+        await signOutAsync();
+        await refreshProfile();
+        setFamilyStep(0);
+        setPath('leader');
+      } catch {
+        /* mutation onError에서 처리 */
+      }
+    })();
+  };
+
   // P1 가족 만들기 퍼널
   if (needsFamilySetup) {
     const dirty = familyName.trim().length > 0 || nickname.trim().length > 0;
@@ -148,21 +158,26 @@ export function WelcomePage() {
         <FunnelShell
           stepIndex={0}
           stepCount={2}
-          title="가족 이름을 알려주세요"
+          title={COPY.welcome.familyNameTitle}
           kokiVariant="family"
-          ctaLabel="다음"
+          hideProgress
+          stagger
+          ctaLabel={COPY.welcome.next}
           ctaDisabled={!familyName.trim()}
           dirty={dirty}
-          onClose={() => void signOutAsync().then(() => refreshProfile())}
+          onBack={onLeaveFamilySetup}
           onCtaPress={() => setFamilyStep(1)}
         >
           <Input
             value={familyName}
             onChangeText={setFamilyName}
-            placeholder="예: 우리집"
+            placeholder={COPY.welcome.familyNamePlaceholder}
             maxLength={LIMITS.familyNameMaxLength}
             autoFocus
           />
+          <Muted className="self-end text-xs">
+            {familyName.length}/{LIMITS.familyNameMaxLength}
+          </Muted>
         </FunnelShell>
       );
     }
@@ -170,128 +185,148 @@ export function WelcomePage() {
       <FunnelShell
         stepIndex={1}
         stepCount={2}
-        title="뭐라고 불러드릴까요?"
-        ctaLabel={busy ? '잠시만요…' : '만들기'}
-        ctaDisabled={busy}
+        title={COPY.welcome.nicknameTitle}
+        kokiVariant="happy"
+        hideProgress
+        stagger
+        ctaLabel={busy ? '잠시만요…' : COPY.welcome.create}
+        ctaDisabled={busy || !nickname.trim()}
         ctaLoading={busy}
         dirty={dirty}
         onBack={() => setFamilyStep(0)}
-        onClose={() => void signOutAsync().then(() => refreshProfile())}
         onCtaPress={() => void onCreateFamily()}
       >
         <Input
           value={nickname}
           onChangeText={setNickname}
-          placeholder="예: 민수"
+          placeholder={COPY.welcome.nicknamePlaceholder}
           maxLength={LIMITS.nicknameMaxLength}
           autoFocus
         />
+        <Muted className="self-end text-xs">
+          {nickname.length}/{LIMITS.nicknameMaxLength}
+        </Muted>
       </FunnelShell>
     );
   }
 
-  return (
-    <KeyboardAvoidingView
-      className="flex-1 bg-canvas"
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <ScrollView
-        keyboardShouldPersistTaps="handled"
-        contentContainerClassName="flex-grow justify-center gap-3 px-6 py-10"
+  // choose: 인사·콕이·CTA를 세로 중앙에 한 덩어리로
+  if (path === 'choose') {
+    return (
+      <View
+        className="flex-1 justify-center bg-canvas px-6"
+        style={{
+          paddingTop: insets.top,
+          paddingBottom: Math.max(insets.bottom, 16),
+        }}
       >
-        <FadeInView>
-          <View className="mb-1 items-center gap-2">
-            <KokiIllustration variant="welcome" size={140} />
-            <Text className="text-4xl font-bold text-brand">약콕</Text>
-          </View>
-          <Body className="mb-1 text-center">
-            멀리 있는 가족과 안부를 나눠요.
-          </Body>
-          <Muted className="mb-2 text-center text-sm">콕이가 함께해요</Muted>
-        </FadeInView>
+        <View className="gap-8">
+          <FadeInView step={0} className="gap-2.5">
+            <Text className="text-3xl font-bold leading-snug text-text">
+              {COPY.welcome.title}
+            </Text>
+            <Muted className="text-base leading-relaxed">
+              {COPY.welcome.subtitle}
+            </Muted>
+          </FadeInView>
 
-        {path === 'choose' ? (
-          <FadeInView className="mt-2 gap-3">
-            <ChoiceCard
-              title="가족을 만들어요"
-              description="가족장으로 시작해요"
-              icon={Icons.Shield}
+          <FadeInView step={1} className="items-center">
+            <KokiIllustration variant="welcome" size={240} />
+          </FadeInView>
+
+          <FadeInView step={2} className="gap-3">
+            <Button
+              label={COPY.welcome.createFamily}
               onPress={() => setPath('leader')}
             />
-            <ChoiceCard
-              title="초대코드를 받았어요"
-              description="보호자·피보호자로 참여해요"
-              icon={Icons.QrCode}
+            <Button
+              label={COPY.welcome.hasInvite}
+              variant="outline"
               onPress={() => router.push(ROUTES.join)}
             />
           </FadeInView>
-        ) : (
-          <FadeInView className="gap-2.5">
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="이전"
-              hitSlop={LAYOUT.hitSlop.md}
-              onPress={() => setPath('choose')}
-              className="mb-1 self-start"
-            >
-              <Icons.ChevronLeft size={LAYOUT.icon.xl} color={COLORS.brand} />
-            </Pressable>
-            <View className="flex-row items-center gap-1.5">
-              <Icons.Shield size={LAYOUT.icon.sm} color={COLORS.brand} />
-              <SectionTitle className="text-sm">가족장으로 시작</SectionTitle>
-            </View>
-            <Button
-              label="Google로 계속"
-              variant="outline"
-              disabled={busy}
-              onPress={() => void onOAuth('google')}
-            />
-            <Button
-              label="Apple로 계속"
-              variant="outline"
-              disabled={busy}
-              onPress={() => void onOAuth('apple')}
-            />
+        </View>
+      </View>
+    );
+  }
 
-            {__DEV__ ? (
-              <>
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => setShowDevLogin((v) => !v)}
-                  className="mt-2"
-                >
-                  <Muted className="text-xs underline">
-                    {showDevLogin ? '개발 로그인 접기' : '개발용 이메일 로그인'}
-                  </Muted>
-                </Pressable>
-                {showDevLogin ? (
-                  <>
-                    <Input
-                      autoCapitalize="none"
-                      keyboardType="email-address"
-                      value={email}
-                      onChangeText={setEmail}
-                      placeholder="이메일"
-                    />
-                    <Input
-                      secureTextEntry
-                      value={password}
-                      onChangeText={setPassword}
-                      placeholder="비밀번호"
-                    />
-                    <Button
-                      label={busy ? '잠시만요…' : '이메일로 시작하기'}
-                      disabled={busy}
-                      icon={Icons.Shield}
-                      onPress={() => void onLeaderDev()}
-                    />
-                  </>
-                ) : null}
-              </>
-            ) : null}
-          </FadeInView>
-        )}
-      </ScrollView>
-    </KeyboardAvoidingView>
+  // leader: OAuth / 개발 로그인
+  return (
+    <View
+      className="flex-1 bg-canvas px-6"
+      style={{
+        paddingTop: insets.top + 8,
+        paddingBottom: Math.max(insets.bottom, 16),
+      }}
+    >
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="이전"
+        hitSlop={LAYOUT.hitSlop.md}
+        onPress={() => setPath('choose')}
+        className="mb-2 self-start"
+      >
+        <Icons.ChevronLeft size={LAYOUT.icon.xl} color={COLORS.brand} />
+      </Pressable>
+
+      <View className="flex-1 justify-center gap-8">
+        <FadeInView step={0}>
+          <Text className="text-center text-2xl font-bold leading-snug text-text">
+            {COPY.welcome.loginTitle}
+          </Text>
+        </FadeInView>
+
+        <FadeInView step={1} className="gap-3">
+          <Button
+            label={COPY.welcome.continueGoogle}
+            variant="oauth"
+            disabled={busy}
+            onPress={() => void onOAuth('google')}
+          />
+          <Button
+            label={COPY.welcome.continueApple}
+            variant="oauth"
+            disabled={busy}
+            onPress={() => void onOAuth('apple')}
+          />
+
+          {__DEV__ ? (
+            <>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => setShowDevLogin((v) => !v)}
+                className="mt-1"
+              >
+                <Muted className="text-center text-xs underline">
+                  {showDevLogin ? '개발 로그인 접기' : '개발용 이메일 로그인'}
+                </Muted>
+              </Pressable>
+              {showDevLogin ? (
+                <View className="gap-2.5">
+                  <Input
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    value={email}
+                    onChangeText={setEmail}
+                    placeholder="이메일"
+                  />
+                  <Input
+                    secureTextEntry
+                    value={password}
+                    onChangeText={setPassword}
+                    placeholder="비밀번호"
+                  />
+                  <Button
+                    label={busy ? '잠시만요…' : '이메일로 시작하기'}
+                    disabled={busy}
+                    onPress={() => void onLeaderDev()}
+                  />
+                </View>
+              ) : null}
+            </>
+          ) : null}
+        </FadeInView>
+      </View>
+    </View>
   );
 }

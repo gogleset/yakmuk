@@ -45,6 +45,37 @@ export const COPY = {
     emptyMembers: '아직 함께하는 가족이 없어요',
   },
 
+  /** P2 초대코드 조인 */
+  join: {
+    codeTitle: '초대코드를 입력해 주세요',
+    peekLoading: '초대 확인 중…',
+    nicknameTitle: '콕이는\n뭐라고 불러드릴까요?',
+    nicknamePlaceholder: '예) 엄마, 언니, 아들 등 (선택)',
+    later: '나중에 할게요',
+    next: '다음',
+    participate: '참여하기',
+    connecting: '연결 중…',
+    familyOf: (leaderNickname: string) => `${leaderNickname}님의 가족`,
+    recoveryHint: '기기 복구 · 약·기록 유지',
+  },
+
+  /** F1 Welcome — 콕이 1인칭 히어로 · 가족장 시작 */
+  welcome: {
+    title: '안녕하세요.\n저는 콕이에요',
+    subtitle: '멀리 있어도\n가족의 안부를 함께\n살펴볼게요.',
+    createFamily: '가족을 만들어요',
+    hasInvite: '초대코드를 받았어요',
+    loginTitle: '안부를 나누기 위해\n로그인이 필요해요',
+    continueGoogle: 'Google로 계속',
+    continueApple: 'Apple로 계속',
+    familyNameTitle: '우리 가족을\n어떻게 부를까요?',
+    familyNamePlaceholder: '예) 우리집, 행복한 가족 등',
+    nicknameTitle: '콕이는\n뭐라고 불러드릴까요?',
+    nicknamePlaceholder: '예) 엄마, 아빠, 언니 등',
+    next: '다음',
+    create: '만들기',
+  },
+
   invite: {
     claimedCannotDeleteTitle: '연결된 초대예요',
     claimedCannotDeleteBody: '이미 연결된 초대는 지울 수 없어요.',

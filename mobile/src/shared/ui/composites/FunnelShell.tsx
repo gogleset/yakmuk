@@ -13,14 +13,17 @@ import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { Button } from '@/shared/ui/primitives/Button';
 import { Icons } from '@/shared/ui/primitives/Icon';
 import { FadeInView } from '@/shared/ui/composites/FadeInView';
-import { KokiIllustration, type KokiVariant } from '@/shared/ui/composites/KokiIllustration';
+import {
+  KokiIllustration,
+  type KokiVariant,
+} from '@/shared/ui/composites/KokiIllustration';
 
 type Props = {
   /** 0-based 현재 스텝 */
   stepIndex: number;
   /** 전체 스텝 수 (progress용) */
   stepCount: number;
-  /** 큰 질문 타이틀 */
+  /** 큰 질문 타이틀 (줄바꿈 허용) */
   title: string;
   children: ReactNode;
   /** 하단 CTA 라벨 */
@@ -28,19 +31,22 @@ type Props = {
   onCtaPress: () => void;
   ctaDisabled?: boolean;
   ctaLoading?: boolean;
-  /** 이전 스텝 — stepIndex>0일 때 표시 */
+  /** 이전 — step 0에서도 넘기면 표시 (예: 로그인으로) */
   onBack?: () => void;
   /** 닫기 — dirty면 confirm */
   onClose?: () => void;
   /** 작성 중이면 닫기 시 confirm */
   dirty?: boolean;
-  /** 입구·완료 스텝만 콕이 */
+  /** 입구·완료 스텝만 콕이 (타이틀 위) */
   kokiVariant?: KokiVariant;
-  /** progress 숨김 (1스텝 퍼널 등) */
+  kokiSize?: number;
+  /** progress 숨김 (P1 목업 등) */
   hideProgress?: boolean;
+  /** stagger 순차 등장 (콕이 → 타이틀 → 필드/CTA) */
+  stagger?: boolean;
 };
 
-/** 토스형 입력 퍼널 셸 — 전부 full page (#5A) */
+/** 토스형 입력 퍼널 셸 — 전부 full page (#5B) */
 export function FunnelShell({
   stepIndex,
   stepCount,
@@ -54,10 +60,25 @@ export function FunnelShell({
   onClose,
   dirty = false,
   kokiVariant,
+  kokiSize = 168,
   hideProgress = false,
+  stagger = false,
 }: Props) {
   const insets = useSafeAreaInsets();
-  const showBack = stepIndex > 0 && !!onBack;
+  const showBack = !!onBack;
+
+  const handleBack = () => {
+    if (!onBack) return;
+    // step 0 + dirty = 퍼널 이탈(로그인 복귀 등) — confirm
+    if (dirty && stepIndex === 0) {
+      Alert.alert('작성을 그만둘까요?', '입력한 내용은 저장되지 않아요.', [
+        { text: '계속 작성', style: 'cancel' },
+        { text: '나가기', style: 'destructive', onPress: onBack },
+      ]);
+      return;
+    }
+    onBack();
+  };
 
   const handleClose = () => {
     if (!onClose) return;
@@ -70,6 +91,11 @@ export function FunnelShell({
       { text: '나가기', style: 'destructive', onPress: onClose },
     ]);
   };
+
+  // stagger 끄면 한 덩어리로 즉시 표시 (step 고정 0)
+  const mediaStep = stagger ? 0 : 0;
+  const titleStep = stagger ? 1 : 0;
+  const bodyStep = stagger ? 2 : 0;
 
   return (
     <KeyboardAvoidingView
@@ -91,7 +117,7 @@ export function FunnelShell({
               accessibilityRole="button"
               accessibilityLabel="이전"
               hitSlop={LAYOUT.hitSlop.md}
-              onPress={onBack}
+              onPress={handleBack}
               className="min-w-[44px]"
             >
               <Icons.ChevronLeft size={LAYOUT.icon.xl} color={COLORS.brand} />
@@ -131,27 +157,37 @@ export function FunnelShell({
 
         <ScrollView
           keyboardShouldPersistTaps="handled"
-          contentContainerClassName="flex-grow px-5 pb-4"
+          contentContainerClassName="flex-grow justify-center px-5 pb-4"
           contentContainerStyle={{ gap: LAYOUT.sheet.contentGap }}
         >
-          <FadeInView key={stepIndex} className="gap-3">
+          {/* key로 스텝 전환 시 stagger 재시작 */}
+          <View key={stepIndex} className="gap-4">
             {kokiVariant ? (
-              <View className="items-center py-2">
-                <KokiIllustration variant={kokiVariant} size={120} />
-              </View>
+              <FadeInView
+                step={mediaStep}
+                className="items-center py-1"
+              >
+                <KokiIllustration variant={kokiVariant} size={kokiSize} />
+              </FadeInView>
             ) : null}
-            <Text className="text-2xl font-bold text-brand">{title}</Text>
-            {children}
-          </FadeInView>
+            <FadeInView step={titleStep}>
+              <Text className="text-2xl font-bold leading-snug text-text">
+                {title}
+              </Text>
+            </FadeInView>
+            <FadeInView step={bodyStep} className="gap-2">
+              {children}
+            </FadeInView>
+          </View>
         </ScrollView>
 
-        <View className="px-5 pt-2">
+        <FadeInView key={`cta-${stepIndex}`} step={bodyStep} className="px-5 pt-2">
           <Button
             label={ctaLoading ? '잠시만요…' : ctaLabel}
             disabled={ctaDisabled || ctaLoading}
             onPress={onCtaPress}
           />
-        </View>
+        </FadeInView>
       </View>
     </KeyboardAvoidingView>
   );

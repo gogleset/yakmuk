@@ -13,6 +13,8 @@ const buttonVariants = cva(
         default: "bg-brand",
         secondary: "bg-brand-soft",
         outline: "bg-surface-soft",
+        /** OAuth 표준 — 흰 배경 + line 윤곽 (Google/Apple G는 흰 위) */
+        oauth: "border border-line bg-surface",
         ghost: "bg-transparent",
         destructive: "bg-destructive",
       },
@@ -36,6 +38,7 @@ const buttonLabelVariants = cva("text-base font-semibold", {
       default: "text-ink",
       secondary: "text-brand",
       outline: "text-brand",
+      oauth: "text-text",
       ghost: "text-brand",
       destructive: "text-white",
     },
@@ -60,6 +63,7 @@ type Props = Omit<PressableProps, "children"> &
 function iconColor(variant: ButtonVariant): string {
   if (variant === "default") return COLORS.ink;
   if (variant === "destructive") return COLORS.white;
+  if (variant === "oauth") return COLORS.text;
   return COLORS.brand;
 }
 

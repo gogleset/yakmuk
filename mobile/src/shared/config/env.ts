@@ -20,7 +20,7 @@ export function getSupabaseUrl(): string {
   const url = process.env.EXPO_PUBLIC_SUPABASE_URL?.trim();
   if (url) return resolveLocalSupabaseUrl(url);
   // Expo Go / 시뮬 기본
-  return resolveLocalSupabaseUrl('http://127.0.0.1:54321');
+  return resolveLocalSupabaseUrl('http://127.0.0.1:54421');
 }
 
 export function getSupabaseAnonKey(): string {

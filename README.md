@@ -8,7 +8,9 @@
 
 1. Docker Desktop 실행  
 2. `supabase start` → anon key를 `mobile/.env`에  
-3. `cd mobile && pnpm install && pnpm start`  
+3. 앱 중 하나:
+   - 호스트: `cd mobile && pnpm install && pnpm start`
+   - 컨테이너: `docker compose up --build yakmuk` (Metro `8081`)
 
 상세: [mobile/README.md](mobile/README.md)
 

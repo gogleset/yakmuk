@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 # git-pr
 
-`@git-pr` 호출 = **PR 본문 `.md` 파일만 생성**. `gh pr create` / push / 커밋하지 않는다.
+`@git-pr` 호출 = **안티패턴 게이트 후** PR 본문 `.md` 파일만 생성. `gh pr create` / push / 커밋하지 않는다.
 
 ## 1. Inspect (병렬)
 
@@ -22,7 +22,15 @@ git log --oneline -15
 
 기본 브랜치를 못 찾으면 `git merge-base` / remote HEAD로 추정.
 
-## 2. Write md
+## 2. Anti-patterns gate (필수)
+
+브랜치 diff에 `mobile/**`이 있으면 **pr-body 작성 전에** [rn-fsd-anti-patterns](../rn-fsd-anti-patterns/SKILL.md)를 읽고 `main...HEAD`(또는 `master...HEAD`) mobile 변경을 점검한다.
+
+- Must-fix 발견 → 먼저 고치고(커밋은 사용자/`@git-commit`에 맡김), 잔여 이슈를 PR Test plan / Notes에 짧게 적는다
+- 이슈 없음 → 진행
+- mobile 변경 없으면 스킵
+
+## 3. Write md
 
 템플릿: [pr-template.md](pr-template.md)
 
@@ -33,7 +41,7 @@ git log --oneline -15
 - **덮어쓰기** OK (기존 `pr-body.md` 있으면 갱신)
 - 파일을 git에 add/commit 하지 않는다
 
-## 3. Report
+## 4. Report
 
 작성 경로 + 제안 PR 제목 한 줄만 보고.
 

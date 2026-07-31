@@ -68,6 +68,7 @@ Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 |-------|------|
 | [add-fsd-feature](.agents/skills/add-fsd-feature/SKILL.md) | mobile feature/entity/page 추가 |
 | [add-supabase-migration](.agents/skills/add-supabase-migration/SKILL.md) | RPC·테이블·한도 변경 |
+| [rn-fsd-anti-patterns](.agents/skills/rn-fsd-anti-patterns/SKILL.md) | 디버그·리뷰·리팩토링 시 FSD/Query/RN 안티패턴 점검 |
 | [git-commit](.agents/skills/git-commit/SKILL.md) | `@git-commit` → 작업별 스테이징·커밋 |
 | [git-pr](.agents/skills/git-pr/SKILL.md) | `@git-pr` → `pr-body.md` 생성 |
 

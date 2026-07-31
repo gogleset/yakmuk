@@ -19,6 +19,10 @@ description: >-
 2. 도메인 slice(`features/medication/`)가 아닌지 확인 → **use-case 이름**만
 3. UI/카피면 [docs/design.md](../../../docs/design.md) · [copy-constants.mdc](../../rules/copy-constants.mdc)
 4. **Red 먼저** — `mobile/src/__tests__/…`에 실패 테스트 경로 잡기 (소스 옆 금지)
+5. **empty / 검색 없음 / 예외 UI**가 필요하면 `Fallback` (`@/shared/ui`)을 쓴다.  
+   `image` + `message`만. BottomSheet·스크롤 = 기본(compact). 화면 남은 높이 채울 때만 `fill`.  
+   시트에 `min-h`/`flex-1`로 높이 억지로 키우지 말 것.  
+   새로 empty 박스를 만들지 말 것. (`RichEmptyState`는 CTA·홈 empty용, `EmptyHint`는 한 줄 힌트용)
 
 ## Feature slice
 
@@ -35,6 +39,8 @@ mobile/src/__tests__/features/<use-case>/
 └── useXxxMutation.test.ts    # 같은 use-case 경로로 미러
 ```
 
+약 등록·수정·상세 UI는 `features/medication-sheet` (`MedicationSheet` mode).  
+`add-medication` / `edit-medication`은 mutation(+refresh)만.
 - supabase는 **entity api만**. feature에서 `@/shared/api/client` 금지
 - 에러 타이틀: `import { ERRORS } from '@/shared/copy'`
 - 무효화: `shared/lib/query-invalidation` 또는 entity `invalidate*`
@@ -71,5 +77,6 @@ page 테스트가 필요하면 `src/__tests__/pages/<route>/`.
 - [ ] `mobile/src/app/` 만들지 않음
 - [ ] 새 문구/한도는 copy·constants에
 - [ ] design §6.2 (짧은 카피, border 남발 금지)
+- [ ] empty/예외 UI → `Fallback` (`image` + `message`; 풀높이만 `fill`)
 - [ ] TDD: `mobile/src/__tests__/`에 대응 테스트 (소스 옆 `*.test.ts` 없음)
 - [ ] entity api/RPC면 로컬 Supabase로 `*.api.test.ts` (가능하면 · mock만으로 끝내지 않기)

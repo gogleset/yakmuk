@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateMedication } from '@/entities/medication/api/update-medication';
+import type { MedicationMetaInput } from '@/entities/medication/lib/medicationMeta';
 import { editMedicationKeys } from '@/features/edit-medication/model/queryKeys';
 import {
   invalidateHomeActivity,
@@ -13,7 +14,7 @@ type UpdateInput = {
   name: string;
   scheduledTime: string;
   daysMask: string;
-};
+} & MedicationMetaInput;
 
 type Params = {
   onSuccess?: () => void | Promise<void>;

@@ -73,6 +73,12 @@ export {
 } from './lib/time12h';
 export type { Period, Time12h } from './lib/time12h';
 export { MedRow } from './ui/MedRow';
+export { MedColorSwatch } from './ui/MedColorSwatch';
+export {
+  MedicationMetaFields,
+  emptyMedicationMetaForm,
+} from './ui/MedicationMetaFields';
+export type { MedicationMetaFormState } from './ui/MedicationMetaFields';
 export { TimeSlotMedAccordion } from './ui/TimeSlotMedAccordion';
 export { DaysModeToggle } from './ui/DaysModeToggle';
 export { WeekdayPicker } from './ui/WeekdayPicker';
@@ -80,6 +86,11 @@ export { TimePicker } from './ui/TimePicker';
 export { ScheduleModeToggle } from './ui/ScheduleModeToggle';
 export type { ScheduleMode, ControlTone } from './ui/ScheduleModeToggle';
 export { TimeSlotList } from './ui/TimeSlotList';
+export {
+  toMedicationMetaColumns,
+  validateDosePair,
+} from './lib/medicationMeta';
+export type { MedicationMetaInput } from './lib/medicationMeta';
 export { CONDITION_LABEL } from './lib/display';
 export { stepDayLoop } from './lib/loop/dayLoop';
 export type {

@@ -68,6 +68,8 @@ export const ERRORS = {
     searchNetwork: '약 정보를 불러오지 못했어요. 네트워크를 확인해 주세요',
     searchForbidden: '약 검색이 막혀 있어요. 잠시 후 다시 시도해 주세요',
     searchParse: '약 검색 결과를 읽지 못했어요',
+    dosePairRequired: '용량과 단위를 같이 적어 주세요',
+    doseInvalid: '용량을 확인해 주세요',
   },
 
   condition: {

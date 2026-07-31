@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { addMedications } from '@/entities/medication/api/add-medication';
 import type { MedScheduleSlot } from '@/entities/medication/lib/daysMask';
+import type { MedicationMetaInput } from '@/entities/medication/lib/medicationMeta';
 import { addMedicationKeys } from '@/features/add-medication/model/queryKeys';
 import {
   invalidateHomeActivity,
@@ -13,7 +14,7 @@ type AddMedicationsInput = {
   userId: string;
   name: string;
   slots: MedScheduleSlot[];
-};
+} & MedicationMetaInput;
 
 type Params = {
   onSuccess?: () => void | Promise<void>;

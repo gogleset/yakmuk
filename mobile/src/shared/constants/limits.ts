@@ -15,6 +15,8 @@ export const LIMITS = {
   doseMinuteInterval: 5,
   /** 약 검색 최소 글자 */
   drugSearchMinQueryLength: 2,
-  /** 약 검색 debounce (ms) */
-  drugSearchDebounceMs: 350,
+  /** 약 메타 텍스트 상한 (효능·복용법 등) */
+  medMetaMaxLength: 2000,
+  /** 용량 숫자 상한 */
+  medDoseAmountMax: 9999,
 } as const;

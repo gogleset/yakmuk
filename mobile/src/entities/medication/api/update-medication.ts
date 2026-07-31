@@ -1,21 +1,29 @@
 import { supabase } from '@/shared/api/client';
 import { throwIfError } from '@/shared/api/interceptor';
 import { mapMedication } from '@/entities/medication/api/mappers';
+import {
+  toMedicationMetaColumns,
+  type MedicationMetaInput,
+} from '@/entities/medication/lib/medicationMeta';
 import type { Medication } from '@/entities/medication/model/types';
 import { ERRORS } from '@/shared/copy';
 
-export async function updateMedication(input: {
-  medicationId: number;
-  name: string;
-  scheduledTime: string;
-  daysMask: string;
-}): Promise<Medication> {
+export async function updateMedication(
+  input: {
+    medicationId: number;
+    name: string;
+    scheduledTime: string;
+    daysMask: string;
+  } & MedicationMetaInput,
+): Promise<Medication> {
+  const metaColumns = toMedicationMetaColumns(input);
   const { data, error } = await supabase
     .from('medications')
     .update({
       name: input.name.trim(),
       scheduled_time: input.scheduledTime,
       days_mask: input.daysMask,
+      ...metaColumns,
     })
     .eq('id', input.medicationId)
     .select('*')

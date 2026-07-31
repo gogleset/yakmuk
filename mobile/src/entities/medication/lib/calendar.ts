@@ -1,4 +1,5 @@
 import type { DailyLog, DayMedStatus, Medication } from '@/entities/medication/model/types';
+import { isDayCompleteFeedLog } from '@/entities/medication/lib/dayCompleteFeed';
 import { COLORS } from '@/shared/config/theme';
 import { toKstDateStringFromIso, weekdayMon0FromKstDate } from '@/shared/lib/kst';
 
@@ -28,7 +29,10 @@ export function isMedScheduledOnDate(med: Medication, dateKst: string): boolean 
 
 function countOrphanTakenLogs(dayLogs: DailyLog[]): number {
   return dayLogs.filter(
-    (log) => log.status === 'TAKEN' && log.medicationId == null,
+    (log) =>
+      log.status === 'TAKEN' &&
+      log.medicationId == null &&
+      !isDayCompleteFeedLog(log),
   ).length;
 }
 
@@ -108,6 +112,7 @@ export function buildDayMedicationEntries(
   // hard delete 등으로 medication_id가 null인 과거 체크 기록
   for (const log of dayLogs) {
     if (log.status !== 'TAKEN' || log.medicationId != null) continue;
+    if (isDayCompleteFeedLog(log)) continue;
     entries.push({
       key: `orphan-${log.id}`,
       name: log.medicationName?.trim() || '삭제된 약',

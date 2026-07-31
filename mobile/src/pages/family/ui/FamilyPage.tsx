@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { FlatList, RefreshControl } from 'react-native';
+import { useMemo, useState } from 'react';
+import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { useAuth } from '@/providers/AuthProvider';
 import {
   invalidateFamilyActivity,
@@ -10,21 +10,39 @@ import {
 } from '@/entities/family';
 import { useAckFamilyAlertMutation } from '@/features/ack-family-alert';
 import { familyMemberRoute, ROUTES } from '@/shared/config/routes';
-import { formatDayLabel } from '@/shared/lib/format';
+import { formatFriendlyDate } from '@/shared/lib/format';
 import { todayKstDateString } from '@/shared/lib/kst';
-import { COLORS, LAYOUT } from '@/shared/config/theme';
+import { COLORS, LAYOUT, LIMITS } from '@/shared/config/theme';
+import { COPY } from '@/shared/copy';
 import {
   FadeInView,
-  Icons,
-  Muted,
-  RichEmptyState,
+  Fallback,
+  KokiIllustration,
   Screen,
-  SectionHeader,
 } from '@/shared/ui';
-import { FamilyActivityFeedItem } from '@/widgets/family-activity-feed';
-import { FamilyGuardianDashboard } from '@/widgets/family-guardian-dashboard';
+import {
+  FamilyActivityFeedItem,
+  FamilyFeedDayHeader,
+  filterFamilyFeedLastDays,
+  groupFamilyFeedByDate,
+  sliceFamilyFeedSections,
+} from '@/widgets/family-activity-feed';
+import {
+  FAMILY_ALERT_UI_MOCK,
+  FamilyCareAlertCarousel,
+  mapFamilyAlertsToSlides,
+  MOCK_CARE_ALERTS,
+} from '@/widgets/family-care-alert';
+import {
+  FamilyFeedSectionHeader,
+  FamilyGuardianDashboard,
+  FamilyTabHeader,
+} from '@/widgets/family-guardian-dashboard';
 
-/** 가족 — 전원 복약 상태·활동 피드 (대칭) */
+/** UI 확인용 — true면 가족 그리드·최근 소식 empty 강제 */
+const FAMILY_TAB_EMPTY_UI_PREVIEW = false;
+
+/** 가족 — 케어 알림 · 가족 그리드 · 최근 소식 프리뷰 */
 export function FamilyPage() {
   const { profile, refreshProfile } = useAuth();
   const qc = useQueryClient();
@@ -33,6 +51,8 @@ export function FamilyPage() {
   const myUserId = profile?.id;
   const isLeader = profile?.role === 'family_leader';
   const [refreshing, setRefreshing] = useState(false);
+  /** mock ack — 슬라이드 id 로컬 제거 */
+  const [dismissedMockIds, setDismissedMockIds] = useState<string[]>([]);
 
   const {
     status: statusQuery,
@@ -57,18 +77,47 @@ export function FamilyPage() {
     }
   };
 
-  const statusMembers = (statusQuery.data ?? []).filter(
-    (member) => member.userId !== myUserId,
-  );
+  const statusMembers = FAMILY_TAB_EMPTY_UI_PREVIEW
+    ? []
+    : (statusQuery.data ?? []).filter((member) => member.userId !== myUserId);
   const alerts = (alertsQuery.data ?? []).filter(
     (alert) => alert.userId !== myUserId,
   );
-  const feed = (feedQuery.data ?? []).filter((item) => item.userId !== myUserId);
 
-  const leaderNickname =
-    (membersQuery.data ?? []).find((m) => m.role === 'family_leader')
-      ?.nickname ??
-    (profile?.role === 'family_leader' ? profile.nickname : null);
+  const careSlides = useMemo(() => {
+    if (FAMILY_ALERT_UI_MOCK) {
+      return MOCK_CARE_ALERTS.filter(
+        (slide) => !dismissedMockIds.includes(slide.id),
+      );
+    }
+    return mapFamilyAlertsToSlides(alerts);
+  }, [alerts, dismissedMockIds]);
+
+  const feedSections = useMemo(() => {
+    if (FAMILY_TAB_EMPTY_UI_PREVIEW) return [];
+    const others = (feedQuery.data ?? []).filter(
+      (item) => item.userId !== myUserId,
+    );
+    const week = filterFamilyFeedLastDays(
+      others,
+      today,
+      LIMITS.familyFeedWindowDays,
+    );
+    return groupFamilyFeedByDate(week, today);
+  }, [feedQuery.data, myUserId, today]);
+
+  const feedCount = feedSections.reduce((n, s) => n + s.data.length, 0);
+  const feedPreviewSections = sliceFamilyFeedSections(
+    feedSections,
+    LIMITS.familyFeedPreviewCount,
+  );
+  const previewCount = feedPreviewSections.reduce(
+    (n, s) => n + s.data.length,
+    0,
+  );
+  const hasMembers = statusMembers.length > 0;
+  // 프리뷰: 멤버 empty여도 최근 소식 empty 같이 노출
+  const showFeedSection = hasMembers || FAMILY_TAB_EMPTY_UI_PREVIEW;
 
   const openMember = (userId: string, nickname: string | null) => {
     if (!userId || userId === myUserId) return;
@@ -77,12 +126,24 @@ export function FamilyPage() {
     router.push(familyMemberRoute(userId, nickname, role));
   };
 
+  const openFeed = () => {
+    router.push(ROUTES.familyFeed);
+  };
+
+  const onAckCareAlert = (slideId: string) => {
+    if (FAMILY_ALERT_UI_MOCK) {
+      setDismissedMockIds((prev) =>
+        prev.includes(slideId) ? prev : [...prev, slideId],
+      );
+      return;
+    }
+    ackMut.mutate(slideId);
+  };
+
   return (
     <Screen fadeTop={LAYOUT.fade.top} fadeBottom={LAYOUT.fade.bottomPlain}>
-      <FlatList
-        data={feed}
-        keyExtractor={(item) => String(item.id)}
-        contentContainerClassName="gap-2.5 px-5 pb-10 pt-4"
+      <ScrollView
+        contentContainerClassName="gap-3 px-5 pb-10 pt-2"
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -91,35 +152,68 @@ export function FamilyPage() {
             colors={[COLORS.brand]}
           />
         }
-        ListHeaderComponent={
-          <FadeInView className="gap-3 pb-2">
-            <Muted>{formatDayLabel(today)} · 가족 안부</Muted>
-
-            <FamilyGuardianDashboard
-              alerts={alerts}
-              members={statusMembers}
-              leaderNickname={leaderNickname}
-              myUserId={myUserId}
-              showInviteCta={isLeader}
-              onAckAlert={(id) => ackMut.mutate(id)}
-              onPressMember={openMember}
-              onInviteCtaPress={() => router.push(ROUTES.settingsFamily)}
-            />
-
-            <SectionHeader title="최근 소식" />
-          </FadeInView>
-        }
-        ListEmptyComponent={
-          <RichEmptyState
-            title="아직 소식이 없어요"
-            message="가족이 약을 체크하면 여기에 보여요."
-            icon={Icons.Users}
+        keyboardShouldPersistTaps="handled"
+      >
+        <FadeInView className="gap-3">
+          <FamilyTabHeader
+            dateLabel={formatFriendlyDate(today)}
+            onBellPress={() => router.push(ROUTES.settings)}
           />
-        }
-        renderItem={({ item }) => (
-          <FamilyActivityFeedItem item={item} onPress={openMember} />
-        )}
-      />
+
+          <FamilyCareAlertCarousel
+            slides={careSlides}
+            onAck={onAckCareAlert}
+          />
+
+          <FamilyGuardianDashboard
+            members={statusMembers}
+            showInviteCta={isLeader}
+            onPressMember={openMember}
+            onInviteCtaPress={() => router.push(ROUTES.settingsFamily)}
+          />
+
+          {showFeedSection ? (
+            <View className="gap-2.5">
+              <FamilyFeedSectionHeader
+                feedCount={feedCount}
+                onPress={openFeed}
+              />
+              {feedCount === 0 ? (
+                <Fallback
+                  image={<KokiIllustration variant="cheer" size={96} />}
+                  message={COPY.family.emptyFeedMessage}
+                />
+              ) : (
+                <>
+                  {feedPreviewSections.map((section) => (
+                    <View key={section.dateYmd} className="gap-2.5">
+                      <FamilyFeedDayHeader title={section.title} />
+                      {section.data.map((item) => (
+                        <FamilyActivityFeedItem
+                          key={item.id}
+                          item={item}
+                          onPress={openMember}
+                        />
+                      ))}
+                    </View>
+                  ))}
+                  {feedCount > previewCount ? (
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={openFeed}
+                      className="items-center py-2"
+                    >
+                      <Text className="text-sm font-semibold text-text">
+                        {COPY.family.seeMoreFeed}
+                      </Text>
+                    </Pressable>
+                  ) : null}
+                </>
+              )}
+            </View>
+          ) : null}
+        </FadeInView>
+      </ScrollView>
     </Screen>
   );
 }

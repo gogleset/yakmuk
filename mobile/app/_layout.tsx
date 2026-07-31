@@ -13,6 +13,12 @@ const sheetScreenOptions = {
   headerShown: false,
 };
 
+/** 가족 스택 상세 — 우측 슬라이드 푸시 */
+const familyPushOptions = {
+  animation: 'slide_from_right' as const,
+  animationDuration: MOTION.duration.normal,
+};
+
 export default function RootLayout() {
   return (
     <AppProviders>
@@ -29,6 +35,12 @@ export default function RootLayout() {
           <Stack.Screen name="add-medication" options={sheetScreenOptions} />
           <Stack.Screen name="edit-medication" options={sheetScreenOptions} />
           <Stack.Screen name="view-medication" options={sheetScreenOptions} />
+          <Stack.Screen
+            name="family-member/[userId]"
+            options={familyPushOptions}
+          />
+          <Stack.Screen name="family-feed" options={familyPushOptions} />
+          <Stack.Screen name="settings-family" options={familyPushOptions} />
         </Stack>
       </View>
     </AppProviders>

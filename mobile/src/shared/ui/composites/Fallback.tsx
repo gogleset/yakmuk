@@ -44,7 +44,7 @@ export function Fallback({
       <View className="items-center justify-center">{image}</View>
       <Body
         className={cn(
-          'text-center text-sm text-brand-muted',
+          'text-center text-base font-bold leading-6 text-text',
           messageClassName,
         )}
       >

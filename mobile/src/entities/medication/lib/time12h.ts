@@ -34,14 +34,6 @@ export function isValidMinute(n: number): boolean {
   return Number.isInteger(n) && n >= 0 && n <= 59;
 }
 
-/** interval 배수로 내림. 음수·NaN·잘못된 interval → 0 */
-export function snapMinute(n: number, interval: number): number {
-  if (!Number.isFinite(n) || n < 0) return 0;
-  if (!Number.isFinite(interval) || interval <= 0) return 0;
-  const clamped = Math.min(59, Math.floor(n));
-  return clamped - (clamped % interval);
-}
-
 /** HH:MM → 12h. 무효면 null */
 export function hhmmToTime12h(hhmm: string): Time12h | null {
   if (!isValidHhmm(hhmm)) return null;
@@ -91,7 +83,6 @@ type NormalizeDraftInput = {
   minuteDigits: string;
   period: Period;
   fallbackHhmm?: string;
-  minuteInterval?: number;
 };
 
 /**
@@ -131,14 +122,13 @@ export function coerceMinuteDigits(digits: string): {
 
 /**
  * draft → 유효 HH:MM.
- * 시 >12 → 12, 분 >59 → 59 후 snap. 빈값이면 fallback.
+ * 시 >12 → 12, 분 >59 → 59. 분은 입력값 그대로(스냅 없음). 빈값이면 fallback.
  */
 export function normalizeDraft({
   hourDigits,
   minuteDigits,
   period,
   fallbackHhmm,
-  minuteInterval = LIMITS.doseMinuteInterval,
 }: NormalizeDraftInput): string {
   const fallback =
     fallbackHhmm && isValidHhmm(fallbackHhmm)
@@ -158,9 +148,7 @@ export function normalizeDraft({
   if (!Number.isInteger(minute) || minute < 0) minute = 0;
   if (minute > 59) minute = 59;
 
-  const snapped = snapMinute(minute, minuteInterval);
-
-  return time12hToHhmm({ hour12, minute: snapped, period });
+  return time12hToHhmm({ hour12, minute, period });
 }
 
 /** 표시용 pad (편집 중엔 draft 문자열 그대로) */

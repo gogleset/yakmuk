@@ -4,7 +4,7 @@ import { groupMedsByScheduledTime } from '@/entities/medication/lib/timeSlots';
 import type { Medication } from '@/entities/medication/model/types';
 import { TimeSlotMedAccordion } from '@/entities/medication';
 import { COPY } from '@/shared/copy';
-import { EmptyHint } from '@/shared/ui';
+import { Fallback, KokiIllustration } from '@/shared/ui';
 
 type Props = {
   meds: Medication[];
@@ -46,11 +46,21 @@ export function GuardianMedManagePanel({
   );
 
   if (isError) {
-    return <EmptyHint message={COPY.med.loadFailed} />;
+    return (
+      <Fallback
+        image={<KokiIllustration variant="worried" size={72} />}
+        message={COPY.med.loadFailed}
+      />
+    );
   }
 
   if (meds.length === 0) {
-    return <EmptyHint message={COPY.med.emptyRegistered} />;
+    return (
+      <Fallback
+        image={<KokiIllustration variant="thinking" size={72} />}
+        message={COPY.med.emptyRegistered}
+      />
+    );
   }
 
   return (

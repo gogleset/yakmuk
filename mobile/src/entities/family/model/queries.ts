@@ -6,6 +6,8 @@ import { listFeed } from '@/entities/family/api/list-feed';
 import { listTodayStatus } from '@/entities/family/api/list-today-status';
 import { subscribeFeed } from '@/entities/family/api/subscribe-feed';
 import { familyKeys } from '@/entities/family/model/queryKeys';
+import { LIMITS } from '@/shared/constants';
+import { addDaysKst } from '@/shared/lib/kst';
 
 type FamilyScreenQueryParams = {
   familyId: string | null | undefined;
@@ -18,6 +20,10 @@ export function useFamilyScreenQueries({
   todayKst,
 }: FamilyScreenQueryParams) {
   const enabled = !!familyId;
+  const feedSince = addDaysKst(
+    todayKst,
+    -(LIMITS.familyFeedWindowDays - 1),
+  );
 
   const [status, alerts, feed, members] = useQueries({
     queries: [
@@ -32,8 +38,9 @@ export function useFamilyScreenQueries({
         enabled,
       },
       {
-        queryKey: familyKeys.feed(familyId!),
-        queryFn: () => listFeed(familyId!),
+        queryKey: familyKeys.feed(familyId!, feedSince),
+        queryFn: () =>
+          listFeed(familyId!, { sinceLogDate: feedSince }),
         enabled,
       },
       {

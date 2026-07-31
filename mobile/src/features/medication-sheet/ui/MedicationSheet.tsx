@@ -17,7 +17,11 @@ import {
   validatePerWeekdaySchedule,
   validateSameSchedule,
 } from '@/entities/medication/lib/daysMask';
-import { validateDosePair } from '@/entities/medication/lib/medicationMeta';
+import {
+  clampMedMetaText,
+  parseDoseAmount,
+  validateMedicationMetaForm,
+} from '@/entities/medication/lib/medicationMeta';
 import type {
   DrugSearchItem,
   Medication,
@@ -65,21 +69,14 @@ type Props = {
   onEditPress?: () => void;
 };
 
-function parseDoseAmount(raw: string): number | null {
-  const trimmed = raw.trim();
-  if (!trimmed) return null;
-  const n = Number(trimmed);
-  return Number.isFinite(n) ? n : null;
-}
-
 function metaFromMedications(meds: Medication[]): MedicationMetaFormState {
   const first = meds[0];
   if (!first) return emptyMedicationMetaForm(MED_COLOR_DEFAULT);
   return {
-    efficacy: first.efficacy ?? '',
-    useMethod: first.useMethod ?? '',
-    storage: first.storage ?? '',
-    warning: first.warning ?? '',
+    efficacy: clampMedMetaText(first.efficacy ?? ''),
+    useMethod: clampMedMetaText(first.useMethod ?? ''),
+    storage: clampMedMetaText(first.storage ?? ''),
+    warning: clampMedMetaText(first.warning ?? ''),
     doseAmount:
       first.doseAmount == null ? '' : String(first.doseAmount),
     doseUnit: (first.doseUnit as MedDoseUnitId | null) ?? null,
@@ -251,10 +248,10 @@ export function MedicationSheet({
     setItemSeq(item.itemSeq);
     setMeta((prev) => ({
       ...prev,
-      efficacy: item.efficacy ?? '',
-      useMethod: item.useMethod ?? '',
-      storage: item.storage ?? '',
-      warning: item.warning ?? '',
+      efficacy: clampMedMetaText(item.efficacy ?? ''),
+      useMethod: clampMedMetaText(item.useMethod ?? ''),
+      storage: clampMedMetaText(item.storage ?? ''),
+      warning: clampMedMetaText(item.warning ?? ''),
       unitPickerOpen: false,
     }));
     setNameConfirmed(true);
@@ -288,10 +285,9 @@ export function MedicationSheet({
   };
 
   const goNextToSchedule = () => {
-    const doseAmount = parseDoseAmount(meta.doseAmount);
-    const doseErr = validateDosePair(doseAmount, meta.doseUnit);
-    if (doseErr) {
-      Alert.alert(COPY.med.scheduleAlertTitle, doseErr);
+    const metaErr = validateMedicationMetaForm(meta);
+    if (metaErr) {
+      Alert.alert(COPY.med.scheduleAlertTitle, metaErr);
       return;
     }
     setFormStep('schedule');
@@ -343,12 +339,12 @@ export function MedicationSheet({
       Alert.alert(COPY.med.nameAlertTitle, ERRORS.med.nameRequired);
       return null;
     }
-    const doseAmount = parseDoseAmount(meta.doseAmount);
-    const doseErr = validateDosePair(doseAmount, meta.doseUnit);
-    if (doseErr) {
-      Alert.alert(COPY.med.scheduleAlertTitle, doseErr);
+    const metaErr = validateMedicationMetaForm(meta);
+    if (metaErr) {
+      Alert.alert(COPY.med.scheduleAlertTitle, metaErr);
       return null;
     }
+    const doseAmount = parseDoseAmount(meta.doseAmount);
     if (draft.scheduleMode === 'same') {
       const err = validateSameSchedule(
         draft.slotTimes,

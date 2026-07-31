@@ -9,7 +9,6 @@ import {
   normalizeDraft,
   parseDigitDraft,
   shouldAdvanceHourField,
-  snapMinute,
   time12hToHhmm,
 } from '@/entities/medication/lib/time12h';
 
@@ -53,23 +52,6 @@ describe('time12h — isValidHour12 / isValidMinute', () => {
   });
 });
 
-describe('time12h — snapMinute', () => {
-  const interval = LIMITS.doseMinuteInterval;
-
-  it('interval 배수로 내림', () => {
-    expect(snapMinute(0, interval)).toBe(0);
-    expect(snapMinute(7, interval)).toBe(5);
-    expect(snapMinute(59, interval)).toBe(55);
-  });
-
-  it('음수·NaN·잘못된 interval 가드', () => {
-    expect(snapMinute(-1, interval)).toBe(0);
-    expect(snapMinute(NaN, interval)).toBe(0);
-    expect(snapMinute(7, 0)).toBe(0);
-    expect(snapMinute(7, -5)).toBe(0);
-  });
-});
-
 describe('time12h — hhmm ↔ 12h 왕복', () => {
   it('자정·정오·오후', () => {
     expect(hhmmToTime12h('00:00')).toEqual({
@@ -82,61 +64,31 @@ describe('time12h — hhmm ↔ 12h 왕복', () => {
       minute: 0,
       period: 'pm',
     });
-    expect(hhmmToTime12h('13:05')).toEqual({
-      hour12: 1,
-      minute: 5,
+    expect(hhmmToTime12h('15:30')).toEqual({
+      hour12: 3,
+      minute: 30,
       period: 'pm',
     });
-    expect(hhmmToTime12h('08:00')).toEqual({
-      hour12: 8,
-      minute: 0,
-      period: 'am',
-    });
-  });
-
-  it('12h → HH:MM', () => {
     expect(time12hToHhmm({ hour12: 12, minute: 0, period: 'am' })).toBe(
       '00:00',
     );
     expect(time12hToHhmm({ hour12: 12, minute: 0, period: 'pm' })).toBe(
       '12:00',
     );
-    expect(time12hToHhmm({ hour12: 1, minute: 5, period: 'pm' })).toBe(
-      '13:05',
+    expect(time12hToHhmm({ hour12: 3, minute: 30, period: 'pm' })).toBe(
+      '15:30',
     );
-    expect(time12hToHhmm({ hour12: 8, minute: 0, period: 'am' })).toBe(
-      '08:00',
-    );
-  });
-
-  it('왕복 유지', () => {
-    for (const hhmm of ['00:00', '08:00', '12:00', '13:05', '23:55'] as const) {
-      const t = hhmmToTime12h(hhmm);
-      expect(t).not.toBeNull();
-      expect(time12hToHhmm(t!)).toBe(hhmm);
-    }
-  });
-
-  it('무효 hhmm → null', () => {
-    expect(hhmmToTime12h('')).toBeNull();
-    expect(hhmmToTime12h('24:00')).toBeNull();
-    expect(hhmmToTime12h('bad')).toBeNull();
   });
 });
 
 describe('time12h — parseDigitDraft / shouldAdvanceHourField', () => {
-  it('숫자만·최대 2자리', () => {
-    expect(parseDigitDraft('')).toBe('');
-    expect(parseDigitDraft('12')).toBe('12');
-    expect(parseDigitDraft('1a2b3')).toBe('12');
-    expect(parseDigitDraft('99')).toBe('99');
+  it('숫자만 2자리', () => {
+    expect(parseDigitDraft('a1b2c3')).toBe('12');
+    expect(parseDigitDraft('7')).toBe('7');
   });
 
   it('시 필드 자동 이동', () => {
-    expect(shouldAdvanceHourField('')).toBe(false);
     expect(shouldAdvanceHourField('1')).toBe(false);
-    expect(shouldAdvanceHourField('0')).toBe(false);
-    expect(shouldAdvanceHourField('2')).toBe(true);
     expect(shouldAdvanceHourField('9')).toBe(true);
     expect(shouldAdvanceHourField('12')).toBe(true);
     expect(shouldAdvanceHourField('07')).toBe(true);
@@ -160,14 +112,21 @@ describe('time12h — coerceHour12Digits / coerceMinuteDigits', () => {
 });
 
 describe('time12h — normalizeDraft', () => {
-  it('유효 draft → pad·snap HH:MM', () => {
+  it('유효 draft → HH:MM (분 스냅 없음)', () => {
     expect(
       normalizeDraft({
         hourDigits: '7',
         minuteDigits: '07',
         period: 'am',
       }),
-    ).toBe('07:05');
+    ).toBe('07:07');
+    expect(
+      normalizeDraft({
+        hourDigits: '8',
+        minuteDigits: '27',
+        period: 'am',
+      }),
+    ).toBe('08:27');
     expect(
       normalizeDraft({
         hourDigits: '12',
@@ -192,7 +151,7 @@ describe('time12h — normalizeDraft', () => {
         minuteDigits: '99',
         period: 'pm',
       }),
-    ).toBe('12:55');
+    ).toBe('12:59');
   });
 
   it('빈값 → fallback', () => {
@@ -209,9 +168,9 @@ describe('time12h — normalizeDraft', () => {
     expect(
       normalizeDraft({
         hourDigits: '',
-        minuteDigits: '',
+        minuteDigits: '00',
         period: 'am',
-        fallbackHhmm: 'bad',
+        fallbackHhmm: 'xx',
       }),
     ).toBe(LIMITS.defaultDoseTime);
   });

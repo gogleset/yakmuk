@@ -168,9 +168,12 @@ export function HomePage() {
   };
 
   // 셸 = 캘린더. 아래만 empty / 오늘 체크 / 과거일
+  // 다른 월을 보고 있으면 selectedDate가 오늘이어도 오늘 패널(컨디션 포함) 숨김
+  const viewingTodayMonth = visibleMonth === currentYearMonthKst(today);
   const showTodayCheck =
-    hasRegisteredMeds && selectedDate === today;
+    hasRegisteredMeds && selectedDate === today && viewingTodayMonth;
   const showPastDay = hasRegisteredMeds && selectedDate !== today;
+
   const showFab = hasRegisteredMeds;
   const allDone = todayMeds.length > 0 && pendingIds.length === 0;
 

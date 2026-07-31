@@ -140,7 +140,7 @@ export function SettingsPage() {
         contentContainerClassName="gap-3 px-5 pb-10 pt-4"
       >
         <FadeInView className="gap-3">
-          <PageTitle>설정</PageTitle>
+          <PageTitle className="text-xl">설정</PageTitle>
 
           {/* 프로필 탭 → 닉네임 변경 시트 */}
           <PressableScale

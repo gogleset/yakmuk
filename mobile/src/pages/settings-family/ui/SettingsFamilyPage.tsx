@@ -32,9 +32,9 @@ import {
   Icons,
   Input,
   Muted,
-  PageTitle,
   Screen,
   SectionHeader,
+  StackHeader,
 } from '@/shared/ui';
 
 /** 가족 운영 — 초대·멤버·이름·삭제 (설정 서브) */
@@ -145,18 +145,7 @@ export function SettingsFamilyPage() {
 
   return (
     <Screen fadeTop={LAYOUT.fade.top} fadeBottom={LAYOUT.fade.bottomPlain}>
-      <View className="flex-row items-center gap-2 px-5 pt-2">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="뒤로"
-          hitSlop={LAYOUT.hitSlop.md}
-          onPress={() => router.back()}
-          className="p-1"
-        >
-          <Icons.ChevronLeft size={LAYOUT.icon.lg} color={COLORS.brand} />
-        </Pressable>
-        <PageTitle className="flex-1">가족</PageTitle>
-      </View>
+      <StackHeader title="가족" tone="brand" />
 
       <ScrollView
         keyboardShouldPersistTaps="handled"

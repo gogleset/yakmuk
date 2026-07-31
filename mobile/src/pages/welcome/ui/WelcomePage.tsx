@@ -266,7 +266,7 @@ export function WelcomePage() {
         onPress={() => setPath('choose')}
         className="mb-2 self-start"
       >
-        <Icons.ChevronLeft size={LAYOUT.icon.xl} color={COLORS.brand} />
+        <Icons.ChevronLeft size={LAYOUT.icon.lg} color={COLORS.brand} />
       </Pressable>
 
       <View className="flex-1 justify-center gap-8">

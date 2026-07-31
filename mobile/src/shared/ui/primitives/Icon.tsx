@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import {
   Activity,
+  Bell,
   CalendarDays,
   Check,
   CheckCircle2,
@@ -29,6 +30,7 @@ import {
   Share2,
   Shield,
   Sun,
+  TriangleAlert,
   UserPlus,
   Users,
   UserX,
@@ -53,6 +55,7 @@ function withClassName(Icon: LucideIcon) {
 
 export const Icons = {
   Activity: withClassName(Activity),
+  Bell: withClassName(Bell),
   Calendar: withClassName(CalendarDays),
   Check: withClassName(Check),
   CheckCircle: withClassName(CheckCircle2),
@@ -81,6 +84,7 @@ export const Icons = {
   Share: withClassName(Share2),
   Shield: withClassName(Shield),
   Sun: withClassName(Sun),
+  TriangleAlert: withClassName(TriangleAlert),
   UserPlus: withClassName(UserPlus),
   Users: withClassName(Users),
   UserX: withClassName(UserX),

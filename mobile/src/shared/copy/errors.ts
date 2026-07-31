@@ -70,6 +70,8 @@ export const ERRORS = {
     searchParse: '약 검색 결과를 읽지 못했어요',
     dosePairRequired: '용량과 단위를 같이 적어 주세요',
     doseInvalid: '용량을 확인해 주세요',
+    doseTooLarge: '용량이 너무 커요',
+    metaTooLong: '글자가 너무 많아요',
   },
 
   condition: {

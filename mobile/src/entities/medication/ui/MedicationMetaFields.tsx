@@ -1,14 +1,19 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View, type TextStyle } from 'react-native';
 import {
   MED_DOSE_UNITS,
   type MedDoseUnitId,
 } from '@/shared/constants/medDoseUnits';
 import { LIMITS } from '@/shared/constants/limits';
+import { COLORS } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
 import { cn } from '@/shared/lib/cn';
 import { Input } from '@/shared/ui/primitives/Input';
 import { MedColorSwatch } from '@/entities/medication/ui/MedColorSwatch';
 import type { MedColorId } from '@/shared/constants/medColors';
+import {
+  clampMedMetaText,
+  sanitizeDoseAmountInput,
+} from '@/entities/medication/lib/medicationMeta';
 
 export type MedicationMetaFormState = {
   efficacy: string;
@@ -28,9 +33,35 @@ type Props = {
   readOnly?: boolean;
 };
 
-function FieldLabel({ children }: { children: string }) {
+/** 라벨 왼쪽 · 글자수/최대 오른쪽 위 */
+function FieldHeader({
+  label,
+  length,
+  max,
+  showCount,
+}: {
+  label: string;
+  length: number;
+  max: number;
+  showCount: boolean;
+}) {
+  const nearLimit = length >= max * 0.9;
   return (
-    <Text className="mb-1.5 text-sm font-semibold text-brand">{children}</Text>
+    <View className="mb-1.5 flex-row items-center justify-between gap-2">
+      <Text className="text-sm font-semibold text-brand">{label}</Text>
+      {showCount ? (
+        <Text
+          className={cn('text-xs', nearLimit && 'font-semibold')}
+          style={
+            {
+              color: nearLimit ? COLORS.warning : COLORS.muted,
+            } satisfies TextStyle
+          }
+        >
+          {length}/{max}
+        </Text>
+      ) : null}
+    </View>
   );
 }
 
@@ -45,10 +76,22 @@ export function MedicationMetaFields({
     onChange({ ...value, ...partial });
   };
 
+  const patchText = (
+    key: 'efficacy' | 'useMethod' | 'storage' | 'warning',
+    next: string,
+  ) => {
+    patch({ [key]: clampMedMetaText(next) });
+  };
+
+  const max = LIMITS.medMetaMaxLength;
+  const showCount = !readOnly;
+
   return (
     <View className="gap-3">
       <View>
-        <FieldLabel>{COPY.med.colorLabel}</FieldLabel>
+        <Text className="mb-1.5 text-sm font-semibold text-brand">
+          {COPY.med.colorLabel}
+        </Text>
         <MedColorSwatch
           value={value.color}
           onChange={(color: MedColorId) => patch({ color })}
@@ -57,56 +100,78 @@ export function MedicationMetaFields({
       </View>
 
       <View>
-        <FieldLabel>{COPY.med.efficacyLabel}</FieldLabel>
+        <FieldHeader
+          label={COPY.med.efficacyLabel}
+          length={value.efficacy.length}
+          max={max}
+          showCount={showCount}
+        />
         <Input
           tone="soft"
           placeholder={COPY.med.efficacyPlaceholder}
           value={value.efficacy}
-          onChangeText={(efficacy) => patch({ efficacy })}
-          maxLength={LIMITS.medMetaMaxLength}
+          onChangeText={(efficacy) => patchText('efficacy', efficacy)}
+          maxLength={max}
           multiline
           editable={!readOnly}
         />
       </View>
       <View>
-        <FieldLabel>{COPY.med.useMethodLabel}</FieldLabel>
+        <FieldHeader
+          label={COPY.med.useMethodLabel}
+          length={value.useMethod.length}
+          max={max}
+          showCount={showCount}
+        />
         <Input
           tone="soft"
           placeholder={COPY.med.useMethodPlaceholder}
           value={value.useMethod}
-          onChangeText={(useMethod) => patch({ useMethod })}
-          maxLength={LIMITS.medMetaMaxLength}
+          onChangeText={(useMethod) => patchText('useMethod', useMethod)}
+          maxLength={max}
           multiline
           editable={!readOnly}
         />
       </View>
       <View>
-        <FieldLabel>{COPY.med.storageLabel}</FieldLabel>
+        <FieldHeader
+          label={COPY.med.storageLabel}
+          length={value.storage.length}
+          max={max}
+          showCount={showCount}
+        />
         <Input
           tone="soft"
           placeholder={COPY.med.storagePlaceholder}
           value={value.storage}
-          onChangeText={(storage) => patch({ storage })}
-          maxLength={LIMITS.medMetaMaxLength}
+          onChangeText={(storage) => patchText('storage', storage)}
+          maxLength={max}
           multiline
           editable={!readOnly}
         />
       </View>
       <View>
-        <FieldLabel>{COPY.med.warningLabel}</FieldLabel>
+        <FieldHeader
+          label={COPY.med.warningLabel}
+          length={value.warning.length}
+          max={max}
+          showCount={showCount}
+        />
         <Input
           tone="soft"
           placeholder={COPY.med.warningPlaceholder}
           value={value.warning}
-          onChangeText={(warning) => patch({ warning })}
-          maxLength={LIMITS.medMetaMaxLength}
+          onChangeText={(warning) => patchText('warning', warning)}
+          maxLength={max}
           multiline
           editable={!readOnly}
         />
       </View>
 
       <View>
-        <FieldLabel>{COPY.med.doseLabel}</FieldLabel>
+        <Text className="mb-1.5 text-sm font-semibold text-brand">
+          {COPY.med.doseLabel}
+        </Text>
         <View className="flex-row gap-2">
           <View className="min-w-0 flex-1">
             <Input
@@ -114,9 +179,11 @@ export function MedicationMetaFields({
               placeholder={COPY.med.doseAmountPlaceholder}
               value={value.doseAmount}
               onChangeText={(doseAmount) =>
-                patch({ doseAmount: doseAmount.replace(/[^0-9.]/g, '') })
+                patch({ doseAmount: sanitizeDoseAmountInput(doseAmount) })
               }
               keyboardType="decimal-pad"
+              // 9999.99
+              maxLength={String(LIMITS.medDoseAmountMax).length + 3}
               editable={!readOnly}
             />
           </View>

@@ -9,6 +9,8 @@ export const ROUTES = {
   settings: '/(tabs)/settings',
   /** 가족 운영 (초대·멤버·이름) */
   settingsFamily: '/settings-family',
+  /** 가족 최근 소식 전체 */
+  familyFeed: '/family-feed',
   /** P3 약 추가 퍼널 */
   addMedication: '/add-medication',
   /** P4 약 수정 퍼널 */

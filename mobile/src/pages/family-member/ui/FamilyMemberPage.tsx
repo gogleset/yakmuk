@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
-import { useQueryClient } from '@tanstack/react-query';
+import { Alert, ScrollView, Text } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useAuth } from '@/providers/AuthProvider';
 import {
@@ -15,14 +14,13 @@ import {
   editMedicationRoute,
 } from '@/shared/config/routes';
 import { todayKstDateString } from '@/shared/lib/kst';
-import { COLORS, LAYOUT } from '@/shared/config/theme';
+import { LAYOUT } from '@/shared/config/theme';
 import { ACTIONS, COPY } from '@/shared/copy';
 import {
   Fab,
-  Icons,
-  PageTitle,
+  FadeInView,
   Screen,
-  SectionHeader,
+  StackHeader,
 } from '@/shared/ui';
 import { GuardianMedManagePanel } from '@/widgets/guardian-med-manage-panel';
 import { MedicationCalendarPanel } from '@/widgets/medication-calendar-panel';
@@ -95,20 +93,7 @@ export function FamilyMemberPage() {
         canManageMeds ? LAYOUT.fade.bottomWithFab : LAYOUT.fade.bottomPlain
       }
     >
-      <View className="flex-row items-center gap-2 px-5 pt-2">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="뒤로"
-          hitSlop={LAYOUT.hitSlop.md}
-          onPress={() => router.back()}
-          className="p-1"
-        >
-          <Icons.ChevronLeft size={LAYOUT.icon.xl} color={COLORS.brand} />
-        </Pressable>
-        <View className="flex-1">
-          <PageTitle className="text-[22px]">{nickname}</PageTitle>
-        </View>
-      </View>
+      <StackHeader title={nickname} />
 
       <ScrollView
         contentContainerClassName={
@@ -121,35 +106,38 @@ export function FamilyMemberPage() {
         }
         keyboardShouldPersistTaps="handled"
       >
-        {!userId ? (
-          <Text className="text-brand-muted">멤버를 찾을 수 없어요.</Text>
-        ) : (
-          <>
-            <MedicationCalendarPanel
-              visibleMonth={visibleMonth}
-              markedDates={markedDates}
-              onDayPress={(day) => setSelectedDate(day.dateString)}
-              onMonthChange={(month) => {
-                const ym = `${month.year}-${String(month.month).padStart(2, '0')}`;
-                setVisibleMonth(ym);
-              }}
-            />
-
-            {canManageMeds ? (
-              <>
-                <SectionHeader title="등록된 약" />
-                <GuardianMedManagePanel
-                  meds={medsQuery.data ?? []}
-                  isError={medsQuery.isError}
-                  onEdit={(med) =>
-                    router.push(editMedicationRoute(med.id, userId))
-                  }
-                  onDelete={confirmDelete}
+        <FadeInView className="gap-2.5">
+          {!userId ? (
+            <Text className="text-brand-muted">멤버를 찾을 수 없어요.</Text>
+          ) : (
+            <>
+              <FadeInView step={0}>
+                <MedicationCalendarPanel
+                  visibleMonth={visibleMonth}
+                  markedDates={markedDates}
+                  onDayPress={(day) => setSelectedDate(day.dateString)}
+                  onMonthChange={(month) => {
+                    const ym = `${month.year}-${String(month.month).padStart(2, '0')}`;
+                    setVisibleMonth(ym);
+                  }}
                 />
-              </>
-            ) : null}
-          </>
-        )}
+              </FadeInView>
+
+              {canManageMeds ? (
+                <FadeInView step={1}>
+                  <GuardianMedManagePanel
+                    meds={medsQuery.data ?? []}
+                    isError={medsQuery.isError}
+                    onEdit={(med) =>
+                      router.push(editMedicationRoute(med.id, userId))
+                    }
+                    onDelete={confirmDelete}
+                  />
+                </FadeInView>
+              ) : null}
+            </>
+          )}
+        </FadeInView>
       </ScrollView>
 
       {canManageMeds ? (

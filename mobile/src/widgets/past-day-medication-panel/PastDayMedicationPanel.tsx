@@ -6,7 +6,7 @@ import { CONDITION_LABEL } from '@/entities/medication/lib/display';
 import type { DailyLog } from '@/entities/medication/model/types';
 import { TimeSlotMedAccordion } from '@/entities/medication';
 import { COPY } from '@/shared/copy';
-import { Body, EmptyHint } from '@/shared/ui';
+import { Body, Fallback, KokiIllustration } from '@/shared/ui';
 
 type Props = {
   entries: DayMedicationEntry[];
@@ -26,7 +26,12 @@ export function PastDayMedicationPanel({
   );
 
   if (entries.length === 0 && conditionLogs.length === 0) {
-    return <EmptyHint message={COPY.med.emptyPastDay} />;
+    return (
+      <Fallback
+        image={<KokiIllustration variant="thinking" size={72} />}
+        message={COPY.med.emptyPastDay}
+      />
+    );
   }
 
   return (

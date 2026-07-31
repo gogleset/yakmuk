@@ -1,3 +1,12 @@
+/** 한글 주격 조사 가/이 */
+function subjectGa(name: string): string {
+  const ch = name.trim().slice(-1);
+  if (!ch) return '가';
+  const code = ch.charCodeAt(0);
+  if (code < 0xac00 || code > 0xd7a3) return '가';
+  return (code - 0xac00) % 28 === 0 ? '가' : '이';
+}
+
 /** 중복 product 문구 — confirm / empty / notif / stalled */
 export const COPY = {
   med: {
@@ -14,7 +23,7 @@ export const COPY = {
     emptyRegisteredCta: '첫 약 등록하기',
     emptyToday: '오늘은 먹을 약이 없어요',
     emptyTodayHint: '다른 요일 일정은 캘린더에서 볼 수 있어요.',
-    emptyPastDay: '이 날에는 먹을 약이 없어요.',
+    emptyPastDay: '이 날에는 먹을 약이 없어요',
     addFab: '약 추가',
     /** 오늘 진행 — 전부 완료 */
     allDoneToday: '오늘 다 먹었어요',
@@ -65,7 +74,41 @@ export const COPY = {
   },
 
   family: {
-    emptyMembers: '아직 함께하는 가족이 없어요',
+    title: '가족 안부',
+    todayStatus: '가족',
+    recentFeed: '최근 소식',
+    /** 다른 멤버 수 (본인 제외) */
+    memberCount: (count: number) => `우리 가족 ${count}명`,
+    newFeedCount: (count: number) => `새로운 소식 ${count}개`,
+    seeMoreFeed: '더보기',
+    emptyMembers: '아직 가족이 등록되지 않았어요',
+    emptyMembersMessage: '가족을 초대해서 서로의 하루를 챙겨보세요.',
+    inviteCta: '가족 초대하기',
+    emptyFeed: '아직 소식이 없어요',
+    emptyFeedMessage: '가족이 약을 체크하면 여기에 보여요.',
+    statusAnbu: '안부',
+    statusAllTaken: '다 먹음',
+    /** 오늘 아직 남은 약 있음 — 숫자 없이 진행 표현 */
+    statusInProgress: '진행 중',
+    statusNoMeds: '약 없음',
+    /** 닉네임 (초대 호칭) */
+    memberTitle: (nickname: string, invitedAs: string | null | undefined) => {
+      const as = invitedAs?.trim();
+      return as ? `${nickname} (${as})` : nickname;
+    },
+    feedTaken: (who: string) => `${who}${subjectGa(who)} 약을 복용했어요`,
+    feedAllTaken: (who: string) => `${who}${subjectGa(who)} 약을 다 먹었어요`,
+    /** label = 좋아요 / 보통이에요 / 안 좋아요요 */
+    feedCondition: (who: string, label: string) =>
+      `${who}의 컨디션이 ${label}`,
+    feedFallback: (who: string) => `${who}님 소식`,
+    careAck: '확인했어요',
+    careStuckTitle: (who: string) => `${who}의 약 안부가 궁금해요`,
+    careStuckDays: (days: number) => `${days}일째 확인이 없어요`,
+    careBadTitle: (who: string) => `${who}의 컨디션이 걱정돼요`,
+    careBadBody: (when: string, label: string) =>
+      `${when} '${label}'으로 기록했어요`,
+    careEmpty: '서로의 하루를 응원해요',
   },
 
   /** P2 초대코드 조인 */

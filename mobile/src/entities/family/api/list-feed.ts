@@ -3,11 +3,20 @@ import { throwIfError } from '@/shared/api/interceptor';
 import { mapDailyLog } from '@/entities/medication/api/mappers';
 import type { DailyLog } from '@/entities/medication/model/types';
 
+type ListFeedOptions = {
+  limit?: number;
+  /** YYYY-MM-DD inclusive (KST log_date) */
+  sinceLogDate?: string;
+};
+
 export async function listFeed(
   familyId: string,
-  limit = 40,
+  options: ListFeedOptions = {},
 ): Promise<DailyLog[]> {
-  const { data, error } = await supabase
+  const limit = options.limit ?? 80;
+  const sinceLogDate = options.sinceLogDate;
+
+  let query = supabase
     .from('daily_logs')
     .select(
       `
@@ -20,14 +29,24 @@ export async function listFeed(
     .order('created_at', { ascending: false })
     .limit(limit);
 
+  if (sinceLogDate) {
+    query = query.gte('log_date', sinceLogDate);
+  }
+
+  const { data, error } = await query;
+
   if (error) {
     console.warn('[feed] join failed, fallback', error.message);
-    const { data: plain, error: plainError } = await supabase
+    let plainQuery = supabase
       .from('daily_logs')
       .select('*')
       .eq('family_id', familyId)
       .order('created_at', { ascending: false })
       .limit(limit);
+    if (sinceLogDate) {
+      plainQuery = plainQuery.gte('log_date', sinceLogDate);
+    }
+    const { data: plain, error: plainError } = await plainQuery;
     throwIfError(plainError);
 
     const logs = (plain ?? []).map(mapDailyLog);

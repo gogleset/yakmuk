@@ -2,7 +2,7 @@ import { Pressable, Text } from 'react-native';
 import type { FamilyMember } from '@/entities/family/model/types';
 import { ROLE_LABEL } from '@/entities/user';
 import { COPY } from '@/shared/copy';
-import { Card, EmptyHint } from '@/shared/ui';
+import { Card, Fallback, KokiIllustration } from '@/shared/ui';
 
 type Props = {
   members: FamilyMember[];
@@ -12,7 +12,12 @@ type Props = {
 /** 피보호자용: 다른 가족 프로필 목록 */
 export function FamilyMemberList({ members, onPressMember }: Props) {
   if (members.length === 0) {
-    return <EmptyHint message={COPY.family.emptyMembers} />;
+    return (
+      <Fallback
+        image={<KokiIllustration variant="family" size={72} />}
+        message={COPY.family.emptyMembers}
+      />
+    );
   }
 
   return (

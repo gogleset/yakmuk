@@ -14,6 +14,7 @@ export { deleteMedication } from './api/delete-medication';
 export { listLogsInRange } from './api/list-logs-in-range';
 export { listTodayTaken } from './api/list-today-taken';
 export { toggleTaken } from './api/toggle-taken';
+export { syncDayCompleteFeedLog } from './api/sync-day-complete-feed';
 export { submitCondition } from './api/submit-condition';
 export { searchDrugsByName } from './api/search-drugs';
 export { medicationKeys } from './model/queryKeys';
@@ -22,6 +23,10 @@ export {
   invalidateMedicationActivity,
   invalidateMedicationLists,
 } from './model/queries';
+export {
+  DAY_COMPLETE_FEED_MARKER,
+  isDayCompleteFeedLog,
+} from './lib/dayCompleteFeed';
 export {
   buildDayMedicationEntries,
   buildMarkedDates,
@@ -87,10 +92,17 @@ export { ScheduleModeToggle } from './ui/ScheduleModeToggle';
 export type { ScheduleMode, ControlTone } from './ui/ScheduleModeToggle';
 export { TimeSlotList } from './ui/TimeSlotList';
 export {
+  clampMedMetaText,
+  parseDoseAmount,
+  sanitizeDoseAmountInput,
   toMedicationMetaColumns,
   validateDosePair,
+  validateMedicationMetaForm,
 } from './lib/medicationMeta';
-export type { MedicationMetaInput } from './lib/medicationMeta';
+export type {
+  MedicationMetaFormFields,
+  MedicationMetaInput,
+} from './lib/medicationMeta';
 export { CONDITION_LABEL } from './lib/display';
 export { stepDayLoop } from './lib/loop/dayLoop';
 export type {

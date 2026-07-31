@@ -9,7 +9,7 @@ type Props = {
   onNextMonth: () => void;
 };
 
-/** 월 타이틀 — ◀ N월 YYYY ▶ (탭 루트 헤더 크롬 없음) */
+/** 월 타이틀 — ◀ N월 YYYY ▶ (StackHeader와 동일 사이즈·중립 톤) */
 export function MonthHeader({
   visibleMonth,
   onPrevMonth,
@@ -29,19 +29,19 @@ export function MonthHeader({
         accessibilityLabel="이전 달"
         hitSlop={LAYOUT.hitSlop.md}
         onPress={onPrevMonth}
-        className="p-2"
+        className="p-0.5"
       >
-        <Icons.ChevronLeft size={LAYOUT.icon.xl} color={COLORS.brand} />
+        <Icons.ChevronLeft size={LAYOUT.icon.lg} color={COLORS.text} />
       </Pressable>
-      <Text className="text-lg font-bold text-brand">{title}</Text>
+      <Text className="text-lg font-bold text-text">{title}</Text>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="다음 달"
         hitSlop={LAYOUT.hitSlop.md}
         onPress={onNextMonth}
-        className="p-2"
+        className="p-0.5"
       >
-        <Icons.ChevronRight size={LAYOUT.icon.xl} color={COLORS.brand} />
+        <Icons.ChevronRight size={LAYOUT.icon.lg} color={COLORS.text} />
       </Pressable>
     </View>
   );

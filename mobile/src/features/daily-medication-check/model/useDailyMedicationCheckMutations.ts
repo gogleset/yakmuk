@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { upsertAlert } from '@/entities/family/api/upsert-alert';
 import { deleteMedication } from '@/entities/medication/api/delete-medication';
+import { syncDayCompleteFeedLog } from '@/entities/medication/api/sync-day-complete-feed';
 import { toggleTaken } from '@/entities/medication/api/toggle-taken';
 import { stepDayLoop } from '@/entities/medication/lib/loop/dayLoop';
 import { dailyMedicationCheckKeys } from '@/features/daily-medication-check/model/queryKeys';
@@ -46,6 +47,16 @@ export function useDailyMedicationCheckMutations({
         medicationId,
         currentlyTaken,
       });
+
+      // 스케줄 약이 있을 때만 — 전부 복용 시 피드용 day_complete
+      const totalScheduled = pendingIds.length + takenMedIds.size;
+      if (totalScheduled > 0) {
+        await syncDayCompleteFeedLog({
+          userId,
+          familyId,
+          allDone: pendingIdsAfter.length === 0,
+        });
+      }
 
       await stepDayLoop({
         store: loopStore,

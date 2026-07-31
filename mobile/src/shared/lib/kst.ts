@@ -10,6 +10,18 @@ export function todayKstDateString(now = new Date()): string {
   return `${y}-${m}-${d}`;
 }
 
+/** YYYY-MM-DD ± days (KST 달력 기준) */
+export function addDaysKst(dateYmd: string, deltaDays: number): string {
+  const [y, m, d] = dateYmd.split('-').map(Number);
+  if (!y || !m || !d) return dateYmd;
+  const utc = Date.UTC(y, m - 1, d, 12, 0, 0);
+  const next = new Date(utc + deltaDays * 86_400_000);
+  const yy = next.getUTCFullYear();
+  const mm = String(next.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(next.getUTCDate()).padStart(2, '0');
+  return `${yy}-${mm}-${dd}`;
+}
+
 /** ISO 타임스탬프 → KST 날짜 YYYY-MM-DD */
 export function toKstDateStringFromIso(iso: string): string {
   return todayKstDateString(new Date(iso));

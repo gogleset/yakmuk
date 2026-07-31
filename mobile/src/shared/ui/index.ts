@@ -15,13 +15,13 @@ export {
 /** composites */
 export { AlertBanner } from "./composites/AlertBanner";
 export { ChoiceCard } from "./composites/ChoiceCard";
-export { EmptyHint } from "./composites/EmptyHint";
 export { Fab } from "./composites/Fab";
 export { FadeEdge, FadeEdges } from "./composites/FadeEdge";
 export { FadeInView } from "./composites/FadeInView";
 export { Fallback } from "./composites/Fallback";
 export { FunnelShell } from "./composites/FunnelShell";
 export { InviteCodeInput } from "./composites/InviteCodeInput";
+export { InitialAvatar } from "./composites/InitialAvatar";
 export { MarqueeTitle } from "./composites/MarqueeTitle";
 export { MedFormIcon } from "./composites/MedFormIcon";
 export {
@@ -32,5 +32,6 @@ export { PressableScale } from "./composites/PressableScale";
 export { RichEmptyState } from "./composites/RichEmptyState";
 export { Screen } from "./composites/Screen";
 export { SectionHeader } from "./composites/SectionHeader";
+export { StackHeader } from "./composites/StackHeader";
 export { SettingsGroup, SettingsRow } from "./composites/SettingsRow";
 export { BottomSheet, PageSheet } from "./composites/Sheet";

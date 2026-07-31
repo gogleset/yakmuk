@@ -11,8 +11,6 @@ export const LIMITS = {
   maxTimeSlots: 6,
   /** 복약 기본 시각 (HH:MM) */
   defaultDoseTime: '08:00',
-  /** TimePicker 분 단위 */
-  doseMinuteInterval: 5,
   /** 약 검색 최소 글자 */
   drugSearchMinQueryLength: 2,
   /** 약 메타 텍스트 상한 (효능·복용법 등) */
@@ -21,4 +19,8 @@ export const LIMITS = {
   medDoseAmountMax: 9999,
   /** 오늘 배너(완료↔컨디션) 자동 넘김 ms */
   todayBannerAutoAdvanceMs: 5000,
+  /** 가족 탭 최근 소식 프리뷰 개수 */
+  familyFeedPreviewCount: 3,
+  /** 가족 최근 소식 조회 일수 (오늘 포함) */
+  familyFeedWindowDays: 7,
 } as const;

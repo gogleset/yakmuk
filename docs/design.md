@@ -93,7 +93,7 @@
 | ------------- | --------- | --------- | ----------------------------------------------- |
 | `brand`       | `#4D8679` | `#3DBFA8` | CTA, 탭 active, 선택일·아이콘 강조              |
 | `brandSoft`   | `#E4F1ED` | `#1A3D36` | taken row, secondary 버튼, soft fill            |
-| `canvas`      | `#F7F8F8` | `#0E1413` | 스크린 배경, 시스템 크롬                        |
+| `canvas`      | `#FFFFFF` | `#0E1413` | 스크린 배경, 시스템 크롬                        |
 | `surface`     | `#FFFFFF` | `#1A2421` | 인풋·시트·탭 bar                                |
 | `surfaceSoft` | `#F0F5F3` | `#15201D` | 카드·empty 박스 — brandSoft보다 훨씬 연한 fill  |
 | `ink`         | `#F5FFFC` | `#0A1F1A` | `brand` 위 텍스트/아이콘                        |
@@ -160,7 +160,7 @@ Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타�
 ### 8.1 Border
 
 **기본 금지.** 계층·구분·버튼 outline·카드 윤곽·리스트 divider에 border를 쓰지 않는다.  
-구분은 `canvas`(`#F7F8F8`) → `surfaceSoft`(`#F0F5F3`) → `brandSoft` → `brand` **fill**로만.
+구분은 `canvas`(`#FFFFFF`) → `surfaceSoft`(`#F0F5F3`) → `brandSoft` → `brand` **fill**로만.
 
 | 허용           | 규칙                                                                                                 |
 | -------------- | ---------------------------------------------------------------------------------------------------- |

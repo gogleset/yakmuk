@@ -12,7 +12,7 @@ module.exports = {
           muted: "#7A8783",
           faint: "#7A8783",
         },
-        canvas: "#F7F8F8",
+        canvas: "#FFFFFF",
         surface: {
           DEFAULT: "#FFFFFF",
           soft: "#F0F5F3",
@@ -20,7 +20,7 @@ module.exports = {
         ink: "#F5FFFC",
         text: "#1F2A27",
         line: "#D5DED9",
-        background: "#F7F8F8",
+        background: "#FFFFFF",
         foreground: "#1F2A27",
         primary: {
           DEFAULT: "#4D8679",

@@ -28,7 +28,7 @@
 
 ## 갭 2 — 색
 
-**확정 (#8):** soft 틸 `brand #4D8679` · canvas `#F7F8F8` · surfaceSoft `#F0F5F3`.  
+**확정 (#8):** soft 틸 `brand #4D8679` · canvas `#FFFFFF` · surfaceSoft `#F0F5F3`.  
 진한 쿨 틸(`#0F6B5C`) 폐기. SoT: [design.md](../design.md) §6 ↔ `theme.ts` / NativeWind.
 
 ---

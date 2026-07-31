@@ -5,9 +5,9 @@ export const COLORS = {
   brand: "#4D8679",
   brandSoft: "#E4F1ED",
   /** 스크린 배경 · 시스템 크롬 */
-  canvas: "#F7F8F8",
+  canvas: "#FFFFFF",
   /** FadeEdge 투명 끝점 */
-  canvasTransparent: "rgba(247, 248, 248, 0)",
+  canvasTransparent: "rgba(255, 255, 255, 0)",
   surface: "#FFFFFF",
   /** 인풋·outline·미선택 토글 — canvas/surface 위 가시 fill (border 대체) */
   surfaceSoft: "#F0F5F3",

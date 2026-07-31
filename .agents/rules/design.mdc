@@ -13,3 +13,4 @@ UI·스타일·카피·테마(색/타이포/표면/모션) 작업 전에 **반�
 - border는 focus 상태가 아니면 쓰지 않음 (§6.1)
 - 구현 토큰: `mobile/src/shared/config/theme.ts` / `mobile/tailwind.config.js` — design.md와 어긋나면 문서를 우선하고 코드를 맞춤
 - 제품 느낌: 잔소리 없는 가족 안부 · 틸 · 감시 UI 금지
+- empty/예외 UI: `Fallback` (`image` + `message`) — 상세 [fsd-architecture.mdc](fsd-architecture.mdc) Empty 절

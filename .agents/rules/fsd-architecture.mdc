@@ -65,3 +65,15 @@ use-case만: `add-medication`, `family-invite`, `guardian-auth` …
 - shared에 MedRow·Medication 타입
 - entity 간 무효화 흩뿌리기 → `shared/lib/query-invalidation.ts`
 - 테스트를 소스 slice 안에 두기 (`features/…/foo.test.ts` 등)
+
+## Empty / 예외 UI
+
+- empty·검색 없음·예외 → `Fallback` (`@/shared/ui`): `image` + `message`만
+- BottomSheet·스크롤 = 기본(compact). 화면 남은 높이 채울 때만 `fill`
+- 시트에 `min-h`/`flex-1`로 높이 억지로 키우지 말 것
+- CTA·홈 empty만 `RichEmptyState`. 새 empty 박스 만들지 말 것
+
+## 안티패턴 점검
+
+Query 이중화·queryKey·nested component·FlatList·NativeWind 등은  
+[rn-fsd-anti-patterns.mdc](rn-fsd-anti-patterns.mdc) 숏리스트를 따른다.

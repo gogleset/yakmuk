@@ -34,7 +34,7 @@ yakmuk/
 
 ## Mobile (FSD)
 
-경로: `mobile/src/`. 상세: [`.agents/rules/fsd-architecture.mdc`](.agents/rules/fsd-architecture.mdc)
+경로: `mobile/src/`. 상세: [`.agents/rules/fsd-architecture.mdc`](.agents/rules/fsd-architecture.mdc) · 안티패턴: [`.agents/rules/rn-fsd-anti-patterns.mdc`](.agents/rules/rn-fsd-anti-patterns.mdc)
 
 ```
 providers/ → pages/ → widgets/ → features/ → entities/ → shared/
@@ -62,13 +62,23 @@ Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 - 상수/문구: [`.agents/rules/copy-constants.mdc`](.agents/rules/copy-constants.mdc)
 - TDD·테스트 위치: [`.agents/rules/tdd.mdc`](.agents/rules/tdd.mdc)
 
+## Rules (지속 규칙)
+
+| Rule | 언제 |
+|------|------|
+| [fsd-architecture](.agents/rules/fsd-architecture.mdc) | mobile 레이어·의존·Empty UI |
+| [rn-fsd-anti-patterns](.agents/rules/rn-fsd-anti-patterns.mdc) | Query/FSD/RN/NativeWind 안티패턴 (리뷰·디버그·커밋 게이트) |
+| [tdd](.agents/rules/tdd.mdc) | 테스트 위치·API 통합 |
+| [supabase](.agents/rules/supabase.mdc) | 마이그레이션·RPC·ERRORS 동기 |
+| [design](.agents/rules/design.mdc) · [copy-constants](.agents/rules/copy-constants.mdc) | UI·카피·상수 |
+
 ## Skills (워크플로)
 
 | Skill | 언제 |
 |-------|------|
 | [add-fsd-feature](.agents/skills/add-fsd-feature/SKILL.md) | mobile feature/entity/page 추가 |
 | [add-supabase-migration](.agents/skills/add-supabase-migration/SKILL.md) | RPC·테이블·한도 변경 |
-| [rn-fsd-anti-patterns](.agents/skills/rn-fsd-anti-patterns/SKILL.md) | 디버그·리뷰·리팩토링 시 FSD/Query/RN 안티패턴 점검 |
+| [document-user-flows](.agents/skills/document-user-flows/SKILL.md) | 사용자 플로우·갭 브리프 (GPT 이미지용) |
 | [git-commit](.agents/skills/git-commit/SKILL.md) | `@git-commit` → 작업별 스테이징·커밋 |
 | [git-pr](.agents/skills/git-pr/SKILL.md) | `@git-pr` → `pr-body.md` 생성 |
 

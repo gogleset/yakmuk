@@ -65,9 +65,9 @@ cd mobile && pnpm exec eslint \
 
 ## 3. Anti-patterns gate (필수)
 
-`mobile/**` 변경이 있으면 **커밋 전에** [rn-fsd-anti-patterns](../rn-fsd-anti-patterns/SKILL.md)를 읽고, working tree(unstaged+staged) mobile diff를 점검한다.
+`mobile/**` 변경이 있으면 **커밋 전에** [rn-fsd-anti-patterns.mdc](../../rules/rn-fsd-anti-patterns.mdc)를 읽고, working tree(unstaged+staged) mobile diff를 점검한다.
 
-- 점검 순서·보고 형식은 해당 스킬을 따른다
+- 점검 순서·보고 형식은 해당 규칙을 따른다
 - Must-fix(캐시 이중화, queryKey 매직, FSD 우회/계층 위반, nested component, index key 등) → **고친 뒤** 커밋
 - 추가로: 새로 추가/수정된 `useQuery`/`useMutation`이 **`model/queryKeys.ts` factory**를 거치지 않고 매직 배열(`['medication', id]` 등)을 직접 쓰면 must-fix
   - entity: `entities/<entity>/model/queryKeys.ts`

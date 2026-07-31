@@ -1,0 +1,212 @@
+---
+description: Expo RN + FSD + TanStack Query + NativeWind 구조적 안티패턴. 리뷰·디버그·리팩토링·새 화면/컴포넌트 작성 시
+globs: mobile/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# RN + FSD 안티패턴 (yakmuk)
+
+레이어·디렉터리 규칙: [fsd-architecture.mdc](fsd-architecture.mdc).  
+신규 슬라이스 워크플로: [add-fsd-feature](../skills/add-fsd-feature/SKILL.md).
+
+점검 순서: **① TanStack Query → ② FSD → ③ React 렌더링 → ④ RN/Expo → ⑤ NativeWind**
+
+보고 형식:
+
+```
+[카테고리 - 항목번호] 파일:라인
+문제: (한 줄)
+수정 제안: (Good 스니펫 또는 프로젝트 경로)
+```
+
+---
+
+## 1. TanStack Query
+
+### 1-1. 쿼리 데이터의 로컬 state 이중화
+
+`useQuery` `data`를 `useState`에 복사하면 캐시와 로컬이 어긋난다.
+
+```tsx
+// Bad
+const { data } = useMedications(userId);
+const [meds, setMeds] = useState(data);
+useEffect(() => setMeds(data), [data]);
+
+// Good — data를 그대로 소비. 가공은 select
+const { data: meds } = useQuery({
+  queryKey: medicationKeys.list(userId),
+  queryFn: () => listMedications(userId),
+  select: (list) => list.filter((m) => m.active),
+});
+```
+
+### 1-2. queryKey 매직 배열 난립
+
+키는 **`model/queryKeys.ts` factory**만. (`api/queryKeys.ts` 아님)
+
+| 위치 | 예 |
+|------|-----|
+| `entities/<entity>/model/queryKeys.ts` | `medicationKeys`, `familyKeys`, `userKeys` |
+| `features/<use-case>/model/queryKeys.ts` | mutation key (`addMedicationKeys` 등) |
+
+```ts
+// Bad
+useQuery({ queryKey: ['medication', 'list', userId], ... });
+qc.invalidateQueries({ queryKey: ['medications', userId] });
+
+// Good
+import { medicationKeys } from '@/entities/medication/model/queryKeys';
+useQuery({ queryKey: medicationKeys.list(userId), queryFn: () => listMedications(userId) });
+```
+
+### 1-3. API / useQuery가 UI에 인라인
+
+```
+entities/<entity>/
+├── api/<action>.ts          # supabase (1파일 1동작)
+├── model/{queryKeys,queries}.ts
+└── ui/                      # model 훅만 소비
+
+features/<use-case>/
+└── model/useXxxMutation.ts  # entity api + queryKeys + invalidation
+```
+
+- features → `@/shared/api/client` **금지** (entity api만)
+- pages → entity `api/*` **직접 금지** (model/queries·feature mutation 경유)
+
+### 1-4. mutation 후 무분별한 invalidate
+
+```tsx
+// Bad
+onSuccess: () => queryClient.invalidateQueries(),
+
+// Good — 영향 키만
+import { invalidateHomeActivity } from '@/shared/lib/query-invalidation';
+onSuccess: () => invalidateHomeActivity(qc),
+```
+
+entity 간 무효화 → `shared/lib/query-invalidation.ts`.
+
+### 1-5. useEffect + fetch 수동 페칭
+
+```tsx
+// Bad
+useEffect(() => {
+  setLoading(true);
+  listMedications(userId).then(setMeds).finally(() => setLoading(false));
+}, [userId]);
+
+// Good
+const { data: meds, isLoading } = useHomeMedicationQueries({ userId, ... });
+```
+
+---
+
+## 2. FSD 계층
+
+의존·금지 상세: [fsd-architecture.mdc](fsd-architecture.mdc). 리뷰 시 특히:
+
+- Public API(`index.ts`) 우회 deep import (다른 슬라이스 `ui/`·`api/`)
+- `app/*.tsx` / Page 비대화 (re-export·조립만)
+- `mobile/src/app/` 금지 · domain feature(`features/medication/`) 금지
+- shared에 도메인 타입/UI · 테스트는 `mobile/src/__tests__/`만 ([tdd.mdc](tdd.mdc))
+
+---
+
+## 3. React 렌더링
+
+### 3-1. 컴포넌트 내부 컴포넌트 선언
+
+```tsx
+// Bad — 매 렌더 identity 변경
+function HomePage() {
+  const Row = ({ label }: { label: string }) => <Text>{label}</Text>;
+  return <Row label="hi" />;
+}
+
+// Good — 모듈 스코프
+function Row({ label }: { label: string }) {
+  return <Text>{label}</Text>;
+}
+```
+
+### 3-2. 리스트 key = index
+
+```tsx
+// Bad
+keyExtractor={(_, i) => String(i)}
+
+// Good
+keyExtractor={(item) => String(item.id)}
+```
+
+### 3-3. 성급한 상태 끌어올리기
+
+모달 open·시트 입력 등 **한 화면 로컬**이면 `useState`. 실제 공유 필요할 때만 승격.
+
+---
+
+## 4. React Native / Expo
+
+### 4-1. FlatList 콜백 인라인 (memo 자식 무력화)
+
+```tsx
+// Bad
+<FlatList renderItem={({ item }) => <Row onPress={() => go(item.id)} item={item} />} />
+
+// Good
+const renderItem = useCallback(
+  ({ item }: { item: Member }) => <Row item={item} onPress={handlePress} />,
+  [handlePress],
+);
+```
+
+### 4-2. Platform 분기 산재
+
+반복 `Platform.OS` → `shared/` 유틸. 키보드 회피 등 기존 (`Sheet`, `FunnelShell`) 패턴 따름.
+
+---
+
+## 5. NativeWind
+
+### 5-1. className / style 혼용
+
+- 레이아웃·간격·flex → `className` 우선
+- 토큰 색/그림자 → `COLORS` / `LAYOUT` (`style`) **허용**
+- ❌ 같은 속성 경쟁 · hex 하드코딩 — `COLORS.*` / `text-muted-foreground`
+
+```tsx
+// Bad
+<Text className="text-[15.5px] text-[#7A8783]" style={{ marginTop: 8 }} />
+
+// Good
+<Text className="mt-2 text-sm text-muted-foreground" />
+```
+
+### 5-2. Arbitrary value 남발
+
+`w-[123px]` → theme / `shared/constants` 토큰화.
+
+### 5-3. 조건부 className
+
+```tsx
+// Bad
+className={`${active ? 'bg-brand' : ''} p-2`}
+
+// Good
+className={cn('p-2', active && 'bg-brand')}
+```
+
+---
+
+## 우선 점검 숏리스트
+
+1. useQuery data → useState 복사?
+2. queryKey 매직 스트링? (`model/queryKeys` factory)
+3. UI 안 supabase / useQuery 인라인?
+4. `invalidateQueries()` 전체?
+5. pages/app 비대화 · public API 우회 · domain feature?
+6. nested component · index key?
+7. FlatList `renderItem` 인라인?
+8. className↔style 충돌 · hex · `cn` 미사용?

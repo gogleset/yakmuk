@@ -24,7 +24,7 @@ git log --oneline -15
 
 ## 2. Anti-patterns gate (필수)
 
-브랜치 diff에 `mobile/**`이 있으면 **pr-body 작성 전에** [rn-fsd-anti-patterns](../rn-fsd-anti-patterns/SKILL.md)를 읽고 `main...HEAD`(또는 `master...HEAD`) mobile 변경을 점검한다.
+브랜치 diff에 `mobile/**`이 있으면 **pr-body 작성 전에** [rn-fsd-anti-patterns.mdc](../../rules/rn-fsd-anti-patterns.mdc)를 읽고 `main...HEAD`(또는 `master...HEAD`) mobile 변경을 점검한다.
 
 - Must-fix 발견 → 먼저 고치고(커밋은 사용자/`@git-commit`에 맡김), 잔여 이슈를 PR Test plan / Notes에 짧게 적는다
 - 이슈 없음 → 진행

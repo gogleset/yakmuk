@@ -53,8 +53,8 @@ F5 **beat**(가족 컷) ≠ 퍼널 **P1**(가족 입력).
 - **시트:** 집+하트
 - **beat:** 가족 없음 empty · 초대 결과/공유 화면에 `family` 컷
 - **입력 쪼개기:** 가족 *만들기* 폼 = 퍼널 P1, *초대 코드 만들기* = 퍼널 P5 ([funnels.md](funnels.md))
-- **카피:** `COPY.family.emptyMembers` 유지
-- **훅:** `FamilyPage.tsx` · 초대 완료 화면
+- **카피:** `COPY.family.emptyMembers` + `emptyMembersMessage` · CTA `inviteCta` (leader만)
+- **훅:** `FamilyPage.tsx` · `FamilyGuardianDashboard` · 목업 `docs/brand/mocks/family-empty.png`
 
 ## F6 — 오늘 전부 완료 (Done) — [decisions.md](decisions.md) #1 + #2B
 

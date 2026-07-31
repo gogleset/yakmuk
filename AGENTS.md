@@ -79,6 +79,7 @@ Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 | [add-fsd-feature](.agents/skills/add-fsd-feature/SKILL.md) | mobile feature/entity/page 추가 |
 | [add-supabase-migration](.agents/skills/add-supabase-migration/SKILL.md) | RPC·테이블·한도 변경 |
 | [document-user-flows](.agents/skills/document-user-flows/SKILL.md) | 사용자 플로우·갭 브리프 (GPT 이미지용) |
+| [store-review-check](.agents/skills/store-review-check/SKILL.md) | 스토어 심사 리젝 후보 스캔 |
 | [git-commit](.agents/skills/git-commit/SKILL.md) | `@git-commit` → 작업별 스테이징·커밋 |
 | [git-pr](.agents/skills/git-pr/SKILL.md) | `@git-pr` → `pr-body.md` 생성 |
 

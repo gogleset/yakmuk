@@ -2,13 +2,11 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/providers/AuthProvider';
-import {
-  AddMedicationSheet,
-  refreshAfterMedicationChange,
-} from '@/features/add-medication';
+import { refreshAfterMedicationChange } from '@/features/add-medication';
+import { MedicationSheet } from '@/features/medication-sheet';
 import { ROUTES } from '@/shared/config/routes';
 
-/** 약 추가 — 투명 페이지 + BottomSheet */
+/** 약 추가 — 투명 페이지 + MedicationSheet create */
 export function AddMedicationPage() {
   const qc = useQueryClient();
   const { profile } = useAuth();
@@ -22,10 +20,11 @@ export function AddMedicationPage() {
 
   return (
     <View className="flex-1 bg-transparent">
-      <AddMedicationSheet
+      <MedicationSheet
+        mode="create"
         userId={userId}
         onClose={onClose}
-        onAdded={async () => {
+        onSaved={async () => {
           await refreshAfterMedicationChange(qc);
         }}
       />

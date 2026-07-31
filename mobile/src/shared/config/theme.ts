@@ -27,7 +27,7 @@ export const COLORS = {
   white: "#FFFFFF",
 } as const;
 
-/** react-native-calendars 테마 — soft canvas에 붙는 플랫 캘린더 */
+/** react-native-calendars 테마 — canvas(흰) 위 플랫 캘린더 */
 export const CALENDAR_THEME = {
   backgroundColor: COLORS.canvas,
   calendarBackground: COLORS.canvas,

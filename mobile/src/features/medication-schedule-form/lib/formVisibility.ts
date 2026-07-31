@@ -54,7 +54,7 @@ export function resolveFormVisibility(input: {
   };
 }
 
-/** 이름 클리어·재검색 시 뒤 섹션 접힘 + draft 리셋 */
+/** 이름 클리어·재검색 시 뒤 섹션 접힘 + draft 리셋 (전체 초기화용) */
 export function collapseOnNameCleared(_prev: MedicationScheduleDraft): {
   nameConfirmed: false;
   draft: MedicationScheduleDraft;

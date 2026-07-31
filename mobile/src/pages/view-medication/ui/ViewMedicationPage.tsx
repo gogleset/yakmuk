@@ -1,19 +1,22 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/providers/AuthProvider';
 import { useHomeMedicationQueries } from '@/entities/medication/model/queries';
 import type { Medication } from '@/entities/medication/model/types';
 import { refreshAfterMedicationChange } from '@/features/add-medication';
-import { MedicationSheet } from '@/features/medication-sheet';
+import {
+  MedicationSheet,
+  type MedicationSheetMode,
+} from '@/features/medication-sheet';
 import { ROUTES } from '@/shared/config/routes';
 import { COLORS } from '@/shared/config/theme';
 import { todayKstDateString } from '@/shared/lib/kst';
 import { Body, Screen } from '@/shared/ui';
 
-/** 약 수정 — 투명 페이지 + MedicationSheet edit */
-export function EditMedicationPage() {
+/** 약 상세 — 같은 MedicationSheet에서 view ↔ edit mode 전환 */
+export function ViewMedicationPage() {
   const qc = useQueryClient();
   const { profile } = useAuth();
   const params = useLocalSearchParams<{
@@ -23,7 +26,10 @@ export function EditMedicationPage() {
   const userId = params.userId ?? profile?.id;
   const medicationId = Number(params.medicationId);
   const today = todayKstDateString();
-  // replace 후 옛 id 소실해도 시트 닫힐 때까지 유지
+  const [mode, setMode] = useState<Extract<MedicationSheetMode, 'view' | 'edit'>>(
+    'view',
+  );
+  // replace 후 옛 id가 사라져도 시트 닫힐 때까지 스냅샷 유지
   const sheetMedsRef = useRef<Medication[] | null>(null);
 
   const { meds } = useHomeMedicationQueries({
@@ -76,10 +82,11 @@ export function EditMedicationPage() {
   return (
     <View className="flex-1 bg-transparent">
       <MedicationSheet
-        mode="edit"
+        mode={mode}
         userId={userId}
         medications={sheetMeds}
         onClose={onClose}
+        onEditPress={() => setMode('edit')}
         onSaved={async () => {
           await refreshAfterMedicationChange(qc);
         }}

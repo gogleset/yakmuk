@@ -19,7 +19,7 @@ import { Icons } from '@/shared/ui/primitives/Icon';
 
 type SheetProps = {
   visible: boolean;
-  title: string;
+  title: ReactNode;
   /** 닫기 요청 (× / 스크림) — visible=false로 바꾸는 쪽 */
   onClose: () => void;
   /** 퇴장 애니 끝난 뒤 (router.back 등) */
@@ -146,13 +146,22 @@ export function BottomSheet({
             },
           ]}
         >
-          <View className="mb-1 flex-row items-center justify-between">
-            <Text className="text-lg font-bold text-brand">{title}</Text>
+          <View className="mb-1 flex-row items-center justify-between gap-2">
+            {typeof title === 'string' ? (
+              <Text
+                className="min-w-0 flex-1 text-lg font-bold text-brand"
+                numberOfLines={1}
+              >
+                {title}
+              </Text>
+            ) : (
+              title
+            )}
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="닫기"
               onPress={onClose}
-              className="h-10 w-10 items-center justify-center"
+              className="h-10 w-10 shrink-0 items-center justify-center"
             >
               <Icons.X size={LAYOUT.icon.lg} color={COLORS.brand} />
             </Pressable>

@@ -28,6 +28,7 @@ export default function RootLayout() {
         >
           <Stack.Screen name="add-medication" options={sheetScreenOptions} />
           <Stack.Screen name="edit-medication" options={sheetScreenOptions} />
+          <Stack.Screen name="view-medication" options={sheetScreenOptions} />
         </Stack>
       </View>
     </AppProviders>

@@ -2,7 +2,7 @@
 export { Badge } from "./primitives/Badge";
 export { Button } from "./primitives/Button";
 export { Card, CardDescription, CardTitle } from "./primitives/Card";
-export { Icons, type IconComponent } from "./primitives/Icon";
+export { Icons, MED_FORM_ICONS, type IconComponent } from "./primitives/Icon";
 export { Input } from "./primitives/Input";
 export {
   Body,
@@ -19,8 +19,11 @@ export { EmptyHint } from "./composites/EmptyHint";
 export { Fab } from "./composites/Fab";
 export { FadeEdge, FadeEdges } from "./composites/FadeEdge";
 export { FadeInView } from "./composites/FadeInView";
+export { Fallback } from "./composites/Fallback";
 export { FunnelShell } from "./composites/FunnelShell";
 export { InviteCodeInput } from "./composites/InviteCodeInput";
+export { MarqueeTitle } from "./composites/MarqueeTitle";
+export { MedFormIcon } from "./composites/MedFormIcon";
 export {
   KokiIllustration,
   type KokiVariant,

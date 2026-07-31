@@ -77,6 +77,9 @@ export type TimedEntry = {
   taken: boolean;
   /** manage 등 — 요일 라벨 */
   caption?: string;
+  color?: string | null;
+  doseAmount?: number | null;
+  doseUnit?: string | null;
 };
 
 export type TimedEntryGroup = {

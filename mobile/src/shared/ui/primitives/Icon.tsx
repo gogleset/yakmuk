@@ -9,14 +9,18 @@ import {
   ChevronRight,
   ChevronUp,
   Circle,
+  Cylinder,
   FileText,
+  FlaskConical,
   Heart,
   Home,
   Info,
+  Layers,
   LogOut,
   Mail,
   Megaphone,
   Moon,
+  Package,
   Pill,
   Plus,
   QrCode,
@@ -33,6 +37,7 @@ import {
   type LucideProps,
 } from 'lucide-react-native';
 import { cssInterop } from 'nativewind';
+import type { MedFormIconId } from '@/shared/constants/medDoseUnits';
 
 function withClassName(Icon: LucideIcon) {
   return cssInterop(Icon, {
@@ -56,14 +61,18 @@ export const Icons = {
   ChevronRight: withClassName(ChevronRight),
   ChevronUp: withClassName(ChevronUp),
   Circle: withClassName(Circle),
+  Cylinder: withClassName(Cylinder),
   FileText: withClassName(FileText),
+  FlaskConical: withClassName(FlaskConical),
   Heart: withClassName(Heart),
   Home: withClassName(Home),
   Info: withClassName(Info),
+  Layers: withClassName(Layers),
   LogOut: withClassName(LogOut),
   Mail: withClassName(Mail),
   Megaphone: withClassName(Megaphone),
   Moon: withClassName(Moon),
+  Package: withClassName(Package),
   Pill: withClassName(Pill),
   Plus: withClassName(Plus),
   QrCode: withClassName(QrCode),
@@ -79,3 +88,12 @@ export const Icons = {
 } as const;
 
 export type IconComponent = ComponentType<LucideProps & { className?: string }>;
+
+/** dose_unit 형태 → Lucide 아이콘 */
+export const MED_FORM_ICONS: Record<MedFormIconId, IconComponent> = {
+  tablet: Icons.Pill,
+  capsule: Icons.Cylinder,
+  powder: Icons.Package,
+  liquid: Icons.FlaskConical,
+  film: Icons.Layers,
+};

@@ -7,6 +7,7 @@ type Props = {
   value: DaysMode;
   onChange: (mode: DaysMode) => void;
   tone?: ControlTone;
+  readOnly?: boolean;
 };
 
 /** 매일 / 요일 지정 토글 */
@@ -14,6 +15,7 @@ export function DaysModeToggle({
   value,
   onChange,
   tone = 'default',
+  readOnly = false,
 }: Props) {
   const offBg = tone === 'soft' ? 'bg-brand-soft' : 'bg-surface-soft';
 
@@ -31,8 +33,12 @@ export function DaysModeToggle({
             <Pressable
               key={opt.mode}
               accessibilityRole="button"
-              accessibilityState={{ selected: on }}
-              onPress={() => onChange(opt.mode)}
+              accessibilityState={{ selected: on, disabled: readOnly }}
+              disabled={readOnly}
+              onPress={() => {
+                if (readOnly) return;
+                onChange(opt.mode);
+              }}
               className={cn(
                 'flex-1 items-center rounded-xl py-3.5',
                 on ? 'bg-brand' : offBg,

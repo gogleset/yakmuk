@@ -26,6 +26,7 @@ type Props = {
   onScheduleModeChange: (mode: MedicationScheduleDraft['scheduleMode']) => void;
   onWeekdaysChange: (days: number[]) => void;
   onDaysModeChange: (daysMode: MedicationScheduleDraft['daysMode']) => void;
+  readOnly?: boolean;
 };
 
 /** 스케줄 블록 — create progressive / edit full. soft tone (시트용) */
@@ -37,6 +38,7 @@ export function MedicationScheduleFields({
   onScheduleModeChange,
   onWeekdaysChange,
   onDaysModeChange,
+  readOnly = false,
 }: Props) {
   const vis = resolveFormVisibility({ mode, nameConfirmed, draft });
   // 접힘 상태. 미기록 요일은 첫 요일만 펼침
@@ -66,6 +68,7 @@ export function MedicationScheduleFields({
         value={draft.scheduleMode}
         onChange={onScheduleModeChange}
         tone="soft"
+        readOnly={readOnly}
       />
 
       {vis.showSameTimes ? (
@@ -74,6 +77,7 @@ export function MedicationScheduleFields({
             value={draft.slotTimes}
             onChange={(slotTimes) => onDraftChange({ ...draft, slotTimes })}
             tone="soft"
+            readOnly={readOnly}
           />
         </FadeInView>
       ) : null}
@@ -84,12 +88,14 @@ export function MedicationScheduleFields({
             value={draft.daysMode}
             onChange={onDaysModeChange}
             tone="soft"
+            readOnly={readOnly}
           />
           {vis.showWeekdayPicker ? (
             <WeekdayPicker
               value={draft.weekdays}
               onChange={onWeekdaysChange}
               tone="soft"
+              readOnly={readOnly}
             />
           ) : null}
         </FadeInView>
@@ -101,6 +107,7 @@ export function MedicationScheduleFields({
             value={draft.weekdays}
             onChange={onWeekdaysChange}
             tone="soft"
+            readOnly={readOnly}
           />
           {vis.showPerWeekdayTimes
             ? draft.weekdays.map((day) => {
@@ -112,9 +119,8 @@ export function MedicationScheduleFields({
                 return (
                   <View
                     key={day}
-                    className="overflow-hidden rounded-xl bg-surface-soft"
+                    className="overflow-hidden rounded-xl border border-line bg-canvas"
                   >
-                    {/* 화이트 톤: surfaceSoft 셸 · 펼침 헤더만 brandSoft (taken row 축) */}
                     <Pressable
                       accessibilityRole="button"
                       accessibilityState={{ expanded: !collapsed }}
@@ -134,7 +140,7 @@ export function MedicationScheduleFields({
                             {times.map((time, timeIndex) => (
                               <View
                                 key={`${day}-${timeIndex}-${time}`}
-                                className="rounded-md bg-canvas px-2 py-0.5"
+                                className="rounded-md bg-surface-soft px-2 py-0.5"
                               >
                                 <Text className="text-xs font-semibold text-brand">
                                   {time}
@@ -160,6 +166,7 @@ export function MedicationScheduleFields({
                             })
                           }
                           tone="soft"
+                          readOnly={readOnly}
                         />
                       </View>
                     ) : null}

@@ -16,7 +16,7 @@ import type { ConditionValue } from '@/entities/medication/model/types';
 import { useConditionLogMutation } from '@/features/condition-log';
 import { useDailyMedicationCheckMutations } from '@/features/daily-medication-check';
 import { syncMedicationNotifications } from '@/features/medication-notifications';
-import { ROUTES } from '@/shared/config/routes';
+import { ROUTES, viewMedicationRoute } from '@/shared/config/routes';
 import { todayKstDateString } from '@/shared/lib/kst';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { ACTIONS, COPY } from '@/shared/copy';
@@ -243,6 +243,10 @@ export function HomePage() {
               onConditionChange={setCondition}
               onMessageChange={setMessage}
               onToggle={(id) => toggle.mutate(id)}
+              onOpenDetail={(id) => {
+                if (!profile?.id) return;
+                router.push(viewMedicationRoute(id, profile.id));
+              }}
               onDelete={confirmDelete}
               onSubmitCondition={() => submitCondition.mutate()}
               allDone={allDone}
@@ -253,6 +257,10 @@ export function HomePage() {
             <PastDayMedicationPanel
               entries={selectedDayEntries}
               conditionLogs={selectedDayConditionLogs}
+              onOpenDetail={(id) => {
+                if (!profile?.id) return;
+                router.push(viewMedicationRoute(id, profile.id));
+              }}
             />
           ) : null}
         </FadeInView>

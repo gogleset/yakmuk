@@ -1,8 +1,8 @@
 import { Text, View } from 'react-native';
 import type { CalendarMark } from '@/entities/medication/lib/calendar';
-import { COLORS } from '@/shared/config/theme';
+import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
-import { Card, KokiIllustration } from '@/shared/ui';
+import { KokiIllustration } from '@/shared/ui';
 import { MedCalendar } from './MedCalendar';
 import { MonthHeader } from './MonthHeader';
 
@@ -55,15 +55,18 @@ export function MedicationCalendarPanel({
         onNextMonth={() => onMonthChange(shiftYearMonth(visibleMonth, 1))}
       />
 
-      <Card className="overflow-hidden bg-canvas p-0">
-        <MedCalendar
-          key={visibleMonth}
-          current={`${visibleMonth}-01`}
-          markedDates={markedDates}
-          onDayPress={onDayPress}
-          onMonthChange={onMonthChange}
-        />
-      </Card>
+      {/* canvas on canvas — soft shadow로 구분 (overflow는 안쪽만) */}
+      <View className="rounded-xl bg-canvas" style={LAYOUT.shadow.sameFill}>
+        <View className="overflow-hidden rounded-xl">
+          <MedCalendar
+            key={visibleMonth}
+            current={`${visibleMonth}-01`}
+            markedDates={markedDates}
+            onDayPress={onDayPress}
+            onMonthChange={onMonthChange}
+          />
+        </View>
+      </View>
 
       <View className="flex-row flex-wrap gap-3 px-0.5">
         <Text className="text-xs" style={{ color: COLORS.muted }}>

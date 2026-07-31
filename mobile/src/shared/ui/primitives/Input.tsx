@@ -35,9 +35,9 @@ export function Input({
       )}
       style={[
         {
-          // 흰 배경 가시성: 평소 line, focus만 brand
+          // design §8.1 — focus일 때만 brand 보더
           borderWidth: 1,
-          borderColor: focused ? COLORS.brand : COLORS.line,
+          borderColor: focused ? COLORS.brand : 'transparent',
         },
         style,
       ]}

@@ -5,7 +5,10 @@ export const ACTIONS = {
   close: '닫기',
   back: '뒤로',
   save: '저장',
+  edit: '수정',
   export: '내보내기',
   reissue: '재발급',
   ack: '확인했어요',
+  reset: '초기화',
+  confirm: '확인',
 } as const;

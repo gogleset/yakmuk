@@ -53,6 +53,19 @@ export const LAYOUT = {
     /** 오전/오후 토글 너비 */
     periodWidth: 56,
   },
+  /**
+   * 같은 fill끼리 겹칠 때 구분용 soft shadow.
+   * overflow:hidden 은 바깥 래퍼가 아니라 안쪽 콘텐츠에만.
+   */
+  shadow: {
+    sameFill: {
+      shadowColor: '#1F2A27',
+      shadowOpacity: 0.06,
+      shadowRadius: 4,
+      shadowOffset: { width: 0, height: 1 },
+      elevation: 1,
+    },
+  },
 } as const;
 
 /** 탭·스택 내비 */

@@ -76,6 +76,9 @@ export type DayMedicationEntry = {
   name: string;
   scheduledTime: string | null;
   taken: boolean;
+  color?: string | null;
+  doseAmount?: number | null;
+  doseUnit?: string | null;
 };
 
 /** 과거 날짜 상세 — 삭제된 약 체크 기록 포함 */
@@ -97,6 +100,9 @@ export function buildDayMedicationEntries(
     name: med.name,
     scheduledTime: med.scheduledTime,
     taken: takenIds.has(med.id),
+    color: med.color,
+    doseAmount: med.doseAmount,
+    doseUnit: med.doseUnit,
   }));
 
   // hard delete 등으로 medication_id가 null인 과거 체크 기록

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { formatDaysMaskLabel } from '@/entities/medication/lib/daysMask';
 import { groupMedsByScheduledTime } from '@/entities/medication/lib/timeSlots';
 import type { Medication } from '@/entities/medication/model/types';
-import { TimeSlotMedAccordion } from '@/entities/medication/ui/TimeSlotMedAccordion';
+import { TimeSlotMedAccordion } from '@/entities/medication';
 import { COPY } from '@/shared/copy';
 import { EmptyHint } from '@/shared/ui';
 
@@ -37,6 +37,9 @@ export function GuardianMedManagePanel({
           scheduledTime: med.scheduledTime,
           taken: false,
           caption: formatDaysMaskLabel(med.daysMask),
+          color: med.color,
+          doseAmount: med.doseAmount,
+          doseUnit: med.doseUnit,
         })),
       })),
     [meds],

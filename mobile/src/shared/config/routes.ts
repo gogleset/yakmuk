@@ -13,6 +13,8 @@ export const ROUTES = {
   addMedication: '/add-medication',
   /** P4 약 수정 퍼널 */
   editMedication: '/edit-medication',
+  /** 약 상세(readonly) */
+  viewMedication: '/view-medication',
   /** P5 초대 생성 퍼널 */
   inviteCreate: '/invite-create',
 } as const;
@@ -33,6 +35,17 @@ export function editMedicationRoute(
   });
   if (userId) params.set('userId', userId);
   return `${ROUTES.editMedication}?${params.toString()}`;
+}
+
+export function viewMedicationRoute(
+  medicationId: number,
+  userId?: string,
+): string {
+  const params = new URLSearchParams({
+    medicationId: String(medicationId),
+  });
+  if (userId) params.set('userId', userId);
+  return `${ROUTES.viewMedication}?${params.toString()}`;
 }
 
 export function joinRoute(code?: string): string {

@@ -5,9 +5,10 @@ import {
   type TimeOfDaySlot,
   type TimedEntry,
 } from '@/entities/medication/lib/timeSlots';
+import { formatMedDose } from '@/shared/constants/medDoseUnits';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
-import { Icons } from '@/shared/ui';
+import { Icons, MedFormIcon } from '@/shared/ui';
 
 type Group = {
   scheduledTime: string;
@@ -55,22 +56,13 @@ function slotIcon(slot: TimeOfDaySlot) {
 function CheckToggle({ taken }: { taken: boolean }) {
   if (taken) {
     return (
-      <View className="h-7 w-7 items-center justify-center rounded-full bg-brand">
-        <Icons.Check size={16} color={COLORS.ink} strokeWidth={2.5} />
+      <View className="h-10 w-10 items-center justify-center rounded-full bg-brand">
+        <Icons.Check size={22} color={COLORS.ink} strokeWidth={2.5} />
       </View>
     );
   }
-  return <Icons.Circle size={28} color={COLORS.disabled} strokeWidth={1.5} />;
+  return <Icons.Circle size={40} color={COLORS.disabled} strokeWidth={1.5} />;
 }
-
-/** 흰 카드 입체감 — iOS shadow / Android elevation */
-const CARD_SHADOW = {
-  shadowColor: COLORS.text,
-  shadowOpacity: 0.06,
-  shadowRadius: 4,
-  shadowOffset: { width: 0, height: 1 },
-  elevation: 1,
-} as const;
 
 /** 시간대 아코디언 리스트 — 홈 오늘 체크 목업 */
 export function TimeSlotMedAccordion({
@@ -112,7 +104,7 @@ export function TimeSlotMedAccordion({
           <View
             key={group.scheduledTime}
             className="rounded-2xl bg-canvas"
-            style={CARD_SHADOW}
+            style={LAYOUT.shadow.sameFill}
           >
             <View className="overflow-hidden rounded-2xl">
               <Pressable
@@ -145,13 +137,11 @@ export function TimeSlotMedAccordion({
               {!collapsed
                 ? group.entries.map((entry) => {
                     const body = (
-                      <View className="flex-row items-center gap-3 px-4 py-3.5">
-                        <View className="h-10 w-10 items-center justify-center rounded-full bg-surface-soft">
-                          <Icons.Pill
-                            size={LAYOUT.icon.md}
-                            color={COLORS.brand}
-                          />
-                        </View>
+                      <>
+                        <MedFormIcon
+                          doseUnit={entry.doseUnit}
+                          color={entry.color}
+                        />
                         <View className="min-w-0 flex-1 gap-0.5">
                           <Text
                             className={`text-base font-semibold leading-5 ${
@@ -161,27 +151,67 @@ export function TimeSlotMedAccordion({
                           >
                             {entry.name}
                           </Text>
-                          {entry.caption ? (
-                            <Text className="text-xs text-brand-muted">
-                              {entry.caption}
-                            </Text>
-                          ) : null}
+                          {(() => {
+                            const dose = formatMedDose(
+                              entry.doseAmount ?? null,
+                              entry.doseUnit ?? null,
+                            );
+                            const caption = [dose, entry.caption]
+                              .filter(Boolean)
+                              .join(' · ');
+                            return caption ? (
+                              <Text className="text-xs text-brand-muted">
+                                {caption}
+                              </Text>
+                            ) : null;
+                          })()}
                         </View>
-                        {variant === 'check' ? (
-                          <CheckToggle taken={entry.taken} />
-                        ) : (
-                          <Icons.ChevronRight
-                            size={LAYOUT.icon.md}
-                            color={COLORS.muted}
-                          />
-                        )}
-                      </View>
+                      </>
                     );
 
-                    const canPress =
-                      variant === 'check'
-                        ? Boolean(onToggleKey)
-                        : Boolean(onPressKey);
+                    if (variant === 'check') {
+                      return (
+                        <View key={entry.key}>
+                          <View className="mx-4 h-px bg-surface-soft" />
+                          <View className="flex-row items-center gap-3 px-4 py-3.5">
+                            <Pressable
+                              accessibilityRole="button"
+                              accessibilityHint={COPY.a11y.longPressDelete}
+                              className="min-w-0 flex-1 flex-row items-center gap-3"
+                              onPress={() => onPressKey?.(entry.key)}
+                              onLongPress={() =>
+                                onLongPressKey?.(entry.key, entry.name)
+                              }
+                            >
+                              {body}
+                            </Pressable>
+                            {onToggleKey ? (
+                              <Pressable
+                                accessibilityRole="checkbox"
+                                accessibilityState={{ checked: entry.taken }}
+                                hitSlop={LAYOUT.hitSlop.sm}
+                                onPress={() => onToggleKey(entry.key)}
+                              >
+                                <CheckToggle taken={entry.taken} />
+                              </Pressable>
+                            ) : (
+                              <CheckToggle taken={entry.taken} />
+                            )}
+                          </View>
+                        </View>
+                      );
+                    }
+
+                    const canPress = Boolean(onPressKey);
+                    const row = (
+                      <View className="flex-row items-center gap-3 px-4 py-3.5">
+                        {body}
+                        <Icons.ChevronRight
+                          size={LAYOUT.icon.md}
+                          color={COLORS.muted}
+                        />
+                      </View>
+                    );
 
                     return (
                       <View key={entry.key}>
@@ -189,25 +219,16 @@ export function TimeSlotMedAccordion({
                         {canPress ? (
                           <Pressable
                             accessibilityRole="button"
-                            accessibilityState={
-                              variant === 'check'
-                                ? { checked: entry.taken }
-                                : undefined
-                            }
                             accessibilityHint={COPY.a11y.longPressDelete}
-                            onPress={() =>
-                              variant === 'check'
-                                ? onToggleKey?.(entry.key)
-                                : onPressKey?.(entry.key)
-                            }
+                            onPress={() => onPressKey?.(entry.key)}
                             onLongPress={() =>
                               onLongPressKey?.(entry.key, entry.name)
                             }
                           >
-                            {body}
+                            {row}
                           </Pressable>
                         ) : (
-                          body
+                          row
                         )}
                       </View>
                     );

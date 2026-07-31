@@ -14,7 +14,18 @@ type Props = {
   className?: string;
 };
 
-/** 약 이미지 — 로드 실패 시 알약 아이콘 플레이스홀더 */
+/** 검색 썸네일 — 로드 실패·URL 없으면 알약 아이콘 (DB 저장 안 함) */
+function normalizeImageUrl(url: string | null): string | null {
+  if (!url) return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  // 공공 API http → https (iOS ATS)
+  if (trimmed.startsWith('http://')) {
+    return `https://${trimmed.slice('http://'.length)}`;
+  }
+  return trimmed;
+}
+
 function DrugThumbnail({
   imageUrl,
   size,
@@ -23,7 +34,8 @@ function DrugThumbnail({
   size: number;
 }) {
   const [failed, setFailed] = useState(false);
-  const showImage = Boolean(imageUrl) && !failed;
+  const uri = normalizeImageUrl(imageUrl);
+  const showImage = Boolean(uri) && !failed;
 
   return (
     <View
@@ -32,7 +44,7 @@ function DrugThumbnail({
     >
       {showImage ? (
         <Image
-          source={{ uri: imageUrl! }}
+          source={{ uri: uri! }}
           style={{ width: size, height: size }}
           resizeMode="contain"
           onError={() => setFailed(true)}
@@ -44,28 +56,24 @@ function DrugThumbnail({
   );
 }
 
-/** 검색/확인 단계 공통 약 정보 미리보기 */
+/** 검색/상세 미리보기 — 리스트·상세에 썸네일 */
 export function DrugSearchPreview({
   item,
   variant = 'compact',
   className,
 }: Props) {
-  const imageSize = variant === 'detail' ? 112 : 64;
-
   if (variant === 'detail') {
     return (
       <View className={cn('gap-3', className)}>
-        <View className="items-center">
-          <DrugThumbnail imageUrl={item.itemImage} size={imageSize} />
+        <View className="items-center py-1">
+          <DrugThumbnail imageUrl={item.itemImage} size={128} />
         </View>
-
         <View className="gap-1">
           <Text className="text-center text-lg font-semibold text-brand">
             {item.itemName}
           </Text>
           <Muted className="text-center">{item.entpName}</Muted>
         </View>
-
         <DrugDetailFields item={item} />
       </View>
     );
@@ -73,7 +81,7 @@ export function DrugSearchPreview({
 
   return (
     <View className={cn('flex-row gap-3', className)}>
-      <DrugThumbnail imageUrl={item.itemImage} size={imageSize} />
+      <DrugThumbnail imageUrl={item.itemImage} size={56} />
       <View className="min-w-0 flex-1 gap-1">
         <Text className="font-semibold text-brand">{item.itemName}</Text>
         <Muted>{item.entpName}</Muted>
@@ -92,17 +100,18 @@ export function DrugSearchPreview({
   );
 }
 
-/** 상세 필드 — 값이 있는 항목만 표시 */
 function DrugDetailFields({ item }: { item: DrugSearchItem }) {
   const fields: { label: string; value: string | null; lines?: number }[] = [
-    { label: '효능', value: item.efficacy, lines: 4 },
-    { label: '복용법', value: item.useMethod, lines: 3 },
-    { label: '보관법', value: item.storage, lines: 2 },
-    { label: '주의', value: item.warning, lines: 3 },
+    { label: '효능', value: item.efficacy, lines: 8 },
+    { label: '복용법', value: item.useMethod, lines: 6 },
+    { label: '보관법', value: item.storage, lines: 4 },
+    { label: '유의사항', value: item.warning, lines: 6 },
   ];
 
   const visibleFields = fields.filter((field) => field.value);
-  if (visibleFields.length === 0) return null;
+  if (visibleFields.length === 0) {
+    return <Muted className="text-center">상세 정보가 없어요.</Muted>;
+  }
 
   return (
     <View className="gap-2.5 pt-1">

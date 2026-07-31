@@ -5,7 +5,7 @@ import type {
   Medication,
 } from '@/entities/medication/model/types';
 import { groupMedsByScheduledTime } from '@/entities/medication/lib/timeSlots';
-import { TimeSlotMedAccordion } from '@/entities/medication/ui/TimeSlotMedAccordion';
+import { TimeSlotMedAccordion } from '@/entities/medication';
 import { COPY } from '@/shared/copy';
 import { KokiIllustration, RichEmptyState } from '@/shared/ui';
 import { ConditionLogSection } from './ConditionLogSection';
@@ -18,6 +18,7 @@ type Props = {
   onConditionChange: (value: ConditionValue) => void;
   onMessageChange: (value: string) => void;
   onToggle: (medId: number) => void;
+  onOpenDetail: (medId: number) => void;
   onDelete: (medId: number, name: string) => void;
   onSubmitCondition: () => void;
   isError?: boolean;
@@ -36,6 +37,7 @@ export function TodayMedicationPanel({
   onConditionChange,
   onMessageChange,
   onToggle,
+  onOpenDetail,
   onDelete,
   onSubmitCondition,
   isError = false,
@@ -52,6 +54,9 @@ export function TodayMedicationPanel({
         name: med.name,
         scheduledTime: med.scheduledTime,
         taken: takenMedIds.has(med.id),
+        color: med.color,
+        doseAmount: med.doseAmount,
+        doseUnit: med.doseUnit,
       })),
     }));
   }, [meds, takenMedIds]);
@@ -106,6 +111,11 @@ export function TodayMedicationPanel({
           const id = Number(key);
           if (!Number.isFinite(id)) return;
           onToggle(id);
+        }}
+        onPressKey={(key) => {
+          const id = Number(key);
+          if (!Number.isFinite(id)) return;
+          onOpenDetail(id);
         }}
         onLongPressKey={(key, name) => {
           const id = Number(key);

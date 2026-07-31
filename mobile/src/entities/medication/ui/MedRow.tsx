@@ -1,5 +1,6 @@
 import { Text, View } from 'react-native';
 import { formatDaysMaskLabel } from '@/entities/medication/lib/daysMask';
+import { formatMedDose } from '@/shared/constants/medDoseUnits';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
 import { cn } from '@/shared/lib/cn';
@@ -11,6 +12,9 @@ type Props = {
   scheduledTime: string;
   daysMask?: string;
   taken: boolean;
+  color?: string | null;
+  doseAmount?: number | null;
+  doseUnit?: string | null;
   onPress: () => void;
   onLongPress?: () => void;
 };
@@ -21,10 +25,14 @@ export function MedRow({
   scheduledTime,
   daysMask,
   taken,
+  color: _color,
+  doseAmount,
+  doseUnit,
   onPress,
   onLongPress,
 }: Props) {
   const scheduleLabel = daysMask ? formatDaysMaskLabel(daysMask) : null;
+  const doseLabel = formatMedDose(doseAmount ?? null, doseUnit ?? null);
 
   return (
     <PressableScale
@@ -38,22 +46,27 @@ export function MedRow({
       onPress={onPress}
       onLongPress={onLongPress}
     >
-      <View className="flex-row items-center gap-2.5">
+      <View className="min-w-0 flex-1 flex-row items-center gap-2.5">
         {taken ? (
           <Icons.CheckCircle size={LAYOUT.icon.lg} color={COLORS.brand} />
         ) : (
           <Icons.Circle size={LAYOUT.icon.lg} color={COLORS.muted} />
         )}
-        <View>
-          <Text className="text-base font-semibold text-brand">{name}</Text>
-          {scheduleLabel ? (
-            <Text className="mt-0.5 text-xs text-brand-faint">
-              {scheduleLabel}
+        <View className="min-w-0 flex-1">
+          <Text
+            className="text-base font-semibold text-brand"
+            numberOfLines={1}
+          >
+            {name}
+          </Text>
+          {scheduleLabel || doseLabel ? (
+            <Text className="mt-0.5 text-xs text-brand-faint" numberOfLines={1}>
+              {[doseLabel, scheduleLabel].filter(Boolean).join(' · ')}
             </Text>
           ) : null}
         </View>
       </View>
-      <Text className="text-brand-faint">{scheduledTime}</Text>
+      <Text className="ml-2 text-brand-faint">{scheduledTime}</Text>
     </PressableScale>
   );
 }

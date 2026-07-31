@@ -11,6 +11,7 @@ type Props = {
   minSlots?: number;
   maxSlots?: number;
   tone?: ControlTone;
+  readOnly?: boolean;
 };
 
 /** 하루 안 복용 시간 여러 개 */
@@ -20,22 +21,24 @@ export function TimeSlotList({
   minSlots = 1,
   maxSlots = LIMITS.maxTimeSlots,
   tone = 'default',
+  readOnly = false,
 }: Props) {
   const times = value.length > 0 ? value : [LIMITS.defaultDoseTime];
 
   const setAt = (index: number, hhmm: string) => {
+    if (readOnly) return;
     const next = [...times];
     next[index] = hhmm;
     onChange(next);
   };
 
   const addSlot = () => {
-    if (times.length >= maxSlots) return;
+    if (readOnly || times.length >= maxSlots) return;
     onChange([...times, LIMITS.defaultDoseTime]);
   };
 
   const removeAt = (index: number) => {
-    if (times.length <= minSlots) return;
+    if (readOnly || times.length <= minSlots) return;
     onChange(times.filter((_, i) => i !== index));
   };
 
@@ -47,7 +50,7 @@ export function TimeSlotList({
             <Text className="text-sm font-semibold text-brand">
               {index + 1}회
             </Text>
-            {times.length > minSlots ? (
+            {!readOnly && times.length > minSlots ? (
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="시간 삭제"
@@ -58,14 +61,20 @@ export function TimeSlotList({
               </Pressable>
             ) : null}
           </View>
-          <TimePicker
-            value={time}
-            onChange={(hhmm) => setAt(index, hhmm)}
-            tone={tone}
-          />
+          {readOnly ? (
+            <View className="rounded-xl bg-brand-soft px-3.5 py-3.5">
+              <Text className="text-base font-semibold text-brand">{time}</Text>
+            </View>
+          ) : (
+            <TimePicker
+              value={time}
+              onChange={(hhmm) => setAt(index, hhmm)}
+              tone={tone}
+            />
+          )}
         </View>
       ))}
-      {times.length < maxSlots ? (
+      {!readOnly && times.length < maxSlots ? (
         <Button
           label="시간 추가"
           variant="outline"

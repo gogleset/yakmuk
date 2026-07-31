@@ -6,7 +6,7 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          DEFAULT: "#4C8478",
+          DEFAULT: "#4D8679",
           soft: "#E4F1ED",
           // 기존 className 호환 → muted 축
           muted: "#7A8783",
@@ -23,12 +23,12 @@ module.exports = {
         background: "#F7F8F8",
         foreground: "#1F2A27",
         primary: {
-          DEFAULT: "#4C8478",
+          DEFAULT: "#4D8679",
           foreground: "#F5FFFC",
         },
         secondary: {
           DEFAULT: "#E4F1ED",
-          foreground: "#4C8478",
+          foreground: "#4D8679",
         },
         muted: {
           DEFAULT: "#D5DED9",
@@ -39,7 +39,7 @@ module.exports = {
           foreground: "#FFFFFF",
         },
         border: "#D5DED9",
-        success: "#4C8478",
+        success: "#4D8679",
       },
       borderRadius: {
         lg: "12px",

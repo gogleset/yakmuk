@@ -2,7 +2,7 @@
 export { LAYOUT, LIMITS, MOTION, NAV, OVERLAY } from "@/shared/constants";
 
 export const COLORS = {
-  brand: "#4C8478",
+  brand: "#4D8679",
   brandSoft: "#E4F1ED",
   /** 스크린 배경 · 시스템 크롬 */
   canvas: "#F7F8F8",
@@ -23,7 +23,7 @@ export const COLORS = {
   warningBg: "#FFF8E1",
   destructive: "#C46B5A",
   /** 완료·다 먹음 — brand와 동일 축 */
-  success: "#4C8478",
+  success: "#4D8679",
   white: "#FFFFFF",
 } as const;
 

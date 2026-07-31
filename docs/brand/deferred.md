@@ -17,7 +17,7 @@
 | `happy` UI | 에셋만 (#1) | 강화 beat 확정 후 (개별 체크 금지 유지) |
 | 퍼널 P6 | 홈 컨디션 인라인 | FunnelShell 승격 ([funnels.md](funnels.md) P6) |
 | 정식 콕이 컷 | placeholder PNG | 동일 파일명 overwrite → 재빌드만 |
-| soft 틸 hex | **확정** `brand #4C8478` 등 (#8) | — |
+| soft 틸 hex | **확정** `brand #4D8679` 등 (#8) | — |
 | app.json display name | `약먹었약`/scheme 유지 (#6B 제외) | rename 범위 확장 시 별도 결정 |
 
 ---

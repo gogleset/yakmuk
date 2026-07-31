@@ -28,7 +28,7 @@
 
 ## 갭 2 — 색
 
-**확정 (#8):** soft 틸 `brand #4C8478` · canvas `#F7F8F8` · surfaceSoft `#F0F5F3`.  
+**확정 (#8):** soft 틸 `brand #4D8679` · canvas `#F7F8F8` · surfaceSoft `#F0F5F3`.  
 진한 쿨 틸(`#0F6B5C`) 폐기. SoT: [design.md](../design.md) §6 ↔ `theme.ts` / NativeWind.
 
 ---
@@ -156,7 +156,7 @@ flowchart TB
 
 | 시트 느낌 | 현재 토큰 | 조정 |
 |-----------|-----------|------|
-| mid sage | `brand` `#4C8478` | 목업 soft 틸 확정 (#8) |
+| mid sage | `brand` `#4D8679` | 목업 soft 틸 확정 (#8) |
 | pale mint | `brandSoft` | 유지~약간 웜 |
 | off-white | `canvas` | 뉴트럴 오프화이트 |
 | deep forest | 없음 | pressed용만, 토큰 남발 금지 |

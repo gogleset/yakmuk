@@ -91,7 +91,7 @@
 
 | Token         | Light     | Dark      | 용도                                            |
 | ------------- | --------- | --------- | ----------------------------------------------- |
-| `brand`       | `#4C8478` | `#3DBFA8` | CTA, 탭 active, 선택일·아이콘 강조              |
+| `brand`       | `#4D8679` | `#3DBFA8` | CTA, 탭 active, 선택일·아이콘 강조              |
 | `brandSoft`   | `#E4F1ED` | `#1A3D36` | taken row, secondary 버튼, soft fill            |
 | `canvas`      | `#F7F8F8` | `#0E1413` | 스크린 배경, 시스템 크롬                        |
 | `surface`     | `#FFFFFF` | `#1A2421` | 인풋·시트·탭 bar                                |
@@ -106,7 +106,7 @@
 
 | Token           | Light     | Dark      | 용도                                              |
 | --------------- | --------- | --------- | ------------------------------------------------- |
-| `success`       | `#4C8478` | `#3DBFA8` | 완료·“다 먹음” — brand와 동일 축 (이질 블루 금지) |
+| `success`       | `#4D8679` | `#3DBFA8` | 완료·“다 먹음” — brand와 동일 축 (이질 블루 금지) |
 | `warning`       | `#C49A3C` | `#D4A84B` | 주의 텍스트/아이콘 · 범례 “일부만”                |
 | `warningBorder` | `#E8D48A` | `#5C4A1A` | (레거시) — 보더 금지. 경고는 `warningBg` fill     |
 | `warningBg`     | `#FFF8E1` | `#2A2410` | 경고 배너 배경                                    |
@@ -123,7 +123,7 @@
 ### 6.4 Why soft teal
 
 간호·약·안심의 식물성 신뢰. 병원 블루·진한 쿨 틸(`#0F6B5C`) 금지.  
-목업 soft 틸(`#4C8478`) + 오프화이트 canvas — 채도↓·명도↑.  
+목업 soft 틸(`#4D8679`) + 오프화이트 canvas — 채도↓·명도↑.  
 헤어 브라운·윙 페일블루 = **illustration-only**, 토큰 추가 금지.  
 hex SoT: 이 문서 §6.1 ↔ `theme.ts` / `tailwind.config.js`.
 
@@ -249,7 +249,7 @@ Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타�
 
 | 상태   | 내용                                                                                                                      |
 | ------ | ------------------------------------------------------------------------------------------------------------------------- |
-| Done   | light soft 틸 — `theme.ts` / `tailwind` = `brand #4C8478` 등. 브랜드명 약콕 · Character · 목업 soft 팔레트 확정 |
+| Done   | light soft 틸 — `theme.ts` / `tailwind` = `brand #4D8679` 등. 브랜드명 약콕 · Character · 목업 soft 팔레트 확정 |
 | Legacy | `userInterfaceStyle: "light"` only — dark 맵·시스템 크롬 automatic 미적용                                                 |
 | Next   | 1) dark 토큰 맵 2) 시스템 크롬 3) `userInterfaceStyle: "automatic"` QA 4) sage hex 리샘플 시 `theme.ts` / `tailwind` 동기 |
 

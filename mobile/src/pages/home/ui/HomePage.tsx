@@ -119,6 +119,14 @@ export function HomePage() {
     [logsQuery.data, selectedDate],
   );
 
+  const todayConditionLog = useMemo(
+    () =>
+      (logsQuery.data ?? []).find(
+        (log) => log.logDate === today && log.condition != null,
+      ) ?? null,
+    [logsQuery.data, today],
+  );
+
   useEffect(() => {
     if (!medsQuery.data || !takenQuery.data) return;
     void syncMedicationNotifications(medsQuery.data, takenQuery.data);
@@ -250,6 +258,8 @@ export function HomePage() {
               onDelete={confirmDelete}
               onSubmitCondition={() => submitCondition.mutate()}
               allDone={allDone}
+              savedCondition={todayConditionLog?.condition ?? null}
+              savedMessage={todayConditionLog?.message ?? null}
             />
           ) : null}
 

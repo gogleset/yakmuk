@@ -8,10 +8,12 @@ export type InputTone = 'default' | 'soft';
 type Props = TextInputProps & {
   className?: string;
   /**
-   * default = 흰 surface (canvas 위 line 보더로 가시)
+   * default = 흰 surface (canvas 위)
    * soft = brandSoft — BottomSheet(surface) 안 더 강한 대비
    */
   tone?: InputTone;
+  /** true면 비포커스에도 line 보더 (컨디션 한마디 등) */
+  bordered?: boolean;
 };
 
 export function Input({
@@ -21,6 +23,7 @@ export function Input({
   onBlur,
   style,
   tone = 'default',
+  bordered = false,
   ...rest
 }: Props) {
   const [focused, setFocused] = useState(false);
@@ -35,9 +38,12 @@ export function Input({
       )}
       style={[
         {
-          // design §8.1 — focus일 때만 brand 보더
           borderWidth: 1,
-          borderColor: focused ? COLORS.brand : 'transparent',
+          borderColor: focused
+            ? COLORS.brand
+            : bordered
+              ? COLORS.line
+              : 'transparent',
         },
         style,
       ]}

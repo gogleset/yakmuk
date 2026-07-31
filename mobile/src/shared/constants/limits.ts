@@ -19,4 +19,6 @@ export const LIMITS = {
   medMetaMaxLength: 2000,
   /** 용량 숫자 상한 */
   medDoseAmountMax: 9999,
+  /** 오늘 배너(완료↔컨디션) 자동 넘김 ms */
+  todayBannerAutoAdvanceMs: 5000,
 } as const;

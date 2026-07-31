@@ -127,7 +127,7 @@ export type CalendarMark = {
 };
 
 const STATUS_DOT: Record<Exclude<DayMedStatus, 'empty'>, string> = {
-  done: COLORS.success,
+  done: COLORS.sky,
   partial: COLORS.warning,
   missed: COLORS.destructive,
   scheduled: COLORS.muted,

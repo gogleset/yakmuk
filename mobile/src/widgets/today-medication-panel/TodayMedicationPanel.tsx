@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import type {
   ConditionValue,
   Medication,
@@ -9,6 +9,7 @@ import { TimeSlotMedAccordion } from '@/entities/medication';
 import { COPY } from '@/shared/copy';
 import { KokiIllustration, RichEmptyState } from '@/shared/ui';
 import { ConditionLogSection } from './ConditionLogSection';
+import { TodayGreetingBanner } from './TodayGreetingBanner';
 
 type Props = {
   meds: Medication[];
@@ -26,6 +27,9 @@ type Props = {
   emptyHint?: string;
   /** F6 — 오늘 전부 완료 */
   allDone?: boolean;
+  /** 오늘 이미 남긴 컨디션 — 배너 슬라이드 2페이지 */
+  savedCondition?: ConditionValue | null;
+  savedMessage?: string | null;
 };
 
 /** 오늘 약 체크(시간대 그룹) + 컨디션(스크롤 아래) */
@@ -44,6 +48,8 @@ export function TodayMedicationPanel({
   emptyMessage,
   emptyHint,
   allDone = false,
+  savedCondition = null,
+  savedMessage = null,
 }: Props) {
   const accordionGroups = useMemo(() => {
     return groupMedsByScheduledTime(meds).map((group) => ({
@@ -61,6 +67,16 @@ export function TodayMedicationPanel({
     }));
   }, [meds, takenMedIds]);
 
+  const conditionForm = !savedCondition ? (
+    <ConditionLogSection
+      condition={condition}
+      message={message}
+      onConditionChange={onConditionChange}
+      onMessageChange={onMessageChange}
+      onSubmit={onSubmitCondition}
+    />
+  ) : null;
+
   if (isError) {
     return (
       <RichEmptyState
@@ -75,38 +91,35 @@ export function TodayMedicationPanel({
   if (meds.length === 0) {
     return (
       <View className="gap-3">
+        {savedCondition ? (
+          <TodayGreetingBanner
+            allDone={false}
+            savedCondition={savedCondition}
+            savedMessage={savedMessage}
+          />
+        ) : null}
         <RichEmptyState
           layout="card"
           title={emptyMessage ?? COPY.med.emptyToday}
           message={emptyHint ?? COPY.med.emptyTodayHint}
           illustration={<KokiIllustration variant="thinking" size={88} />}
         />
-        <ConditionLogSection
-          condition={condition}
-          message={message}
-          onConditionChange={onConditionChange}
-          onMessageChange={onMessageChange}
-          onSubmit={onSubmitCondition}
-        />
+        {conditionForm}
       </View>
     );
   }
 
   return (
     <View className="gap-3">
-      {/* 인사 배너 — 진행=cheer / 완료(F6)=done + 제목 스왑 */}
-      <View className="flex-row items-center gap-3 rounded-2xl bg-surface-soft px-4 py-4">
-        <View className="min-w-0 flex-1 gap-1">
-          <Text className="text-lg font-bold leading-6 text-brand">
-            {allDone ? COPY.med.checkPromptDone : COPY.med.checkPromptTitle}
-          </Text>
-        </View>
-        <KokiIllustration variant={allDone ? 'done' : 'cheer'} size={88} />
-      </View>
+      <TodayGreetingBanner
+        allDone={allDone}
+        savedCondition={savedCondition}
+        savedMessage={savedMessage}
+      />
 
       <TimeSlotMedAccordion
         groups={accordionGroups}
-        collapseMode={allDone ? 'all-collapsed' : 'incomplete-open'}
+        collapseMode="incomplete-open"
         onToggleKey={(key) => {
           const id = Number(key);
           if (!Number.isFinite(id)) return;
@@ -124,13 +137,7 @@ export function TodayMedicationPanel({
         }}
       />
 
-      <ConditionLogSection
-        condition={condition}
-        message={message}
-        onConditionChange={onConditionChange}
-        onMessageChange={onMessageChange}
-        onSubmit={onSubmitCondition}
-      />
+      {conditionForm}
     </View>
   );
 }

@@ -68,11 +68,11 @@ export function MedicationCalendarPanel({
         </View>
       </View>
 
-      <View className="flex-row flex-wrap gap-3 px-0.5">
+      <View className="flex-row items-center justify-evenly">
         <Text className="text-xs" style={{ color: COLORS.muted }}>
           ● {COPY.calendar.legendScheduled}
         </Text>
-        <Text className="text-xs" style={{ color: COLORS.success }}>
+        <Text className="text-xs" style={{ color: COLORS.sky }}>
           ● {COPY.calendar.legendDone}
         </Text>
         <Text className="text-xs" style={{ color: COLORS.warning }}>

@@ -119,6 +119,8 @@ export const COPY = {
     savedBody: '오늘 컨디션을 가족에게 전했어요',
     defaultBadMessage: '오늘 컨디션이 좋지 않아요',
     prompt: '오늘 컨디션은 어때요?',
+    /** 이미 남긴 뒤 readonly 한 줄 */
+    savedPrompt: (label: string) => `오늘 컨디션은 ${label}이에요!`,
     messagePlaceholder: '가족에게 전할 한마디 (선택)',
     submit: '컨디션 남기기',
   },

@@ -176,6 +176,8 @@ export function HomePage() {
       <ScrollView
         contentContainerClassName="gap-3 px-5 pt-2"
         contentContainerStyle={{
+          // 약 0개면 empty가 캘린더 아래 남은 높이를 채움
+          flexGrow: hasRegisteredMeds ? undefined : 1,
           paddingBottom: showFab
             ? LAYOUT.scroll.paddingBottomWithFab
             : LAYOUT.fade.bottomPlain,
@@ -189,7 +191,9 @@ export function HomePage() {
           />
         }
       >
-        <FadeInView className="gap-3">
+        <FadeInView
+          className={hasRegisteredMeds ? 'gap-3' : 'flex-1 gap-3'}
+        >
           <MedicationCalendarPanel
             visibleMonth={visibleMonth}
             markedDates={markedDates}
@@ -202,6 +206,7 @@ export function HomePage() {
           {!hasRegisteredMeds ? (
             <RichEmptyState
               layout="stack"
+              fill
               title={
                 medsQuery.isError
                   ? COPY.med.loadFailed

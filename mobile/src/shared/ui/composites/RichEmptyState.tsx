@@ -18,6 +18,8 @@ type Props = {
   className?: string;
   /** stack=세로 중앙(홈 A empty) · card=가로 카드(홈 C 등) */
   layout?: 'stack' | 'card';
+  /** stack일 때 부모 남은 세로 공간을 채우고 내용 중앙 정렬 */
+  fill?: boolean;
 };
 
 /** 빈 상태 — 일러스트/아이콘 + 제목 + CTA 하나 (Low friction) */
@@ -30,6 +32,7 @@ export function RichEmptyState({
   onCtaPress,
   className,
   layout = 'stack',
+  fill = false,
 }: Props) {
   const media = illustration ? (
     illustration
@@ -70,6 +73,7 @@ export function RichEmptyState({
     <View
       className={cn(
         'items-center gap-4 rounded-3xl bg-surface-soft px-5 py-6',
+        fill && 'flex-1 justify-center',
         className,
       )}
     >

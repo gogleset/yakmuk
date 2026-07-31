@@ -40,7 +40,7 @@
 - 스타일: soft 3D clay, 투명 PNG, 드롭섀도 최소화
 - 라이브러리: Expr(happy/thinking/cheer/worried) + Action(pill/clipboard/heart/lantern)
   - UI slots(welcome/thinking/happy/done/family/streak)
-- 배치 화이트리스트: Welcome, Empty, Success, Done, Family, Streak(조건부), Stuck(worried)
+- 배치 화이트리스트: Welcome, Empty, Success, Done, Family, Streak(조건부), Stuck(worried), **컨디션 선택**(happy/thinking/worried)
 - Stuck: Worried 컷으로 안부 표현 (시트 UI열 외 — 제품 규칙)
 - Placeholder: `mobile/assets/koki/{slot}.png` — 정식 컷은 동일 파일명 overwrite
 - 금지: 탭 아이콘 대체, MedRow 장식, 런타임 파티클, 설명 문단
@@ -78,8 +78,9 @@
 
 - 상태 도트(약 있는 날 / 다 먹었어요 / 일부만 / 안 먹었어요) = **안부 이력**. compliance 히트맵·알람 빨강 금지 (`destructive`는 점 색만, 배너 아님)
 - 시간대 = `scheduledTime` 클라 버킷 (아침/점심/저녁/취침 전). **용량 optional** (`dose_amount` + `dose_unit` — 정/캡슐/ml 등). 이미지 없음 · 구분용 `color` 키 · 리스트 아이콘은 `dose_unit`→형태(미설정=알약)
-- 컨디션 입력 = 오늘 체크 **스크롤 아래** secondary (스케줄 0일도 동일)
-- 콕이: empty=`thinking` · 진행 배너=`cheer` · 완료=`done`. 본문·행 상시 장식 금지
+- 컨디션 입력 = 오늘 체크 **스크롤 아래** secondary. 선택 UI = **콕이 원형 컷**(좋음 `happy` · 보통 `thinking` · 아픔 `worried`)
+- 컨디션 **남긴 뒤** = 상단 인사 배너와 **가로 슬라이드**(스와이프 · `LIMITS.todayBannerAutoAdvanceMs` 자동). 하단 readonly 카드 금지
+- 콕이: empty=`thinking` · 진행 배너=`cheer` · 완료=`done` · **컨디션 선택**=happy/thinking/worried. 본문·행 상시 장식 금지
 - 일괄「다 먹었어요!」CTA **없음** — 개별 체크만
 
 ## 6. Color system
@@ -93,6 +94,7 @@
 | ------------- | --------- | --------- | ----------------------------------------------- |
 | `brand`       | `#4D8679` | `#3DBFA8` | CTA, 탭 active, 선택일·아이콘 강조              |
 | `brandSoft`   | `#E4F1ED` | `#1A3D36` | taken row, secondary 버튼, soft fill            |
+| `todaySoft`   | `#C5E8D9` | `#1A3D36` | 캘린더 「오늘」 배경 — brandSoft보다 시인성 높은 연녹 |
 | `canvas`      | `#FFFFFF` | `#0E1413` | 스크린 배경, 시스템 크롬                        |
 | `surface`     | `#FFFFFF` | `#1A2421` | 인풋·시트·탭 bar                                |
 | `surfaceSoft` | `#F0F5F3` | `#15201D` | 카드·empty 박스 — brandSoft보다 훨씬 연한 fill  |
@@ -106,7 +108,8 @@
 
 | Token           | Light     | Dark      | 용도                                              |
 | --------------- | --------- | --------- | ------------------------------------------------- |
-| `success`       | `#4D8679` | `#3DBFA8` | 완료·“다 먹음” — brand와 동일 축 (이질 블루 금지) |
+| `success`       | `#4D8679` | `#3DBFA8` | 완료 CTA 등 — brand와 동일 축                         |
+| `sky`           | `#3B9AD9` | `#2F8BC7` | 캘린더 「다 먹었어요」 도트 — 시인성 sky                 |
 | `warning`       | `#C49A3C` | `#D4A84B` | 주의 텍스트/아이콘 · 범례 “일부만”                |
 | `warningBorder` | `#E8D48A` | `#5C4A1A` | (레거시) — 보더 금지. 경고는 `warningBg` fill     |
 | `warningBg`     | `#FFF8E1` | `#2A2410` | 경고 배너 배경                                    |
@@ -257,7 +260,7 @@ Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타�
 - 웜크림 + 테라코타 AI 클리셰
 - 다크 네온·글로우·순검 배경
 - 필 클러스터, 통계 스트립, 배지 과다로 불안 UI
-- “다 먹음” 등 success를 이질 블루로 분리
+- “다 먹음” 캘린더 도트는 `sky` — CTA success와 구분. 네온 블루 금지
 - **border** — focus 상태가 아니면 쓰지 않음 (카드·버튼·divider·토글 윤곽 포함)
 - **설명 문구 남발** — 라벨·레이아웃으로 충분한데 Caption/Body로 풀어쓰기
 - **아이콘 + 중복 라벨** — `← 뒤로`, `× 닫기` 등 아이콘 옆 보조 텍스트

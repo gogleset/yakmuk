@@ -77,7 +77,7 @@
 | 과거일 선택             | 캘린더 + PastDay                                                     | streak(F4)는 캘린더 영역. FAB   |
 
 - 상태 도트(약 있는 날 / 다 먹었어요 / 일부만 / 안 먹었어요) = **안부 이력**. compliance 히트맵·알람 빨강 금지 (`destructive`는 점 색만, 배너 아님)
-- 시간대 = `scheduledTime` 클라 버킷 (아침/점심/저녁/취침 전). dosage 필드 없음
+- 시간대 = `scheduledTime` 클라 버킷 (아침/점심/저녁/취침 전). **용량 optional** (`dose_amount` + `dose_unit` — 정/캡슐/ml 등). 이미지 없음 · 구분용 `color` 키 · 리스트 아이콘은 `dose_unit`→형태(미설정=알약)
 - 컨디션 입력 = 오늘 체크 **스크롤 아래** secondary (스케줄 0일도 동일)
 - 콕이: empty=`thinking` · 진행 배너=`cheer` · 완료=`done`. 본문·행 상시 장식 금지
 - 일괄「다 먹었어요!」CTA **없음** — 개별 체크만
@@ -115,7 +115,8 @@
 ### 6.3 Mode rules
 
 - 다크에서 `brand`는 **더 어둡게가 아니라 더 밝게** — CTA 대비 확보
-- 계층은 그림자·글로우가 아니라 **`canvas` → `surfaceSoft` → `brandSoft` 단계** (`surface`는 인풋·시트·탭)
+- 계층은 기본적으로 **`canvas` → `surfaceSoft` → `brandSoft` 단계** (`surface`는 인풋·시트·탭)
+- **같은 fill끼리** (예: `canvas` 위 `canvas` 카드) 구분해야 하면 border 대신 **아주 옅은 soft shadow** (`LAYOUT.shadow.sameFill`) — 드롭다운/체크리스트급. 네온·다층 글로우 금지
 - 시스템 크롬(status / nav bar) = 해당 모드의 `canvas`
 - 순수 `#000` 배경, 형광 민트, 네온 글로우 금지
 - 목표 런타임: `userInterfaceStyle: "automatic"` (현행 light-only는 legacy)
@@ -123,7 +124,7 @@
 ### 6.4 Why soft teal
 
 간호·약·안심의 식물성 신뢰. 병원 블루·진한 쿨 틸(`#0F6B5C`) 금지.  
-목업 soft 틸(`#4D8679`) + 오프화이트 canvas — 채도↓·명도↑.  
+목업 soft 틸(`#4D8679`) + 흰 canvas — 채도↓·명도↑.  
 헤어 브라운·윙 페일블루 = **illustration-only**, 토큰 추가 금지.  
 hex SoT: 이 문서 §6.1 ↔ `theme.ts` / `tailwind.config.js`.
 
@@ -148,7 +149,10 @@ Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타�
 | -------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | Screen                     | `bg-canvas`, safe area                                                                                                 |
 | Card / empty 박스          | `bg-surface-soft`                                                                                                      |
-| Input / outline / 미선택 토글 | Input default = `bg-surface`(흰) + `line` 보더(평소) / focus=`brand`. 시트 안 중첩은 `brandSoft` (`tone="soft"`). outline 버튼 = `surfaceSoft` |
+| Home calendar              | `bg-canvas` + `LAYOUT.shadow.sameFill` (스크린과 동색 → soft shadow). overflow는 안쪽만 — 바깥에 shadow               |
+| Per-weekday day groups     | `bg-canvas` + `border-line`                                                                                            |
+| Time-slot accordion        | `bg-canvas` + `LAYOUT.shadow.sameFill` (체크리스트형)                                                                  |
+| Input / outline / 미선택 토글 | Input default = `bg-surface`(흰) · soft=`brandSoft`. **unfocused = border 없음**, focus=`brand` 보더. outline 버튼 = `surfaceSoft` |
 | Sheet                      | `bg-surface` (흰). 안쪽 컨트롤은 soft/brandSoft fill                                                                   |
 | Radius                     | sm 8 · md 10 · lg 12 (`rounded-xl` ≈ 12)                                                                               |
 | Button                     | `rounded-xl` — default(`brand`) / outline(`surfaceSoft`) / oauth(흰+`line`, Google·Apple) / secondary(`brandSoft`) / ghost / destructive |
@@ -160,7 +164,8 @@ Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타�
 ### 8.1 Border
 
 **기본 금지.** 계층·구분·버튼 outline·카드 윤곽·리스트 divider에 border를 쓰지 않는다.  
-구분은 `canvas`(`#FFFFFF`) → `surfaceSoft`(`#F0F5F3`) → `brandSoft` → `brand` **fill**로만.
+구분은 `canvas`(`#FFFFFF`) → `surfaceSoft`(`#F0F5F3`) → `brandSoft` → `brand` **fill**로만.  
+**예외:** 부모·자식 fill이 같으면 fill 단계로 구분 불가 → §8.3 soft shadow.
 
 | 허용           | 규칙                                                                                                 |
 | -------------- | ---------------------------------------------------------------------------------------------------- |
@@ -183,6 +188,18 @@ Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타�
 
 힌트가 꼭 필요하면 Caption/Body가 아니라 **placeholder·empty state** 쪽에 둔다.
 
+### 8.3 Soft shadow (same-fill)
+
+배경과 요소의 fill이 **같을 때만** 그림자로 떠 보이게 한다 (드롭박스·체크리스트 느낌).
+
+| Do | Don’t |
+| -- | ----- |
+| `LAYOUT.shadow.sameFill` 한 종류만 | 카드마다 다른 elevation / 다층·네온 글로우 |
+| 바깥 래퍼에 shadow · 안쪽에 `overflow: hidden` | shadow 래퍼에 overflow hidden (그림자가 잘림) |
+| opacity ≈ 0.06 · radius 4 · y=1 · elevation 1 | — |
+
+구현: `LAYOUT.shadow.sameFill` (`layout.ts`). 요일 그룹 카드는 border(`border-line`)로 구분.
+
 ## 9. 입력 — Funnel & Sheet
 
 ### FunnelShell (온보딩·초대)
@@ -195,15 +212,19 @@ Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타�
 - 단일 필드(닉네임만 등)는 퍼널 강제 금지 → BottomSheet
 - **full page** (PageSheet로 FunnelShell 쓰지 않음)
 
-### BottomSheet (약 추가·수정)
+### BottomSheet (약 — `MedicationSheet`)
 
-- 약 등록/수정 = **BottomSheet + progressive disclosure** (풀페이지 퍼널 강제 금지)
-- 추가: 이름 확정 전엔 인풋만. 확정 후(기본 same) 모드·시간·DaysMode **즉시** 공개. perWeekday 전환 시 분기 전환
-- 앞단계 변경 → 뒤 섹션 collapse + draft 의존 필드 리셋
-- 수정 진입 = 전체 섹션 펼침(prefill)
-- sticky CTA — 스케줄 섹션 공개 후 항상 노출, invalid면 disabled
-- Caption·필드 라벨 금지 — placeholder/토글만. 시트 안 컨트롤 fill = `surfaceSoft`
-- 콕이 = 성공 순간만. dirty close = confirm
+- **하나의** `MedicationSheet` · `mode`: `create` | `edit` | `view`
+- 약 등록/수정/상세 = **BottomSheet** (풀페이지 퍼널 강제 금지)
+- `create`: 이름 검색은 **검색 버튼**으로만. 확정 후 **메타·용량·색** → **다음** → **스케줄**
+- 공공 검색 선택 시 `item_seq` + 메타 프리필(수정 가능). 자세히보기 overlay +「이 약 선택」
+- sticky footer: 메타 = **초기화** · **다음** / 스케줄 = **이전** · **등록**. 이름「변경」은 나머지 필드 유지
+- `edit`: 전체 섹션 펼침(prefill). footer = 초기화 · 저장. `item_seq` 재검색 없음
+- `view`: 같은 폼 **readOnly**. footer = 닫기 · **수정**(같은 시트 `mode=edit`로 전환, 라우트 push 금지). dirty confirm 없음
+- 등록·수정 성공 = 시트 dismiss만
+- 앞단계 변경 → 뒤 섹션 collapse + draft 리셋은 **초기화**에만 (이름 변경은 유지)
+- Caption·필드 라벨 금지 — placeholder/토글만. 시트 안 컨트롤 fill = `surfaceSoft` / `brandSoft`
+- 체크 리스트: 행 탭 = `view` · 체크 버튼(큰) = 복용 토글 · 아이콘 = `dose_unit` 형태 + 구분색 tint (`MedFormIcon`)
 - 상세: [docs/brand/funnels.md](brand/funnels.md) P3·P4
 
 ## 10. Motion
@@ -215,6 +236,7 @@ Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타�
 - 모드와 무관하게 동일한 타이밍 커브
 - **순차 등장(stagger):** copy(멘션) → media(컷) → action(CTA).  
   `FadeInView step={0|1|2}` (기본 `duration` = `normal` 300ms). 딜레이 = `step * MOTION.stagger.stepMs` (기본 55ms). 매직넘버 금지.
+- 약 등록: 검색 결과 fade · 자세히보기 present · 메타/스케줄 섹션 reveal · 색 스와치 `PressableScale`
 
 ## 11. Do / Don’t
 

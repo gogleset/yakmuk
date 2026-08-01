@@ -1,16 +1,23 @@
 ---
-description: UI·스타일·카피·테마 작업 시 docs/design.md를 따른다
+description: UI·스타일·카피·테마 작업 시 토큰 파일 먼저, 이어서 docs/design.md
 globs: mobile/**/*.{tsx,ts,css,js}, docs/design.md
 alwaysApply: false
 ---
 
 # Design system
 
-UI·스타일·카피·테마(색/타이포/표면/모션) 작업 전에 **반드시** [`docs/design.md`](docs/design.md)를 읽고 따른다.
+UI·스타일·카피·테마 작업 시 **아래 순서로** 본다.
 
-- 토큰·계층·border·카피 규칙의 기준 소스
-- 화면/컴포넌트에 설명 문구를 추가하기 전에 §6.2 Copy 확인 — 직관 우선, 힌트는 placeholder/empty state
-- border는 focus 상태가 아니면 쓰지 않음 (§6.1)
-- 구현 토큰: `mobile/src/shared/config/theme.ts` / `mobile/tailwind.config.js` — design.md와 어긋나면 문서를 우선하고 코드를 맞춤
+## 조회 순서 (토큰 먼저)
+
+1. [`mobile/src/shared/config/theme.ts`](../../mobile/src/shared/config/theme.ts) — `COLORS` · `TONE_OUTLINE` · `CALENDAR_THEME`
+2. [`mobile/src/shared/constants/`](../../mobile/src/shared/constants/) — `LAYOUT` · `LIMITS` · `MOTION` · `NAV` · `OVERLAY`
+3. [`mobile/tailwind.config.js`](../../mobile/tailwind.config.js) — NativeWind 맵
+4. [`docs/design.md`](../../docs/design.md) — 원칙·예외 (코드와 어긋나면 **문서 우선** 후 코드 맞춤)
+
+## 규칙 요약
+
+- 화면/컴포넌트에 설명 문구를 추가하기 전에 design.md §8.2 Copy 확인 — 직관 우선, 힌트는 placeholder/empty state
+- border: focus only · **Tone outline** (`TONE_OUTLINE.warning` / `.destructive`)만. 계층용 상시 윤곽·`warningBg` 카드 fill 금지 (§8.1)
 - 제품 느낌: 잔소리 없는 가족 안부 · 틸 · 감시 UI 금지
 - empty/예외 UI: `Fallback` (`image` + `message`) — 상세 [fsd-architecture.mdc](fsd-architecture.mdc) Empty 절

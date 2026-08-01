@@ -43,7 +43,7 @@ providers/ → pages/ → widgets/ → features/ → entities/ → shared/
 - `mobile/app/*` = `@/pages/*` re-export만
 - **`mobile/src/app/` 금지** (Expo 라우트 충돌) → FSD app = `providers/`
 - `features/<use-case>/` (도메인 slice 금지). entities api만 supabase 호출
-- 문구: `shared/copy/` · 숫자 한도: `shared/constants/` · 테마: `shared/config/theme.ts`
+- 문구: `shared/copy/` · 숫자 한도: `shared/constants/` · 테마: `shared/config/theme.ts` (`COLORS` · `TONE_OUTLINE`)
 - 테스트: `mobile/src/__tests__/` (FSD 미러, 소스 옆 금지) — [`.agents/rules/tdd.mdc`](.agents/rules/tdd.mdc)
 - 로컬 Supabase면 entity api·RPC는 `*.api.test.ts`로 실제 호출 (가능하면)
 
@@ -57,8 +57,9 @@ Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 
 ## Design & copy
 
-- 기준: [docs/design.md](docs/design.md) (§6.2 카피 — 짧음·해요체·안부 톤)
-- UI 작업 전 design.md 읽기: [`.agents/rules/design.mdc`](.agents/rules/design.mdc)
+- 구현 토큰 먼저: [`theme.ts`](mobile/src/shared/config/theme.ts) (`COLORS` · `TONE_OUTLINE`) · [`shared/constants/`](mobile/src/shared/constants/) · tailwind
+- 원칙: [docs/design.md](docs/design.md) (§6 색 · §8.1 Tone outline · §8.2 카피)
+- UI 작업 규칙: [`.agents/rules/design.mdc`](.agents/rules/design.mdc)
 - 상수/문구: [`.agents/rules/copy-constants.mdc`](.agents/rules/copy-constants.mdc)
 - TDD·테스트 위치: [`.agents/rules/tdd.mdc`](.agents/rules/tdd.mdc)
 
@@ -96,7 +97,7 @@ Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 
 - `features/medication/` 같은 domain slice
 - pages에서 entity api 직접 / features에서 supabase client 직접
-- border 남발 · 설명 카피 남발 (design.md §6)
+- border 남발 · 설명 카피 남발 (design.md §8 — Tone outline·focus만)
 - 마이그레이션 in-place 수정 · 시크릿 커밋
 - 소스 옆에 `*.test.ts` 흩뿌리기
 

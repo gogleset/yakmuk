@@ -151,7 +151,8 @@ Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타�
 | 요소                       | 규칙                                                                                                                   |
 | -------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | Screen                     | `bg-canvas`, safe area                                                                                                 |
-| Card / empty 박스          | `bg-surface-soft`                                                                                                      |
+| Card / empty 박스          | 기본 `bg-surface-soft`. **화이트 톤**(`bg-surface` on `canvas`)이면 반드시 `LAYOUT.shadow.sameFill` (§8.3)              |
+| Settings 그룹·프로필 카드  | `bg-surface` + `LAYOUT.shadow.sameFill` (흰 위 흰 → soft shadow)                                                     |
 | Home calendar              | `bg-canvas` + `LAYOUT.shadow.sameFill` (스크린과 동색 → soft shadow). overflow는 안쪽만 — 바깥에 shadow               |
 | Per-weekday day groups     | `bg-canvas` + `border-line`                                                                                            |
 | Time-slot accordion        | `bg-canvas` + `LAYOUT.shadow.sameFill` (체크리스트형)                                                                  |
@@ -196,13 +197,16 @@ Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타�
 
 배경과 요소의 fill이 **같을 때만** 그림자로 떠 보이게 한다 (드롭박스·체크리스트 느낌).
 
+**화이트 톤 필수:** light에서 `canvas`와 `surface`는 둘 다 `#FFFFFF`. 흰 스크린 위에 흰 카드·설정 그룹을 올리면 fill 단계로 구분이 안 되므로 **반드시** `LAYOUT.shadow.sameFill`을 붙인다. border로 윤곽 그리지 않음 (§8.1).
+
 | Do | Don’t |
 | -- | ----- |
+| `canvas` 위 `surface` / `canvas` 위 `canvas` → `sameFill` | 흰 카드에 border만 주고 shadow 없음 |
 | `LAYOUT.shadow.sameFill` 한 종류만 | 카드마다 다른 elevation / 다층·네온 글로우 |
 | 바깥 래퍼에 shadow · 안쪽에 `overflow: hidden` | shadow 래퍼에 overflow hidden (그림자가 잘림) |
 | opacity ≈ 0.06 · radius 4 · y=1 · elevation 1 | — |
 
-구현: `LAYOUT.shadow.sameFill` (`layout.ts`). 요일 그룹 카드는 border(`border-line`)로 구분.
+구현: `LAYOUT.shadow.sameFill` (`layout.ts`). `surfaceSoft` 카드는 이미 fill 단계로 구분되므로 shadow 불필요(원치 않으면 생략). 요일 그룹만 레거시 `border-line`.
 
 ## 9. 입력 — Funnel & Sheet
 

@@ -19,5 +19,6 @@ UI·스타일·카피·테마 작업 시 **아래 순서로** 본다.
 
 - 화면/컴포넌트에 설명 문구를 추가하기 전에 design.md §8.2 Copy 확인 — 직관 우선, 힌트는 placeholder/empty state
 - border: focus only · **Tone outline** (`TONE_OUTLINE.warning` / `.destructive`)만. 계층용 상시 윤곽·`warningBg` 카드 fill 금지 (§8.1)
+- **화이트 톤** (`canvas` 위 `surface`): 반드시 `LAYOUT.shadow.sameFill` (§8.3). 흰 카드에 border만 쓰지 말 것
 - 제품 느낌: 잔소리 없는 가족 안부 · 틸 · 감시 UI 금지
 - empty/예외 UI: `Fallback` (`image` + `message`) — 상세 [fsd-architecture.mdc](fsd-architecture.mdc) Empty 절

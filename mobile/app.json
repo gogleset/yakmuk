@@ -30,7 +30,14 @@
     "navigationBar": {
       "backgroundColor": "#FFFFFF",
       "barStyle": "dark-content"
-    }
+    },
+    "permissions": [
+      "android.permission.SCHEDULE_EXACT_ALARM",
+      "android.permission.USE_FULL_SCREEN_INTENT",
+      "android.permission.POST_NOTIFICATIONS",
+      "android.permission.RECEIVE_BOOT_COMPLETED",
+      "android.permission.VIBRATE"
+    ]
   },
   "web": {
     "favicon": "./assets/favicon.png",
@@ -54,6 +61,7 @@
         "style": "dark",
         "enforceContrast": false
       }
-    ]
+    ],
+    "./plugins/withNotifeeMaven.js"
   ]
 }

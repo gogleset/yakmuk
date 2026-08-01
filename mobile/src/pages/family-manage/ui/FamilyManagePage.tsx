@@ -1,34 +1,23 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import {
-  Alert,
-  Pressable,
-  Share,
-  Text,
-  View,
-} from 'react-native';
+import { Alert, Pressable, Text, View } from 'react-native';
 import { useAuth } from '@/providers/AuthProvider';
 import { useFamilyMembersQuery } from '@/entities/family/model/queries';
 import { relationSubtitle, ROLE_LABEL } from '@/entities/user';
 import { FamilyInvitePanel } from '@/features/family-invite';
 import {
-  useActiveRecoveryCodesQuery,
   useDeleteFamilyMutation,
   useFamilyInfoQuery,
   useRemoveFamilyMemberMutation,
-  useReissueRecoveryCodeMutation,
   useUpdateFamilyNameMutation,
 } from '@/features/family-ops';
 import { ROUTES } from '@/shared/config/routes';
 import { LAYOUT, LIMITS } from '@/shared/config/theme';
 import { ACTIONS } from '@/shared/copy';
 import {
-  Body,
-  BottomSheet,
   Button,
   Card,
   FadeInView,
-  Icons,
   Input,
   Muted,
   Screen,
@@ -45,17 +34,11 @@ export function FamilyManagePage() {
 
   const familyQuery = useFamilyInfoQuery(familyId);
   const membersQuery = useFamilyMembersQuery(familyId);
-  const recoveryQuery = useActiveRecoveryCodesQuery(isLeader);
   const updateFamilyName = useUpdateFamilyNameMutation(familyId);
   const removeMember = useRemoveFamilyMemberMutation(familyId);
-  const reissueRecovery = useReissueRecoveryCodeMutation();
   const deleteFamilyMut = useDeleteFamilyMutation(refreshProfile);
 
   const [familyNameDraft, setFamilyNameDraft] = useState('');
-  const [recoverySheet, setRecoverySheet] = useState<{
-    nickname: string;
-    code: string;
-  } | null>(null);
 
   useEffect(() => {
     if (familyQuery.data?.name) setFamilyNameDraft(familyQuery.data.name);
@@ -90,40 +73,6 @@ export function FamilyManagePage() {
     );
   };
 
-  const onRecovery = (userId: string, nickname: string) => {
-    Alert.alert(
-      '복구 코드를 발급할까요?',
-      `${nickname} 님이 새 기기에서 이 코드로 다시 들어오면 약·기록이 유지돼요. 기존 기기 세션은 끊겨요.`,
-      [
-        { text: ACTIONS.cancel, style: 'cancel' },
-        {
-          text: '발급',
-          onPress: () => {
-            reissueRecovery.mutate(userId, {
-              onSuccess: (rec) => {
-                setRecoverySheet({
-                  nickname,
-                  code: rec.inviteCode,
-                });
-              },
-            });
-          },
-        },
-      ],
-    );
-  };
-
-  const onShareRecovery = async () => {
-    if (!recoverySheet) return;
-    try {
-      await Share.share({
-        message: `${recoverySheet.nickname} 복구 코드: ${recoverySheet.code}\n새 기기에서 초대코드로 참여해 주세요.`,
-      });
-    } catch {
-      /* 사용자가 공유 취소 */
-    }
-  };
-
   const onDeleteFamily = () => {
     Alert.alert(
       '가족을 삭제할까요?',
@@ -153,7 +102,6 @@ export function FamilyManagePage() {
         contentContainerClassName="gap-3 px-5 pb-10 pt-2"
       >
         <FadeInView className="gap-3">
-          {/* 가족 이름 */}
           <SectionHeader title="가족 이름" />
           {isLeader ? (
             <Card className="gap-2 p-4">
@@ -198,14 +146,8 @@ export function FamilyManagePage() {
                         member.invitedAs,
                         leaderNickname,
                       );
-                      const activeCode = (recoveryQuery.data ?? []).find(
-                        (r) => r.userId === member.userId,
-                      );
                       return (
-                        <View
-                          key={member.userId}
-                          className="gap-1 py-2"
-                        >
+                        <View key={member.userId} className="gap-1 py-2">
                           <View className="flex-row items-center justify-between gap-2">
                             <View className="flex-1">
                               <Text className="font-bold text-brand">
@@ -215,34 +157,17 @@ export function FamilyManagePage() {
                                 {ROLE_LABEL[member.role]}
                                 {sub ? ` · ${sub}` : ''}
                               </Muted>
-                              {activeCode ? (
-                                <Muted className="mt-0.5 text-xs">
-                                  복구 대기 · {activeCode.inviteCode}
-                                </Muted>
-                              ) : null}
                             </View>
-                            <View className="items-end gap-1">
-                              <Pressable
-                                accessibilityRole="button"
-                                onPress={() =>
-                                  onRecovery(member.userId, member.nickname)
-                                }
-                              >
-                                <Muted className="text-xs underline">
-                                  복구 코드
-                                </Muted>
-                              </Pressable>
-                              <Pressable
-                                accessibilityRole="button"
-                                onPress={() =>
-                                  onKick(member.userId, member.nickname)
-                                }
-                              >
-                                <Text className="text-xs text-destructive">
-                                  내보내기
-                                </Text>
-                              </Pressable>
-                            </View>
+                            <Pressable
+                              accessibilityRole="button"
+                              onPress={() =>
+                                onKick(member.userId, member.nickname)
+                              }
+                            >
+                              <Text className="text-xs text-destructive">
+                                내보내기
+                              </Text>
+                            </Pressable>
                           </View>
                         </View>
                       );
@@ -262,37 +187,6 @@ export function FamilyManagePage() {
           ) : null}
         </FadeInView>
       </ScreenScrollView>
-
-      <BottomSheet
-        visible={!!recoverySheet}
-        title="복구 코드"
-        onClose={() => setRecoverySheet(null)}
-      >
-        {recoverySheet ? (
-          <View className="gap-3">
-            <Body className="text-sm">
-              {recoverySheet.nickname} 님이 새 기기에서 이 코드로 들어오면
-              약·기록이 유지돼요.
-            </Body>
-            <Text
-              className="py-2 text-center text-3xl font-bold text-brand"
-              style={{ letterSpacing: LIMITS.inviteCodeLetterSpacing }}
-            >
-              {recoverySheet.code}
-            </Text>
-            <Button
-              label="공유하기"
-              icon={Icons.Share}
-              onPress={() => void onShareRecovery()}
-            />
-            <Button
-              label="닫기"
-              variant="outline"
-              onPress={() => setRecoverySheet(null)}
-            />
-          </View>
-        ) : null}
-      </BottomSheet>
     </Screen>
   );
 }

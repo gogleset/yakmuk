@@ -1,7 +1,7 @@
 import Constants from "expo-constants";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Linking, Text, View } from "react-native";
+import { Alert, Linking, Platform, Text, View } from "react-native";
 import { useAuth } from "@/providers/AuthProvider";
 import { ROLE_LABEL } from "@/entities/user";
 import {
@@ -12,10 +12,15 @@ import {
   useSignOutMutation,
   useWithdrawAccountMutation,
 } from "@/features/guardian-auth";
-import { ensureNotificationPermission } from "@/features/medication-notifications";
-import { ROUTES } from "@/shared/config/routes";
+import {
+  ensureNotificationPermission,
+  fireAndroidFullScreenTestAlarm,
+  resetNotificationPermissionCache,
+} from "@/features/medication-notifications";
+import { medicationAlarmRoute, ROUTES } from "@/shared/config/routes";
 import { adsMailTo, SUPPORT, supportMailTo } from "@/shared/config/support";
 import { COLORS, LAYOUT, LIMITS } from "@/shared/config/theme";
+import { COPY } from "@/shared/copy";
 import {
   Badge,
   BottomSheet,
@@ -68,7 +73,7 @@ export function SettingsPage() {
     setNicknameSheetOpen(true);
   };
 
-  const onSignOut = async () => {
+  const onSignOutPress = async () => {
     await signOut.mutateAsync();
     router.replace(ROUTES.welcome);
   };
@@ -93,13 +98,40 @@ export function SettingsPage() {
   };
 
   const onNotifPermission = async () => {
+    // 설정에서 다시 물을 수 있게 세션 캐시 리셋
+    resetNotificationPermissionCache();
     const ok = await ensureNotificationPermission();
     Alert.alert(
       "알림",
       ok
         ? "약 먹을 시간에 알려드릴 수 있어요"
-        : "Expo Go에서는 알림이 제한돼요. 개발 빌드에서 확인해 주세요.",
+        : "알림 권한이 꺼져 있어요. 기기 설정에서 허용해 주세요.",
     );
+  };
+
+  /** __DEV__: 풀페이지 UI만 — Expo Go에서도 가능 */
+  const onTestFullPage = () => {
+    router.push(
+      medicationAlarmRoute({
+        medicationId: 3,
+        name: "테스트 약",
+        scheduledTime: "15:32",
+      }) as never,
+    );
+  };
+
+  /** __DEV__ Android: Notifee FSI 즉시 발화 */
+  const onTestFsi = async () => {
+    const result = await fireAndroidFullScreenTestAlarm({
+      medicationId: 3,
+      name: "폐렴",
+      scheduledTime: "08:00",
+    });
+    if (result === "ok") {
+      Alert.alert(COPY.notif.testFsi, COPY.notif.testFsiOk);
+      return;
+    }
+    Alert.alert(COPY.notif.testFsi, COPY.notif.testFsiUnavailable);
   };
 
   const onSaveNickname = () => {
@@ -154,31 +186,31 @@ export function SettingsPage() {
             <View style={LAYOUT.shadow.sameFill} className="rounded-2xl">
               <Card className="flex-row items-center gap-3 rounded-2xl bg-surface p-4">
                 <View className="items-center gap-1">
-                <InitialAvatar
-                  nickname={profile?.nickname}
-                  size="lg"
-                  className="bg-brand-soft"
-                />
-                {roleLabel ? (
-                  <Badge
-                    label={roleLabel}
-                    variant="soft"
-                    className="self-center rounded-full px-1.5 py-0"
-                    labelClassName="text-[10px] font-semibold leading-4"
+                  <InitialAvatar
+                    nickname={profile?.nickname}
+                    size="lg"
+                    className="bg-brand-soft"
                   />
-                ) : null}
-              </View>
-              <View className="min-w-0 flex-1 gap-0.5">
-                <Text
-                  className="text-base font-bold text-text"
-                  numberOfLines={1}
-                >
-                  {profile?.nickname ?? "이름 없음"}
-                </Text>
-                <Muted className="text-xs" numberOfLines={1}>
-                  {familyLine}
-                </Muted>
-              </View>
+                  {roleLabel ? (
+                    <Badge
+                      label={roleLabel}
+                      variant="soft"
+                      className="self-center rounded-full px-1.5 py-0"
+                      labelClassName="text-[10px] font-semibold leading-4"
+                    />
+                  ) : null}
+                </View>
+                <View className="min-w-0 flex-1 gap-0.5">
+                  <Text
+                    className="text-base font-bold text-text"
+                    numberOfLines={1}
+                  >
+                    {profile?.nickname ?? "이름 없음"}
+                  </Text>
+                  <Muted className="text-xs" numberOfLines={1}>
+                    {familyLine}
+                  </Muted>
+                </View>
                 <View className="h-8 w-8 items-center justify-center rounded-full bg-surface-soft">
                   <Icons.ChevronRight
                     size={LAYOUT.icon.sm}
@@ -195,7 +227,8 @@ export function SettingsPage() {
               label="로그아웃"
               icon={Icons.LogOut}
               showChevron={false}
-              onPress={() => void onSignOut()}
+              disabled={signOut.isPending}
+              onPress={() => void onSignOutPress()}
             />
             <SettingsRow
               label="탈퇴하기"
@@ -214,6 +247,20 @@ export function SettingsPage() {
               icon={Icons.Radio}
               onPress={() => void onNotifPermission()}
             />
+            {__DEV__ ? (
+              <SettingsRow
+                label={COPY.notif.testFullPage}
+                icon={Icons.Bell}
+                onPress={onTestFullPage}
+              />
+            ) : null}
+            {__DEV__ && Platform.OS === "android" ? (
+              <SettingsRow
+                label={COPY.notif.testFsi}
+                icon={Icons.Radio}
+                onPress={() => void onTestFsi()}
+              />
+            ) : null}
           </SettingsGroup>
 
           <SectionHeader title="고객지원" />
@@ -286,6 +333,7 @@ export function SettingsPage() {
           autoFocus
         />
       </BottomSheet>
+
     </Screen>
   );
 }

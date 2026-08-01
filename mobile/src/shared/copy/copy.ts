@@ -37,9 +37,10 @@ export const COPY = {
     checkPromptDone: '다 먹었어요! 잘했어요',
     streakDays: (days: number) => `${days}일 연속이에요`,
     timeSlot: {
+      dawn: '새벽',
       morning: '아침',
       lunch: '점심',
-      evening: '저녁',
+      afternoon: '오후',
       bedtime: '취침 전',
     },
     timePicker: {
@@ -115,6 +116,7 @@ export const COPY = {
   /** P2 초대코드 조인 */
   join: {
     codeTitle: '초대코드를 입력해 주세요',
+    codeHint: '가족장이 준 초대코드 6자리',
     peekLoading: '초대 확인 중…',
     nicknameTitle: '콕이는\n뭐라고 불러드릴까요?',
     nicknamePlaceholder: '예) 엄마, 언니, 아들 등 (선택)',
@@ -145,13 +147,26 @@ export const COPY = {
 
   invite: {
     claimedCannotDeleteTitle: '연결된 초대예요',
-    claimedCannotDeleteBody: '이미 연결된 초대는 지울 수 없어요.',
+    claimedCannotDeleteBody:
+      '이미 연결된 초대·다시 들어오기 대기는 지울 수 없어요.',
     deleteTitle: '초대를 삭제할까요?',
     reissueTitle: '코드를 재발급할까요?',
     reissueBody: '기존 코드·QR은 더 이상 쓸 수 없어요.',
+    reissueConnectedBody:
+      '새 코드로 바뀌고, 지금 들어와 있는 기기는 로그아웃돼요. 새 코드로 다시 들어와야 약·기록이 이어져요.',
+    reissueAction: '코드 재발급',
+    statusWaiting: '대기',
+    statusConnected: '연결됨',
+    statusReentry: '다시 들어오기 대기',
     limitTitle: '초대가 가득 찼어요',
     labelAlertTitle: '호칭을 알려 주세요',
     labelAlertBody: '예: 아빠, 할머니',
+  },
+
+  auth: {
+    forceSignOutTitle: '다시 로그인이 필요해요',
+    forceSignOutBody:
+      '가족장이 초대코드를 바꿨어요. 새 코드로 다시 들어와 주세요.',
   },
 
   alert: {
@@ -180,6 +195,15 @@ export const COPY = {
     channel: '복약 알림',
     doseTitle: '약 먹을 시간이에요',
     doseBody: (name: string, time: string) => `${name} · ${time}`,
+    /** 시간 슬롯 알림 토글 (짧은 라벨) */
+    slotOn: '알림 켜짐',
+    slotOff: '알림 꺼짐',
+    alarmTaken: '먹었어요',
+    /** __DEV__ 설정 — 풀페이지/FSI 테스트 */
+    testFullPage: '풀페이지 알림 미리보기',
+    testFsi: 'Android FSI 즉시 발화',
+    testFsiOk: '잠금화면이면 풀스크린, 아니면 헤드업이 떠요. 앱을 백그라운드로 두고 다시 눌러보세요.',
+    testFsiUnavailable: '개발 빌드(Android)에서만 쓸 수 있어요. Expo Go는 안 돼요.',
   },
 
   a11y: {

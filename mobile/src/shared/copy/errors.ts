@@ -41,7 +41,8 @@ export const ERRORS = {
     peekFailed: '초대를 확인하지 못했어요',
     labelRequired: '호칭을 알려 주세요',
     notFound: '초대를 찾을 수 없어요',
-    alreadyClaimed: '이미 사용된 초대코드예요',
+    alreadyClaimed:
+      '이미 사용된 초대코드예요. 가족장에게 새 초대코드를 받아 다시 들어와 주세요',
     notFoundOrClaimed: '초대를 찾을 수 없거나 이미 사용됐어요',
     codeGenFailed: '초대코드를 만들지 못했어요. 다시 시도해 주세요',
     invalidCode: '초대코드가 올바르지 않아요',

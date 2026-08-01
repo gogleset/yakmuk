@@ -34,6 +34,14 @@ export async function reissueMemberRecoveryCode(
   return mapRecovery(data as Record<string, unknown>);
 }
 
+/** 멤버 본인: 미사용 복구코드 반환 또는 신규 발급 (로그아웃·기기변경) */
+export async function createMyRecoveryCode(): Promise<MemberRecoveryCode> {
+  const { data, error } = await supabase.rpc('create_my_recovery_code');
+  throwIfError(error, ERRORS.recovery.createFailed);
+  if (!data) throw new Error(ERRORS.recovery.createFailed);
+  return mapRecovery(data as Record<string, unknown>);
+}
+
 /** 미사용 복구코드 목록 (가족장 설정용) */
 export async function listActiveRecoveryCodes(): Promise<MemberRecoveryCode[]> {
   const { data, error } = await supabase

@@ -5,5 +5,6 @@ export {
   useUpdateFamilyNameMutation,
   useRemoveFamilyMemberMutation,
   useReissueRecoveryCodeMutation,
+  useCreateMyRecoveryCodeMutation,
   useDeleteFamilyMutation,
 } from './model/useFamilyOpsMutations';

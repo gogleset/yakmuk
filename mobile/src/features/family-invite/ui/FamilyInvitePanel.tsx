@@ -22,7 +22,7 @@ type Props = {
   isLeader: boolean;
 };
 
-/** 가족장 설정: 초대 슬롯 — 생성은 P5 `/invite-create` */
+/** 가족장: 초대 슬롯 — dots로 재발급/삭제 */
 export function FamilyInvitePanel({ isLeader }: Props) {
   const invitesQuery = useFamilyInvitesQuery({ enabled: isLeader });
   const { deleteInvite, reissueInvite } = useFamilyInviteMutations();
@@ -51,7 +51,7 @@ export function FamilyInvitePanel({ isLeader }: Props) {
   };
 
   const onDelete = (invite: FamilyInvite) => {
-    if (invite.claimedBy) {
+    if (invite.claimedBy || invite.reentryUserId) {
       Alert.alert(
         COPY.invite.claimedCannotDeleteTitle,
         COPY.invite.claimedCannotDeleteBody,
@@ -73,13 +73,39 @@ export function FamilyInvitePanel({ isLeader }: Props) {
   };
 
   const onReissue = (invite: FamilyInvite) => {
-    if (invite.claimedBy) return;
-    Alert.alert(COPY.invite.reissueTitle, COPY.invite.reissueBody, [
-      { text: ACTIONS.cancel, style: 'cancel' },
+    const connected = !!invite.claimedBy || !!invite.reentryUserId;
+    Alert.alert(
+      COPY.invite.reissueTitle,
+      connected
+        ? COPY.invite.reissueConnectedBody
+        : COPY.invite.reissueBody,
+      [
+        { text: ACTIONS.cancel, style: 'cancel' },
+        {
+          text: ACTIONS.reissue,
+          onPress: () => reissueInvite.mutate(invite.id),
+        },
+      ],
+    );
+  };
+
+  const onSlotMenu = (invite: FamilyInvite) => {
+    const canDelete = !invite.claimedBy && !invite.reentryUserId;
+    Alert.alert(invite.invitedAs, undefined, [
       {
-        text: ACTIONS.reissue,
-        onPress: () => reissueInvite.mutate(invite.id),
+        text: COPY.invite.reissueAction,
+        onPress: () => onReissue(invite),
       },
+      ...(canDelete
+        ? [
+            {
+              text: ACTIONS.delete,
+              style: 'destructive' as const,
+              onPress: () => onDelete(invite),
+            },
+          ]
+        : []),
+      { text: ACTIONS.cancel, style: 'cancel' },
     ]);
   };
 
@@ -104,10 +130,10 @@ export function FamilyInvitePanel({ isLeader }: Props) {
                   {slot ? (
                     <InviteSlot
                       invite={slot}
-                      onDelete={() => onDelete(slot)}
-                      onReissue={() => onReissue(slot)}
-                      deleting={deleteInvite.isPending}
-                      reissuing={reissueInvite.isPending}
+                      onMenu={() => onSlotMenu(slot)}
+                      menuDisabled={
+                        deleteInvite.isPending || reissueInvite.isPending
+                      }
                     />
                   ) : (
                     <EmptySlot onPress={onOpenCreate} />
@@ -124,61 +150,44 @@ export function FamilyInvitePanel({ isLeader }: Props) {
 
 type InviteSlotProps = {
   invite: FamilyInvite;
-  onDelete: () => void;
-  onReissue: () => void;
-  deleting: boolean;
-  reissuing: boolean;
+  onMenu: () => void;
+  menuDisabled: boolean;
 };
 
-function InviteSlot({
-  invite,
-  onDelete,
-  onReissue,
-  deleting,
-  reissuing,
-}: InviteSlotProps) {
+function InviteSlot({ invite, onMenu, menuDisabled }: InviteSlotProps) {
   const claimed = !!invite.claimedBy;
+  const reentry = !!invite.reentryUserId;
+
+  let statusLabel: string = COPY.invite.statusWaiting;
+  if (claimed) statusLabel = COPY.invite.statusConnected;
+  else if (reentry) statusLabel = COPY.invite.statusReentry;
 
   return (
     <View className="items-center gap-1.5 rounded-xl bg-brand-soft p-2.5">
-      <View className="w-full flex-row items-center justify-between gap-1">
+      <View className="w-full flex-row items-start justify-between gap-1">
         <View className="min-w-0 flex-1">
           <Text className="text-sm font-bold text-brand" numberOfLines={1}>
             {invite.invitedAs}
           </Text>
           <Muted className="text-xs">{ROLE_LABEL[invite.targetRole]}</Muted>
         </View>
-        {!claimed ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="초대 삭제"
-            hitSlop={LAYOUT.hitSlop.sm}
-            disabled={deleting}
-            onPress={onDelete}
-          >
-            <Icons.X size={LAYOUT.icon.sm} color={COLORS.destructive} />
-          </Pressable>
-        ) : null}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="초대 메뉴"
+          hitSlop={LAYOUT.hitSlop.sm}
+          disabled={menuDisabled}
+          onPress={onMenu}
+          className="pt-0.5"
+        >
+          <Icons.EllipsisVertical size={LAYOUT.icon.sm} color={COLORS.muted} />
+        </Pressable>
       </View>
 
       <Text className="text-base font-bold tracking-widest text-brand">
         {invite.inviteCode}
       </Text>
       <QRCode value={joinDeepLink(invite.inviteCode)} size={QR_SIZE} />
-      {claimed ? (
-        <Muted className="text-xs">연결됨</Muted>
-      ) : (
-        <>
-          <Muted className="text-xs">대기</Muted>
-          <Pressable
-            accessibilityRole="button"
-            disabled={reissuing}
-            onPress={onReissue}
-          >
-            <Muted className="text-xs underline">코드 재발급</Muted>
-          </Pressable>
-        </>
-      )}
+      <Muted className="text-xs">{statusLabel}</Muted>
     </View>
   );
 }

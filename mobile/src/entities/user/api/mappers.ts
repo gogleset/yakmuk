@@ -8,6 +8,9 @@ export function mapUser(row: Record<string, unknown>): AppUser {
     role: row.role as AppUser['role'],
     familyId: row.family_id ? String(row.family_id) : null,
     expoPushToken: row.expo_push_token ? String(row.expo_push_token) : null,
+    forceSignOutAt: row.force_sign_out_at
+      ? String(row.force_sign_out_at)
+      : null,
   };
 }
 
@@ -20,5 +23,6 @@ export function mapFamilyInvite(row: Record<string, unknown>): FamilyInvite {
     targetRole: row.target_role as FamilyInvite['targetRole'],
     claimedBy: row.claimed_by ? String(row.claimed_by) : null,
     claimedAt: row.claimed_at ? String(row.claimed_at) : null,
+    reentryUserId: row.reentry_user_id ? String(row.reentry_user_id) : null,
   };
 }

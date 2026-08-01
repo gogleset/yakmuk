@@ -84,6 +84,7 @@ export function JoinPage() {
         onCtaPress={() => setStep(1)}
       >
         <InviteCodeInput value={code} onChangeText={setCode} autoFocus />
+        <Muted className="text-sm">{COPY.join.codeHint}</Muted>
         {peekLoading ? <Muted>{COPY.join.peekLoading}</Muted> : null}
         {peekError ? (
           <Text className="text-sm text-destructive">{peekError}</Text>
@@ -93,6 +94,10 @@ export function JoinPage() {
     );
   }
 
+  const joinCtaLabel = join.isPending
+    ? COPY.join.connecting
+    : COPY.join.participate;
+
   return (
     <FunnelShell
       stepIndex={1}
@@ -101,7 +106,7 @@ export function JoinPage() {
       kokiVariant="happy"
       hideProgress
       stagger
-      ctaLabel={join.isPending ? COPY.join.connecting : COPY.join.participate}
+      ctaLabel={joinCtaLabel}
       ctaDisabled={join.isPending}
       ctaLoading={join.isPending}
       dirty={dirty}

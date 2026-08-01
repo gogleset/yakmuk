@@ -8,6 +8,7 @@ import {
 import { familyKeys, familyMutationKeys } from '@/entities/family/model/queryKeys';
 import { invalidateFamilyActivity } from '@/entities/family/model/queries';
 import {
+  createMyRecoveryCode,
   listActiveRecoveryCodes,
   reissueMemberRecoveryCode,
 } from '@/entities/user/api/member-recovery';
@@ -99,6 +100,14 @@ export function useReissueRecoveryCodeMutation() {
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: userKeys.recoveryCodes() });
     },
+    onError: (error) => showMutationError(ERRORS.recovery.createFailed, error),
+  });
+}
+
+/** 멤버 로그아웃 전 본인 복구코드 발급 */
+export function useCreateMyRecoveryCodeMutation() {
+  return useMutation({
+    mutationFn: () => createMyRecoveryCode(),
     onError: (error) => showMutationError(ERRORS.recovery.createFailed, error),
   });
 }

@@ -64,9 +64,20 @@ docker compose run --rm --service-ports yakmuk pnpm exec expo start --web --host
 
 OAuth(Google/Apple)는 로컬 프로바이더 설정 후 버튼 사용. 미설정 시 개발용 이메일 로그인.
 
-### Edge 푸시
+### Edge 푸시 · 로컬 알림
 
-pre에서 **stub**: DECISIONS에 따라 Webhook→Expo Push는 후속. Realtime 피드로 가족 연동 먼저 증명.
+- **약 알림:** 폰 로컬만 (`expo-notifications` / Android Notifee). 서버가 보내지 않음. 앱 시작·복귀 시 서버 스케줄과 reconcile. 로그: `[yakmuk:notif]`
+- **공지:** Expo push token → `users.expo_push_token`. EAS `projectId` 없으면 등록 skip (`[yakmuk:push]`).
+
+```bash
+supabase db reset   # 스키마 재적용
+supabase functions serve announce-push   # 공지 stub (선택)
+# POST http://127.0.0.1:54421/functions/v1/announce-push
+# Authorization: Bearer <service_role> 또는 x-announce-secret
+# { "title": "...", "body": "..." }
+```
+
+pre에서 Realtime 가족 연동 우선. hosted `functions deploy`는 DB push와 별도.
 
 ## 스타일
 

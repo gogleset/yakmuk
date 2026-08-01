@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { RefreshControl, SectionList } from 'react-native';
+import { RefreshControl } from 'react-native';
 import { useAuth } from '@/providers/AuthProvider';
 import {
   invalidateFamilyActivity,
@@ -17,6 +17,7 @@ import {
   Fallback,
   KokiIllustration,
   Screen,
+  ScreenSectionList,
   StackHeader,
 } from '@/shared/ui';
 import {
@@ -93,7 +94,7 @@ export function FamilyFeedPage() {
     <Screen fadeTop={LAYOUT.fade.top} fadeBottom={LAYOUT.fade.bottomPlain}>
       <StackHeader title={COPY.family.recentFeed} />
 
-      <SectionList
+      <ScreenSectionList
         sections={sections}
         keyExtractor={(item) => String(item.id)}
         contentContainerClassName="gap-2.5 px-5 pb-10 pt-2"

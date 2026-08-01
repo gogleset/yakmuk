@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, RefreshControl, ScrollView } from 'react-native';
+import { Alert, RefreshControl } from 'react-native';
 import { useAuth } from '@/providers/AuthProvider';
 import {
   buildDayMedicationEntries,
@@ -26,6 +26,7 @@ import {
   KokiIllustration,
   RichEmptyState,
   Screen,
+  ScreenScrollView,
 } from '@/shared/ui';
 import { MedicationCalendarPanel } from '@/widgets/medication-calendar-panel';
 import { PastDayMedicationPanel } from '@/widgets/past-day-medication-panel';
@@ -184,7 +185,7 @@ export function HomePage() {
         showFab ? LAYOUT.fade.bottomWithFab : LAYOUT.fade.bottomPlain
       }
     >
-      <ScrollView
+      <ScreenScrollView
         contentContainerClassName="gap-3 px-5 pt-2"
         contentContainerStyle={{
           // 약 0개면 empty가 캘린더 아래 남은 높이를 채움
@@ -277,7 +278,7 @@ export function HomePage() {
             />
           ) : null}
         </FadeInView>
-      </ScrollView>
+      </ScreenScrollView>
 
       {showFab ? <Fab label={COPY.med.addFab} onPress={openAdd} /> : null}
     </Screen>

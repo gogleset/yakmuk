@@ -30,7 +30,11 @@ export {
 } from "./composites/KokiIllustration";
 export { PressableScale } from "./composites/PressableScale";
 export { RichEmptyState } from "./composites/RichEmptyState";
-export { Screen } from "./composites/Screen";
+export {
+  Screen,
+  ScreenScrollView,
+  ScreenSectionList,
+} from "./composites/Screen";
 export { SectionHeader } from "./composites/SectionHeader";
 export { StackHeader } from "./composites/StackHeader";
 export { SettingsGroup, SettingsRow } from "./composites/SettingsRow";

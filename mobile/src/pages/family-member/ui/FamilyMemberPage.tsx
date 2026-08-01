@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Alert, ScrollView, Text } from 'react-native';
+import { Alert, Text } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useAuth } from '@/providers/AuthProvider';
 import {
@@ -20,6 +20,7 @@ import {
   Fab,
   FadeInView,
   Screen,
+  ScreenScrollView,
   StackHeader,
 } from '@/shared/ui';
 import { GuardianMedManagePanel } from '@/widgets/guardian-med-manage-panel';
@@ -95,7 +96,7 @@ export function FamilyMemberPage() {
     >
       <StackHeader title={nickname} />
 
-      <ScrollView
+      <ScreenScrollView
         contentContainerClassName={
           canManageMeds ? 'gap-2.5 px-5 pt-3' : 'gap-2.5 px-5 pb-10 pt-3'
         }
@@ -138,7 +139,7 @@ export function FamilyMemberPage() {
             </>
           )}
         </FadeInView>
-      </ScrollView>
+      </ScreenScrollView>
 
       {canManageMeds ? (
         <Fab

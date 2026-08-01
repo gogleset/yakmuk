@@ -6,15 +6,18 @@
   "icon": "./assets/icon.png",
   "scheme": "yakmuk",
   "userInterfaceStyle": "light",
-  "backgroundColor": "#F7F8F8",
+  "backgroundColor": "#FFFFFF",
   "androidStatusBar": {
-    "backgroundColor": "#F7F8F8",
+    "backgroundColor": "#FFFFFF",
     "translucent": false,
     "barStyle": "dark-content"
   },
   "ios": {
     "supportsTablet": true,
-    "bundleIdentifier": "com.yakmuk.app"
+    "bundleIdentifier": "com.yakmuk.app",
+    "infoPlist": {
+      "UIViewControllerBasedStatusBarAppearance": true
+    }
   },
   "android": {
     "adaptiveIcon": {
@@ -25,7 +28,7 @@
     },
     "package": "com.yakmuk.app",
     "navigationBar": {
-      "backgroundColor": "#F7F8F8",
+      "backgroundColor": "#FFFFFF",
       "barStyle": "dark-content"
     }
   },

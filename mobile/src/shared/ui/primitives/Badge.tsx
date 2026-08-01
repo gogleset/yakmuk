@@ -39,6 +39,8 @@ const badgeLabelVariants = cva('text-sm font-semibold', {
 type Props = VariantProps<typeof badgeVariants> & {
   label: string;
   className?: string;
+  /** 라벨 텍스트 클래스 (크기 등) */
+  labelClassName?: string;
   selected?: boolean;
 };
 
@@ -47,6 +49,7 @@ export function Badge({
   variant = 'secondary',
   selected,
   className,
+  labelClassName,
 }: Props) {
   const resolved = selected ? 'default' : variant;
   const isWarning = resolved === 'warning';
@@ -57,7 +60,7 @@ export function Badge({
       style={isWarning ? { backgroundColor: COLORS.warningBg } : undefined}
     >
       <Text
-        className={cn(badgeLabelVariants({ variant: resolved }))}
+        className={cn(badgeLabelVariants({ variant: resolved }), labelClassName)}
         style={isWarning ? { color: COLORS.warning } : undefined}
       >
         {label}

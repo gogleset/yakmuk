@@ -11,9 +11,17 @@ type SettingsGroupProps = {
   className?: string;
 };
 
-/** 설정 섹션 카드 — row들을 한 덩어리로 */
+/** 설정 섹션 카드 — 흰 surface. shadow는 바깥(overflow에 안 잘리게) */
 export function SettingsGroup({ children, className }: SettingsGroupProps) {
-  return <Card className={cn('gap-0 overflow-hidden p-0', className)}>{children}</Card>;
+  return (
+    <View style={LAYOUT.shadow.sameFill} className="rounded-xl">
+      <Card
+        className={cn('gap-0 overflow-hidden rounded-xl bg-surface p-0', className)}
+      >
+        {children}
+      </Card>
+    </View>
+  );
 }
 
 type SettingsRowProps = {

@@ -3,8 +3,7 @@ import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, Linking, Text, View } from "react-native";
 import { useAuth } from "@/providers/AuthProvider";
-import { relationSubtitle, ROLE_LABEL } from "@/entities/user";
-import { useFamilyMembersQuery } from "@/entities/family/model/queries";
+import { ROLE_LABEL } from "@/entities/user";
 import {
   useFamilyInfoQuery,
   useUpdateMyNicknameMutation,
@@ -18,12 +17,13 @@ import { ROUTES } from "@/shared/config/routes";
 import { adsMailTo, SUPPORT, supportMailTo } from "@/shared/config/support";
 import { COLORS, LAYOUT, LIMITS } from "@/shared/config/theme";
 import {
-  Body,
+  Badge,
   BottomSheet,
   Button,
   Card,
   FadeInView,
   Icons,
+  InitialAvatar,
   Input,
   Muted,
   PageTitle,
@@ -44,7 +44,6 @@ export function SettingsPage() {
   const isLeader = profile?.role === "family_leader";
 
   const familyQuery = useFamilyInfoQuery(familyId);
-  const membersQuery = useFamilyMembersQuery(familyId);
   const updateNickname = useUpdateMyNicknameMutation(refreshProfile);
 
   const [nicknameSheetOpen, setNicknameSheetOpen] = useState(false);
@@ -54,11 +53,13 @@ export function SettingsPage() {
     setNicknameDraft(profile?.nickname ?? "");
   }, [profile?.nickname]);
 
-  const leaderNickname =
-    (membersQuery.data ?? []).find((m) => m.role === "family_leader")
-      ?.nickname ?? profile?.nickname;
-  const mySubtitle = relationSubtitle(profile?.invitedAs, leaderNickname);
-  const familyName = familyQuery.data?.name;
+  const familyName = familyQuery.data?.name?.trim() || null;
+  const roleLabel = profile?.role ? ROLE_LABEL[profile.role] : null;
+  const familyLine = familyName
+    ? familyName
+    : profile?.familyId
+      ? "가족에 연결되어 있어요"
+      : "가족이 아직 없어요";
   const appVersion =
     Constants.expoConfig?.version ?? Constants.nativeAppVersion ?? "—";
 
@@ -143,38 +144,49 @@ export function SettingsPage() {
         <FadeInView className="gap-3">
           <PageTitle className="text-xl">설정</PageTitle>
 
-          {/* 프로필 탭 → 닉네임 변경 시트 */}
+          {/* 프로필 — 아바타 · 닉·역할 · 가족명 · 닉네임 변경 */}
           <PressableScale
             accessibilityRole="button"
             accessibilityLabel="닉네임 변경"
             accessibilityHint="탭하면 닉네임을 바꿀 수 있어요"
             onPress={openNicknameSheet}
           >
-            <Card className="gap-1.5">
-              <View className="flex-row items-center gap-2">
-                <Icons.Shield size={LAYOUT.icon.md} color={COLORS.brand} />
-                <Text className="flex-1 text-base font-bold text-brand">
+            <View style={LAYOUT.shadow.sameFill} className="rounded-2xl">
+              <Card className="flex-row items-center gap-3 rounded-2xl bg-surface p-4">
+                <View className="items-center gap-1">
+                <InitialAvatar
+                  nickname={profile?.nickname}
+                  size="lg"
+                  className="bg-brand-soft"
+                />
+                {roleLabel ? (
+                  <Badge
+                    label={roleLabel}
+                    variant="soft"
+                    className="self-center rounded-full px-1.5 py-0"
+                    labelClassName="text-[10px] font-semibold leading-4"
+                  />
+                ) : null}
+              </View>
+              <View className="min-w-0 flex-1 gap-0.5">
+                <Text
+                  className="text-base font-bold text-text"
+                  numberOfLines={1}
+                >
                   {profile?.nickname ?? "이름 없음"}
                 </Text>
-                <Icons.ChevronRight
-                  size={LAYOUT.icon.sm}
-                  color={COLORS.muted}
-                />
+                <Muted className="text-xs" numberOfLines={1}>
+                  {familyLine}
+                </Muted>
               </View>
-              <Body>
-                {profile?.role ? ROLE_LABEL[profile.role] : "역할 없음"}
-              </Body>
-              {mySubtitle ? (
-                <Muted className="text-xs">{mySubtitle}</Muted>
-              ) : null}
-              <Muted className="text-xs">
-                {familyName
-                  ? `가족 · ${familyName}`
-                  : profile?.familyId
-                    ? "가족에 연결되어 있어요"
-                    : "가족이 아직 없어요"}
-              </Muted>
-            </Card>
+                <View className="h-8 w-8 items-center justify-center rounded-full bg-surface-soft">
+                  <Icons.ChevronRight
+                    size={LAYOUT.icon.sm}
+                    color={COLORS.muted}
+                  />
+                </View>
+              </Card>
+            </View>
           </PressableScale>
 
           <SectionHeader title="계정" />
@@ -249,7 +261,7 @@ export function SettingsPage() {
         footer={
           <View className="gap-2">
             <Button
-              label={updateNickname.isPending ? '저장 중…' : '저장'}
+              label={updateNickname.isPending ? "저장 중…" : "저장"}
               disabled={
                 updateNickname.isPending ||
                 !nicknameDraft.trim() ||

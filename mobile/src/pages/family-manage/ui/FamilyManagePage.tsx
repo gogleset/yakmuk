@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import {
   Alert,
   Pressable,
-  ScrollView,
   Share,
   Text,
   View,
@@ -21,7 +20,7 @@ import {
   useUpdateFamilyNameMutation,
 } from '@/features/family-ops';
 import { ROUTES } from '@/shared/config/routes';
-import { COLORS, LAYOUT, LIMITS } from '@/shared/config/theme';
+import { LAYOUT, LIMITS } from '@/shared/config/theme';
 import { ACTIONS } from '@/shared/copy';
 import {
   Body,
@@ -33,12 +32,13 @@ import {
   Input,
   Muted,
   Screen,
+  ScreenScrollView,
   SectionHeader,
   StackHeader,
 } from '@/shared/ui';
 
-/** 가족 운영 — 초대·멤버·이름·삭제 (설정 서브) */
-export function SettingsFamilyPage() {
+/** 가족 운영 — 초대·멤버·이름·삭제 (가족 탭 서브) */
+export function FamilyManagePage() {
   const { profile, refreshProfile } = useAuth();
   const isLeader = profile?.role === 'family_leader';
   const familyId = profile?.familyId;
@@ -147,7 +147,7 @@ export function SettingsFamilyPage() {
     <Screen fadeTop={LAYOUT.fade.top} fadeBottom={LAYOUT.fade.bottomPlain}>
       <StackHeader title="가족" tone="brand" />
 
-      <ScrollView
+      <ScreenScrollView
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         contentContainerClassName="gap-3 px-5 pb-10 pt-2"
@@ -261,7 +261,7 @@ export function SettingsFamilyPage() {
             </>
           ) : null}
         </FadeInView>
-      </ScrollView>
+      </ScreenScrollView>
 
       <BottomSheet
         visible={!!recoverySheet}

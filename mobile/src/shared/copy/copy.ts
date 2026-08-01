@@ -75,11 +75,12 @@ export const COPY = {
 
   family: {
     title: '가족 안부',
-    todayStatus: '가족',
+    /** 가족명 로딩 전 섹션 제목 fallback */
+    todayStatusFallback: '가족',
+    manage: '관리',
     recentFeed: '최근 소식',
     /** 다른 멤버 수 (본인 제외) */
     memberCount: (count: number) => `우리 가족 ${count}명`,
-    newFeedCount: (count: number) => `새로운 소식 ${count}개`,
     seeMoreFeed: '더보기',
     emptyMembers: '아직 가족이 등록되지 않았어요',
     emptyMembersMessage: '가족을 초대해서 서로의 하루를 챙겨보세요.',
@@ -98,7 +99,7 @@ export const COPY = {
     },
     feedTaken: (who: string) => `${who}${subjectGa(who)} 약을 복용했어요`,
     feedAllTaken: (who: string) => `${who}${subjectGa(who)} 약을 다 먹었어요`,
-    /** label = 좋아요 / 보통이에요 / 안 좋아요요 */
+    /** label = 좋아요 / 보통이에요 / 안 좋아요 */
     feedCondition: (who: string, label: string) =>
       `${who}의 컨디션이 ${label}`,
     feedFallback: (who: string) => `${who}님 소식`,

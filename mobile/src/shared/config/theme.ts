@@ -33,6 +33,13 @@ export const COLORS = {
   white: "#FFFFFF",
 } as const;
 
+/** 케어/주의 톤 outline — fill 금지. design.md §8.1 Tone outline */
+export const TONE_OUTLINE = {
+  width: 1,
+  warning: { borderWidth: 1, borderColor: COLORS.warningBorder },
+  destructive: { borderWidth: 1, borderColor: COLORS.destructive },
+} as const;
+
 /** react-native-calendars 테마 — canvas(흰) 위 플랫 캘린더 */
 export const CALENDAR_THEME = {
   backgroundColor: COLORS.canvas,

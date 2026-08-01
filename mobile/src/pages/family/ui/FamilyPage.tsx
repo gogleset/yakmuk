@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { Pressable, RefreshControl, Text, View } from 'react-native';
 import { useAuth } from '@/providers/AuthProvider';
 import {
   invalidateFamilyActivity,
@@ -9,6 +9,7 @@ import {
   useFamilyScreenQueries,
 } from '@/entities/family';
 import { useAckFamilyAlertMutation } from '@/features/ack-family-alert';
+import { useFamilyInfoQuery } from '@/features/family-ops';
 import { familyMemberRoute, ROUTES } from '@/shared/config/routes';
 import { formatFriendlyDate } from '@/shared/lib/format';
 import { todayKstDateString } from '@/shared/lib/kst';
@@ -19,6 +20,7 @@ import {
   Fallback,
   KokiIllustration,
   Screen,
+  ScreenScrollView,
 } from '@/shared/ui';
 import {
   FamilyActivityFeedItem,
@@ -63,6 +65,8 @@ export function FamilyPage() {
     familyId,
     todayKst: today,
   });
+
+  const familyInfoQuery = useFamilyInfoQuery(familyId);
 
   useFamilyFeedSubscription(familyId, qc);
 
@@ -119,6 +123,9 @@ export function FamilyPage() {
   // 프리뷰: 멤버 empty여도 최근 소식 empty 같이 노출
   const showFeedSection = hasMembers || FAMILY_TAB_EMPTY_UI_PREVIEW;
 
+  const sectionTitle =
+    familyInfoQuery.data?.name?.trim() || COPY.family.todayStatusFallback;
+
   const openMember = (userId: string, nickname: string | null) => {
     if (!userId || userId === myUserId) return;
     const role =
@@ -128,6 +135,10 @@ export function FamilyPage() {
 
   const openFeed = () => {
     router.push(ROUTES.familyFeed);
+  };
+
+  const openFamilyManage = () => {
+    router.push(ROUTES.familyManage);
   };
 
   const onAckCareAlert = (slideId: string) => {
@@ -142,7 +153,7 @@ export function FamilyPage() {
 
   return (
     <Screen fadeTop={LAYOUT.fade.top} fadeBottom={LAYOUT.fade.bottomPlain}>
-      <ScrollView
+      <ScreenScrollView
         contentContainerClassName="gap-3 px-5 pb-10 pt-2"
         refreshControl={
           <RefreshControl
@@ -167,9 +178,11 @@ export function FamilyPage() {
 
           <FamilyGuardianDashboard
             members={statusMembers}
+            sectionTitle={sectionTitle}
             showInviteCta={isLeader}
             onPressMember={openMember}
-            onInviteCtaPress={() => router.push(ROUTES.settingsFamily)}
+            onInviteCtaPress={openFamilyManage}
+            onManagePress={isLeader ? openFamilyManage : undefined}
           />
 
           {showFeedSection ? (
@@ -213,7 +226,7 @@ export function FamilyPage() {
             </View>
           ) : null}
         </FadeInView>
-      </ScrollView>
+      </ScreenScrollView>
     </Screen>
   );
 }

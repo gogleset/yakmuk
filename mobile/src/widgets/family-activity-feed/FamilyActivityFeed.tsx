@@ -8,7 +8,7 @@ import {
   formatFriendlyTime,
   formatRelativeTime,
 } from '@/shared/lib/format';
-import { COLORS, LAYOUT } from '@/shared/config/theme';
+import { LAYOUT, TONE_OUTLINE } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
 import { Card, InitialAvatar, Muted } from '@/shared/ui';
 
@@ -16,7 +16,7 @@ import { Card, InitialAvatar, Muted } from '@/shared/ui';
 const CONDITION_FEED_LABEL: Record<ConditionValue, string> = {
   GOOD: '좋아요',
   NORMAL: '보통이에요',
-  BAD: '안 좋아요요',
+  BAD: '안 좋아요',
 };
 
 function feedTitle(item: DailyLog): string {
@@ -59,7 +59,7 @@ export function FamilyActivityFeedItem({ item, onPress }: Props) {
       className="flex-row items-start gap-3 bg-surface py-3.5"
       style={[
         LAYOUT.shadow.sameFill,
-        isBad ? { backgroundColor: COLORS.warningBg } : undefined,
+        isBad ? TONE_OUTLINE.warning : undefined,
       ]}
     >
       <InitialAvatar nickname={item.nickname} size="md" />

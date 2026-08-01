@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Text, View } from 'react-native';
-import { COLORS, LAYOUT } from '@/shared/config/theme';
+import { COLORS, LAYOUT, TONE_OUTLINE } from '@/shared/config/theme';
 import { Button } from '@/shared/ui/primitives/Button';
 import { Card } from '@/shared/ui/primitives/Card';
 import { Icons } from '@/shared/ui/primitives/Icon';
@@ -13,7 +13,7 @@ type Props = {
   children?: ReactNode;
 };
 
-/** 주의/알림 배너 카드 */
+/** 주의/알림 배너 카드 — TONE_OUTLINE.warning */
 export function AlertBanner({
   title,
   message,
@@ -21,12 +21,7 @@ export function AlertBanner({
   ackLabel = '확인했어요',
 }: Props) {
   return (
-    <Card
-      className="gap-2"
-      style={{
-        backgroundColor: COLORS.warningBg,
-      }}
-    >
+    <Card className="gap-2 bg-surface" style={TONE_OUTLINE.warning}>
       <View className="flex-row items-center gap-2">
         <Icons.Activity size={LAYOUT.icon.md} color={COLORS.warning} />
         <Text className="flex-1 font-bold" style={{ color: COLORS.warning }}>

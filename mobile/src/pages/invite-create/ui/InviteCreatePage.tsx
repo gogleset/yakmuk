@@ -6,7 +6,7 @@ import { ROUTES } from '@/shared/config/routes';
 export function InviteCreatePage() {
   const onClose = () => {
     if (router.canGoBack()) router.back();
-    else router.replace(ROUTES.settingsFamily);
+    else router.replace(ROUTES.familyManage);
   };
 
   return <InviteCreateFunnel onClose={onClose} />;

@@ -8,7 +8,7 @@ type FeedHeaderProps = {
   onPress: () => void;
 };
 
-/** 최근 소식 섹션 헤더 — 0개면 더보기(새 소식) 숨김 */
+/** 최근 소식 섹션 헤더 — 0개면 더보기 숨김 */
 export function FamilyFeedSectionHeader({
   feedCount,
   onPress,
@@ -21,14 +21,12 @@ export function FamilyFeedSectionHeader({
       {feedCount > 0 ? (
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={COPY.family.newFeedCount(feedCount)}
+          accessibilityLabel={COPY.family.seeMoreFeed}
           hitSlop={LAYOUT.hitSlop.md}
           onPress={onPress}
           className="flex-row items-center gap-0.5"
         >
-          <Muted className="text-xs">
-            {COPY.family.newFeedCount(feedCount)}
-          </Muted>
+          <Muted className="text-xs">{COPY.family.seeMoreFeed}</Muted>
           <Icons.ChevronRight size={LAYOUT.icon.sm} color={COLORS.muted} />
         </Pressable>
       ) : null}

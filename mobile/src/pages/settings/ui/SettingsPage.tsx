@@ -1,7 +1,7 @@
 import Constants from "expo-constants";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Linking, ScrollView, Text, View } from "react-native";
+import { Alert, Linking, Text, View } from "react-native";
 import { useAuth } from "@/providers/AuthProvider";
 import { relationSubtitle, ROLE_LABEL } from "@/entities/user";
 import { useFamilyMembersQuery } from "@/entities/family/model/queries";
@@ -29,6 +29,7 @@ import {
   PageTitle,
   PressableScale,
   Screen,
+  ScreenScrollView,
   SectionHeader,
   SettingsGroup,
   SettingsRow,
@@ -134,7 +135,7 @@ export function SettingsPage() {
 
   return (
     <Screen fadeTop={LAYOUT.fade.top} fadeBottom={LAYOUT.fade.bottomPlain}>
-      <ScrollView
+      <ScreenScrollView
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         contentContainerClassName="gap-3 px-5 pb-10 pt-4"
@@ -194,16 +195,6 @@ export function SettingsPage() {
             />
           </SettingsGroup>
 
-          <SectionHeader title="가족" />
-          <SettingsGroup>
-            <SettingsRow
-              label={isLeader ? "가족 관리" : "우리 가족"}
-              value={familyName ?? undefined}
-              icon={Icons.Users}
-              onPress={() => router.push(ROUTES.settingsFamily)}
-            />
-          </SettingsGroup>
-
           <SectionHeader title="앱" />
           <SettingsGroup>
             <SettingsRow
@@ -249,7 +240,7 @@ export function SettingsPage() {
             />
           </SettingsGroup>
         </FadeInView>
-      </ScrollView>
+      </ScreenScrollView>
 
       <BottomSheet
         visible={nicknameSheetOpen}

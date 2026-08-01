@@ -132,9 +132,14 @@ flowchart TD
 
 | # | 스텝 | 화면/UI | 사용자 행동 | 시스템 반응 | 상태 |
 |---|------|---------|-------------|-------------|------|
-| 1 | 로그아웃 | SettingsRow | 탭 | `signOut` → `ROUTES.welcome` | implemented |
+| 1 | 로그아웃 | SettingsRow | 탭 | 즉시 `signOut` → Welcome (멤버도 코드 시트 없음) | implemented |
 | 2 | 탈퇴 | SettingsRow destructive | 탭 | Confirm Alert (역할별 카피) | implemented |
 | 3 | 확인 | Alert “탈퇴하기” | 확인 | withdraw + signOut → welcome | implemented |
+
+**재진입**
+
+- 멤버가 스스로 나가면 코드가 안 나옴 → 리더가 가족 관리 초대 카드에서 **코드 재발급** 후 Welcome「초대코드를 받았어요」로 재진입
+- 리더가 연결됨 초대 재발급 시 접속 중 멤버는 안내 Alert 후 강제 로그아웃
 
 **분기**
 

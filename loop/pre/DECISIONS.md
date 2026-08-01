@@ -12,6 +12,10 @@
 | **Auth 보호자·피보호자** | **초대코드 6자리 + QR** (anon) · 닉네임 선택 | Low Friction · 호칭은 리더가 사전 지정 |
 | 역할 | `users.role` = `family_leader` \| `guardian` \| `care_recipient` | 3역할 |
 | 가족·초대 | 가족장 OAuth → 가족 생성 → **호칭(`invited_as`)+target_role 슬롯** → 코드·QR | 리더만 초대 |
+| **초대코드** | 슬롯 단위 · 미클레임/클레임 모두 **재발급 가능** (`reissue_invite_code`) | 클레임 재발급 시 `reentry_user_id` + 강제 로그아웃 |
+| **재진입** | **초대 재발급 코드**만 (Welcome「초대코드를 받았어요」) · claim 시 identity transfer | 복구코드 UI 폐기 |
+| **멤버 로그아웃** | **즉시 signOut** (코드 미표시) | 다시 들어오려면 리더가 초대 재발급 |
+| **강제 로그아웃** | `force_sign_out_at` + auth 세션 revoke + 클라 Alert | 초대 재발급(클레임/재입장대기) 시 |
 | 조인 세션 | 코드/QR + 선택 닉네임 → claim | 비우면 invited_as |
 | QR 페이로드 | deep link `yakmuk://join?code=XXXXXX` (또는 Universal Link) | 스캔 = 코드 입력과 동일 |
 | bound | `max_iterations=10` + 당일 KST 윈도우 | — |
@@ -19,8 +23,10 @@
 | verifier | 순수 함수 + SQL (reference) | — |
 | escalate | 로그 + `family_alerts` (가족 탭 배너) | — |
 | trigger | 인앱 버튼 + HTTP webhook | — |
-| 로컬 알림 | expo-notifications | FR-05 |
-| 원격 푸시 | **stub** (Realtime로 가족 연동 먼저) · Edge→Expo Push는 후속 | FR-05 부분 |
+| 로컬 알림 | expo-notifications (iOS) · Notifee FSI (Android) · 앱 시작/AppState reconcile · `[yakmuk:notif]` | FR-05 |
+| 약 알림 on/off | `medications.notification_enabled` (슬롯 단위) · 서버 push 아님 | FR-05 |
+| 원격 푸시 | **공지 stub** Edge `announce-push` + `users.expo_push_token` · EAS projectId 후속(없으면 skip) · 약 스케줄 서버 발송 안 함 | FR-05 부분 |
+| 알림 시각 | 디바이스 로컬 시계 (`scheduled_time` TZ 없음 · KST 전제) | — |
 | HTTP trigger | `supabase/functions/loop-trigger` | pre CONTRACT || RLS | 동일 `family_id`만 · runs는 owner | Two-tier |
 | 컨디션 | goal 필수 · message 선택 | FR-03 |
 | days_mask | `daily` \| `0..6` CSV (월=0) | — |
@@ -36,7 +42,7 @@
 
 | ID | pre | prod |
 |----|-----|------|
-| FR-01 | 가족장 OAuth · family_invites+코드/QR · 보호자/피보호자 조인 · 기기복구코드 | 탈퇴·약관 |
+| FR-01 | 가족장 OAuth · family_invites+코드/QR · 보호자/피보호자 조인 · 초대 재발급 재진입 | 탈퇴·약관 |
 | FR-02 | 스케줄 CRUD | — |
 | FR-03 | 홈 체크·컨디션·Optimistic | — |
 | FR-04 | Realtime 피드 | — |

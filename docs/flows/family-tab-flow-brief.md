@@ -223,8 +223,10 @@ flowchart TD
 |---|------|---------|-------------|-------------|------|
 | 1 | 이름 | Input + 저장 | leader 저장 | updateFamilyName | implemented |
 | 2 | 내보내기 | 멤버 행 | Confirm → 내보내기 | 멤버·약·기록 삭제 | implemented |
-| 3 | 복구 코드 | 시트 + 공유 | 발급 | 새 기기 코드 조인 · 기존 세션 끊김 | implemented |
+| 3 | 코드 재발급 | 초대 카드 dots | 재발급 Confirm | 미클레임·연결됨 모두 · 연결됨이면 멤버 강제 로그아웃 + 재입장 대기 | implemented |
 | 4 | 가족 삭제 | destructive | Confirm | welcome으로 replace | implemented |
+
+**재진입 메모:** 멤버 행 복구 발급 없음. 재진입은 초대 슬롯 재발급만.
 
 **Mermaid**
 

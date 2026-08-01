@@ -59,7 +59,8 @@ verify_day(user_id, date_kst) -> success | continue | failed_verify
 - 표시명: `nickname` (없으면 `invited_as`) · 서브(P1): `{가족장닉}의 {invited_as}`
 - 약 관리: 가족장·보호자 → 피보호자만 / 본인 약은 각자 / 조회는 가족 전원
 - 가족 운영: 닉네임·가족이름 수정 · 미클레임 코드 재발급 · 강퇴 · 가족삭제 · Join peek
-- 기기 복구 (P2): 가족장이 복구코드 발급 → 새 기기 claim 시 auth.uid만 교체, 약·로그 유지
+- 재진입: 리더가 초대 슬롯 **코드 재발급** (`reissue_invite_code`) → 클레임된 멤버는 `force_sign_out_at`+세션 revoke로 강제 로그아웃 → Join에서 새 코드 claim 시 `transfer_member_identity` (약·로그 유지)
+- 멤버 로그아웃은 즉시 signOut (복구코드 UI 없음). 기존 `member_recovery_codes` claim은 호환용으로만 유지
 - QR = 코드와 동일 (`yakmuk://join?code=…`)
 - RLS: 동일 `family_id` · 1 family / user
 - 다중 가족 그룹 금지

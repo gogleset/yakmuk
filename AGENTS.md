@@ -67,6 +67,7 @@ Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 
 | Rule | 언제 |
 |------|------|
+| [plan-with-gates](.agents/rules/plan-with-gates.mdc) | **플랜·Plan mode·다단계 작업** — Part A/B · S-step · 회귀 게이트 (`alwaysApply`) · [템플릿](.agents/rules/plan-with-gates-TEMPLATE.md) |
 | [fsd-architecture](.agents/rules/fsd-architecture.mdc) | mobile 레이어·의존·Empty UI |
 | [rn-fsd-anti-patterns](.agents/rules/rn-fsd-anti-patterns.mdc) | Query/FSD/RN/NativeWind 안티패턴 (리뷰·디버그·커밋 게이트) |
 | [tdd](.agents/rules/tdd.mdc) | 테스트 위치·API 통합 |

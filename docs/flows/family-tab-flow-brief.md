@@ -2,7 +2,7 @@
 
 > GPT/이미지 생성용 입력 문서. 코드·PRD 스캔 결과.  
 > 생성일: 2026-07-31 · stage: pre · 근거: `main` @ `b1a13e7`  
-> 범위: `/(tabs)/family` 및 여기서 나가는 가족 도메인 화면 (멤버·설정-가족·초대)
+> 범위: `/(tabs)/family` 및 여기서 나가는 가족 도메인 화면 (멤버·family-manage·초대)
 
 ---
 
@@ -21,7 +21,7 @@
 
 | 역할 | 앱에서의 이름 | 인증 | 가족 탭에서의 핵심 |
 |------|---------------|------|-------------------|
-| 가족장 | `family_leader` | 보호자 OAuth / 개발 로그인 → 가족 생성 | 오늘 상태·피드·알림 ack · empty 시 **가족 초대** CTA → `/settings-family` · 피보호자 약 대리 관리 |
+| 가족장 | `family_leader` | 보호자 OAuth / 개발 로그인 → 가족 생성 | 오늘 상태·피드·알림 ack · 섹션 제목=가족명 + **관리** → `/family-manage` · empty 시 **가족 초대** CTA · 피보호자 약 대리 관리 |
 | 보호자 | `guardian` | 초대 코드/QR로 조인 | 오늘 상태·피드·알림 ack · 피보호자 약 대리 관리 (`canManageMemberMeds`) · 초대 UI 없음 |
 | 피보호자 | `care_recipient` | 6자리 코드/QR만 (닉네임 사전 설정) | 오늘 상태·피드 열람 · 멤버 탭 시 캘린더만(약 CRUD 불가) |
 
@@ -36,9 +36,8 @@ PRD 요약의 “보호자/피보호자” 이분법 → 코드는 **3역할**. 
 | `/(tabs)/family` | 가족 안부 (오늘 상태 + 피드 프리뷰 2~3) | tab | 전 역할 | implemented |
 | `/family-feed` | 최근 소식 전체 | stack | 전 역할 | implemented |
 | `/family-member/[userId]` | 멤버 캘린더 · (가능 시) 약 관리 | stack | 전 역할 진입 / 약 CRUD는 leader·guardian→care_recipient만 | implemented |
-| `/settings-family` | 가족 운영 (이름·초대·내보내기·복구·삭제) | stack (설정 서브) | 전 역할 진입, ops는 leader만 | implemented |
+| `/family-manage` | 가족 운영 (이름·초대·내보내기·복구·삭제) | stack (가족 탭 서브) | leader 진입 (섹션「관리」·empty CTA) · ops는 leader | implemented |
 | `/invite-create` | 초대 생성 퍼널 (역할→호칭→코드/QR) | stack | leader | implemented |
-| `/(tabs)/settings` → 가족 행 | 설정에서 `/settings-family` 진입 | tab | 전 역할 | implemented |
 
 목업 SoT: [family-member-cards.png](../brand/mocks/family-member-cards.png) · [family-feed.png](../brand/mocks/family-feed.png) · [family-empty.png](../brand/mocks/family-empty.png) · [family-alert-stuck.png](../brand/mocks/family-alert-stuck.png) · [family-alert-bad.png](../brand/mocks/family-alert-bad.png) · [family-alert-empty.png](../brand/mocks/family-alert-empty.png)
 
@@ -46,7 +45,7 @@ PRD 요약의 “보호자/피보호자” 이분법 → 코드는 **3역할**. 
 
 | 의도 화면/요소 | PRD/메모 | 상태 |
 |----------------|----------|------|
-| 가족 탭 **초대 FAB** | CHECKLIST·PRD “초대 FAB” | partial — empty CTA(`가족 초대하기`) + 설정-가족. 탭 상시 FAB 없음 (의도) |
+| 가족 탭 **초대 FAB** | CHECKLIST·PRD “초대 FAB” | partial — empty CTA(`가족 초대하기`) + 섹션「관리」→ `/family-manage`. 탭 상시 FAB 없음 (의도) |
 | 2시뮬 Realtime E2E | CHECKLIST 미체크 | partial — 구독 코드 있음, 실기기 검증 미완 |
 | Edge 푸시 → 가족 알림 | DECISIONS stub / prod | prod-only / stub |
 
@@ -66,8 +65,8 @@ PRD 요약의 “보호자/피보호자” 이분법 → 코드는 **3역할**. 
 | 1 | 탭 진입 | FamilyPage | 가족 탭 탭 | 오늘 KST 기준 status·alerts·feed·members 쿼리 | implemented |
 | 2 | 헤더 | 날짜 + `가족 안부` (+ `우리 가족 N명` 이니셜 스택) | — | N = 다른 멤버 수(본인 제외). 탭 크롬(뒤로/종) 없음 | implemented |
 | 3 | 알림 배너 | stuck_escalate 카드 / BAD 컨디션 AlertBanner | (다음 F2) | 본인 alert 제외 필터 | implemented |
-| 4 | 멤버 카드 | 이니셜 · 닉네임 · 상태(`안부`/`다 먹음`/`진행 중`) | 타인 카드 탭 → F4 | 알림·BAD만 warningBg | implemented |
-| 5 | empty | RichEmptyState + koki family | leader만 `가족 초대하기` → `/settings-family` | 멤버 0(본인만). **피드 섹션 숨김** | implemented |
+| 4 | 멤버 카드 | 섹션 제목=`{가족명}` · (leader)「관리」· 이니셜·닉·상태 | 타인 카드 → F4 / 관리 → F6 | 알림·BAD만 warningBg | implemented |
+| 5 | empty | RichEmptyState + koki family | leader만 `가족 초대하기` → `/family-manage` (헤더「관리」없음) | 멤버 0(본인만). **피드 섹션 숨김** | implemented |
 | 6 | pull-to-refresh | RefreshControl | 당겨 새로고침 | profile + `invalidateFamilyActivity` | implemented |
 
 **분기**
@@ -181,11 +180,11 @@ flowchart TD
 
 ---
 
-### F5. 가족 초대 (탭 empty / 설정-가족) — `implemented`
+### F5. 가족 초대 (탭 empty / family-manage) — `implemented`
 
 - **역할**: `family_leader`만
-- **진입**: 가족 탭 empty CTA **또는** 설정 → 가족 → `/settings-family` → 초대 슬롯 → `/invite-create`
-- **관련 코드**: `features/family-invite` (`FamilyInvitePanel`, `InviteCreateFunnel`) · `pages/invite-create`
+- **진입**: 가족 탭 empty CTA **또는** 섹션「관리」→ `/family-manage` → 초대 슬롯 → `/invite-create`
+- **관련 코드**: `features/family-invite` (`FamilyInvitePanel`, `InviteCreateFunnel`) · `pages/invite-create` · `pages/family-manage`
 
 | # | 스텝 | 화면/UI | 사용자 행동 | 시스템 반응 | 상태 |
 |---|------|---------|-------------|-------------|------|
@@ -204,7 +203,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-  A[초대 CTA / 설정-가족] --> B[InviteCreateFunnel]
+  A[초대 CTA / family-manage] --> B[InviteCreateFunnel]
   B --> C[역할]
   C --> D[호칭]
   D --> E[코드·QR 공유]
@@ -216,9 +215,9 @@ flowchart TD
 
 ### F6. 가족 운영 (내보내기 · 복구 · 이름 · 삭제) — `implemented`
 
-- **역할**: ops는 leader · 이름 조회는 전 역할
-- **진입**: `/settings-family` (가족 탭 직접 아님, 동일 도메인)
-- **관련 코드**: `pages/settings-family` · `features/family-ops`
+- **역할**: ops는 leader · UI 진입도 leader만 (섹션「관리」·empty CTA)
+- **진입**: 가족 탭 → `/family-manage`
+- **관련 코드**: `pages/family-manage` · `features/family-ops`
 
 | # | 스텝 | 화면/UI | 사용자 행동 | 시스템 반응 | 상태 |
 |---|------|---------|-------------|-------------|------|
@@ -231,7 +230,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-  A[settings-family] --> B{leader?}
+  A[family-manage] --> B{leader?}
   B -->|no| C[이름 읽기만]
   B -->|yes| D[초대·멤버·삭제]
   D --> E[내보내기 / 복구 / 삭제]
@@ -249,8 +248,8 @@ flowchart TD
 | F4 멤버 캘린더 | ✅ | ✅ | ✅ | |
 | F4 대리 약 CRUD | ✅→CR | ✅→CR | ❌ | target이 care_recipient일 때만 |
 | F5 초대 | ✅ | ❌ | ❌ | |
-| F6 내보내기·복구·삭제 | ✅ | ❌ | ❌ | |
-| F6 가족 이름 수정 | ✅ | ❌ | ❌ | 비leader는 읽기 |
+| F6 내보내기·복구·삭제 | ✅ | ❌ | ❌ | `/family-manage` |
+| F6 가족 이름 수정 | ✅ | ❌ | ❌ | UI 진입 leader만 |
 
 범례: ✅ 가능 · △ partial · ❌ 불가 · — 해당 없음 · CR = care_recipient
 
@@ -287,12 +286,12 @@ flowchart TD
 톤: 따뜻한 가족 안부, 병원 대시보드·CCTV 느낌 금지, 콕이(캐릭터)는 empty/stuck에만 작은 힌트
 
 포함할 플로우 (swimlane 또는 패널):
-1) F1 가족 탭 열람: 탭 진입 → 알림? → 멤버 카드(상태 라벨·컨디션) → 최근 소식 / empty면 초대 CTA(리더만)
+1) F1 가족 탭 열람: 탭 진입 → 알림? → 섹션 제목=가족명 + (리더)관리 → 멤버 카드 → 최근 소식 / empty면 초대 CTA만(리더)
 2) F2 알림 ack: stuck 또는 BAD 배너 → 확인했어요 → 사라짐
 3) F3 피드: 소식 카드(TAKEN/컨디션) → 탭 → 멤버 상세; Realtime은 점선+“검증 미완”
 4) F4 멤버 상세: 캘린더 → (리더/보호자→피보호자만) 약 목록·FAB 추가/수정/삭제; 대리 복용 체크 없음 명시
-5) F5 초대: empty CTA 또는 설정-가족 → 역할 → 호칭 → 코드/QR → 상대 조인
-6) F6 운영(작은 패널): 이름·내보내기·복구 코드·가족 삭제 (리더만)
+5) F5 초대: empty CTA 또는 family-manage → 역할 → 호칭 → 코드/QR → 상대 조인
+6) F6 운영: 가족 탭「관리」→ family-manage → 이름·내보내기·복구·가족 삭제 (리더만)
 
 갭은 점선 노드 + "미구현/부분":
 - G1 Realtime 2시뮬 미검증
@@ -317,3 +316,4 @@ flowchart TD
 |------|------|
 | 2026-07-31 | 가족 탭 스코프 초안 (`FamilyPage`·멤버·초대·ops 코드 기준) |
 | 2026-07-31 | UI 하이브리드: 멤버 카드 · 피드 프리뷰+`/family-feed` · empty CTA |
+| 2026-08-01 | 설정 가족 행 제거 · 섹션 제목=가족명 · leader「관리」→ `/family-manage` |

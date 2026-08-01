@@ -111,9 +111,9 @@
 | `success`       | `#4D8679` | `#3DBFA8` | 완료 CTA 등 — brand와 동일 축                         |
 | `sky`           | `#3B9AD9` | `#2F8BC7` | 캘린더 「다 먹었어요」 도트 — 시인성 sky                 |
 | `warning`       | `#C49A3C` | `#D4A84B` | 주의 텍스트/아이콘 · 범례 “일부만”                |
-| `warningBorder` | `#E8D48A` | `#5C4A1A` | (레거시) — 보더 금지. 경고는 `warningBg` fill     |
-| `warningBg`     | `#FFF8E1` | `#2A2410` | 경고 배너 배경                                    |
-| `destructive`   | `#C46B5A` | `#E07A7A` | 삭제·위험 · 범례 “안 먹었어요” (soft coral)       |
+| `warningBorder` | `#E8D48A` | `#5C4A1A` | 케어·주의 톤 thin outline (1px) — `TONE_OUTLINE.warning` |
+| `warningBg`     | `#FFF8E1` | `#2A2410` | Badge 등 소형 chip fill · 카드/배너 기본엔 쓰지 않음 |
+| `destructive`   | `#C46B5A` | `#E07A7A` | 삭제·위험 · stuck outline · 범례 “안 먹었어요”     |
 
 ### 6.3 Mode rules
 
@@ -129,7 +129,7 @@
 간호·약·안심의 식물성 신뢰. 병원 블루·진한 쿨 틸(`#0F6B5C`) 금지.  
 목업 soft 틸(`#4D8679`) + 흰 canvas — 채도↓·명도↑.  
 헤어 브라운·윙 페일블루 = **illustration-only**, 토큰 추가 금지.  
-hex SoT: 이 문서 §6.1 ↔ `theme.ts` / `tailwind.config.js`.
+hex SoT: 이 문서 §6.1 ↔ `theme.ts` (`COLORS` · `TONE_OUTLINE`) / `tailwind.config.js`.
 
 ## 7. Typography
 
@@ -170,11 +170,12 @@ Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타�
 구분은 `canvas`(`#FFFFFF`) → `surfaceSoft`(`#F0F5F3`) → `brandSoft` → `brand` **fill**로만.  
 **예외:** 부모·자식 fill이 같으면 fill 단계로 구분 불가 → §8.3 soft shadow.
 
-| 허용           | 규칙                                                                                                 |
-| -------------- | ---------------------------------------------------------------------------------------------------- |
+| 허용 | 규칙 |
+|------|------|
 | **Focus only** | 키보드/포커스 가능 컨트롤(Input 등)이 **focused일 때만** `brand` 보더. unfocused = border 없음(투명) |
+| **Tone outline** | status/care만 — BAD·stuck·AlertBanner 등. thin 1px (`TONE_OUTLINE.warning` / `.destructive`). fill(`warningBg`)로 카드·배너를 칠하지 않음 |
 
-`border-line`, `borderWidth`로 상시 윤곽을 그리는 UI는 전부 fill로 교체.
+계층용 `border-line`·상시 카드 윤곽은 fill로. 케어 톤은 위 Tone outline만.
 
 ### 8.2 Copy (설명 문구)
 
@@ -261,7 +262,7 @@ Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타�
 - 다크 네온·글로우·순검 배경
 - 필 클러스터, 통계 스트립, 배지 과다로 불안 UI
 - “다 먹음” 캘린더 도트는 `sky` — CTA success와 구분. 네온 블루 금지
-- **border** — focus 상태가 아니면 쓰지 않음 (카드·버튼·divider·토글 윤곽 포함)
+- **border** — focus·**Tone outline**(케어 BAD/stuck) 외에는 쓰지 않음. 계층용 카드/divider 윤곽 금지
 - **설명 문구 남발** — 라벨·레이아웃으로 충분한데 Caption/Body로 풀어쓰기
 - **아이콘 + 중복 라벨** — `← 뒤로`, `× 닫기` 등 아이콘 옆 보조 텍스트
 - 홈 본문·MedRow에 콕이 상시 (empty 카드·오늘 배너·streak 슬롯만 허용)

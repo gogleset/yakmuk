@@ -19,6 +19,8 @@ export type Medication = {
   doseAmount: number | null;
   /** MED_DOSE_UNITS id */
   doseUnit: string | null;
+  /** 로컬 약 알림 등록 여부 */
+  notificationEnabled: boolean;
 };
 
 export type DailyLog = {

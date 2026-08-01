@@ -56,6 +56,7 @@ export async function addMedications(
     name: input.name,
     scheduled_time: slot.scheduledTime,
     days_mask: slot.daysMask || 'daily',
+    notification_enabled: slot.notificationEnabled !== false,
     ...metaColumns,
   }));
 

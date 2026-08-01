@@ -30,14 +30,18 @@ describe('timeSlots', () => {
   });
 
   it('timeOfDaySlot — 버킷 경계', () => {
-    expect(timeOfDaySlot('07:59')).toBe('morning');
-    expect(timeOfDaySlot('10:59')).toBe('morning');
-    expect(timeOfDaySlot('11:00')).toBe('lunch');
+    expect(timeOfDaySlot('00:00')).toBe('dawn');
+    expect(timeOfDaySlot('06:59')).toBe('dawn');
+    expect(timeOfDaySlot('07:00')).toBe('morning');
+    expect(timeOfDaySlot('11:59')).toBe('morning');
+    expect(timeOfDaySlot('12:00')).toBe('lunch');
     expect(timeOfDaySlot('14:59')).toBe('lunch');
-    expect(timeOfDaySlot('15:00')).toBe('evening');
-    expect(timeOfDaySlot('20:59')).toBe('evening');
-    expect(timeOfDaySlot('21:00')).toBe('bedtime');
+    expect(timeOfDaySlot('15:00')).toBe('afternoon');
+    expect(timeOfDaySlot('15:30')).toBe('afternoon');
+    expect(timeOfDaySlot('17:59')).toBe('afternoon');
+    expect(timeOfDaySlot('18:00')).toBe('bedtime');
     expect(timeOfDaySlot('23:00')).toBe('bedtime');
+    expect(timeOfDaySlot('23:59')).toBe('bedtime');
   });
 
   it('groupMedsByScheduledTime — 시간순·동일 시각 묶음', () => {
@@ -55,7 +59,7 @@ describe('timeSlots', () => {
     expect(groups[0]?.meds.map((m) => m.name)).toEqual(['A', 'B']);
     expect(groups[0]?.slot).toBe('morning');
     expect(groups[1]?.slot).toBe('lunch');
-    expect(groups[2]?.slot).toBe('evening');
+    expect(groups[2]?.slot).toBe('bedtime');
   });
 
   it('groupTimedEntriesByScheduledTime — null 시간은 끝', () => {

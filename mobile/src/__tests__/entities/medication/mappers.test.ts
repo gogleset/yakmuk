@@ -43,6 +43,12 @@ describe('mapMedication', () => {
     expect(med.efficacy).toBeNull();
     expect(med.doseAmount).toBeNull();
     expect(med.doseUnit).toBeNull();
+    expect(med.notificationEnabled).toBe(true);
+  });
+
+  it('notification_enabled false면 off', () => {
+    const med = mapMedication({ ...base, notification_enabled: false });
+    expect(med.notificationEnabled).toBe(false);
   });
 });
 

@@ -34,6 +34,8 @@ export function mapMedication(row: Record<string, unknown>): Medication {
     warning: nullableString(row.warning),
     doseAmount: nullableNumber(row.dose_amount),
     doseUnit: nullableString(row.dose_unit),
+    // 구행/부분 select 대비 — 없으면 on
+    notificationEnabled: row.notification_enabled !== false,
   };
 }
 

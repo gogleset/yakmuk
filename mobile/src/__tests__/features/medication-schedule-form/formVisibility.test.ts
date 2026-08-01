@@ -112,6 +112,7 @@ describe('resolveFormVisibility', () => {
 describe('collapseOnNameCleared', () => {
   it('이름 클리어 시 draft 기본값 + nameConfirmed false', () => {
     const dirty: MedicationScheduleDraft = {
+      ...createDefaultScheduleDraft(),
       scheduleMode: 'perWeekday',
       slotTimes: ['09:00', '21:00'],
       daysMode: 'weekday',

@@ -75,7 +75,17 @@ export function MedicationScheduleFields({
         <FadeInView className="gap-3">
           <TimeSlotList
             value={draft.slotTimes}
-            onChange={(slotTimes) => onDraftChange({ ...draft, slotTimes })}
+            onChange={(slotTimes, notificationEnabledByTime) =>
+              onDraftChange({
+                ...draft,
+                slotTimes,
+                ...(notificationEnabledByTime
+                  ? { notificationEnabledByTime }
+                  : {}),
+              })
+            }
+            notificationEnabledByTime={draft.notificationEnabledByTime}
+            showNotificationToggle
             tone="soft"
             readOnly={readOnly}
           />
@@ -156,15 +166,27 @@ export function MedicationScheduleFields({
                       <View className="gap-3 bg-canvas px-3.5 py-3.5">
                         <TimeSlotList
                           value={times}
-                          onChange={(nextTimes) =>
+                          onChange={(nextTimes, notificationEnabledByTime) =>
                             onDraftChange({
                               ...draft,
                               timesByDay: {
                                 ...draft.timesByDay,
                                 [day]: nextTimes,
                               },
+                              ...(notificationEnabledByTime
+                                ? {
+                                    notificationEnabledByDayTime: {
+                                      ...draft.notificationEnabledByDayTime,
+                                      [day]: notificationEnabledByTime,
+                                    },
+                                  }
+                                : {}),
                             })
                           }
+                          notificationEnabledByTime={
+                            draft.notificationEnabledByDayTime[day] ?? {}
+                          }
+                          showNotificationToggle
                           tone="soft"
                           readOnly={readOnly}
                         />

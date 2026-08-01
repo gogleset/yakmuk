@@ -1,12 +1,18 @@
 import type { Medication } from '@/entities/medication/model/types';
 
 /** 하루 시간대 — scheduledTime으로 클라 버킷팅 */
-export type TimeOfDaySlot = 'morning' | 'lunch' | 'evening' | 'bedtime';
+export type TimeOfDaySlot =
+  | 'dawn'
+  | 'morning'
+  | 'lunch'
+  | 'afternoon'
+  | 'bedtime';
 
 export const TIME_SLOT_ORDER: TimeOfDaySlot[] = [
+  'dawn',
   'morning',
   'lunch',
-  'evening',
+  'afternoon',
   'bedtime',
 ];
 
@@ -28,12 +34,15 @@ export function parseTimeToMinutes(scheduledTime: string): number {
   return hours * 60 + minutes;
 }
 
-/** 아침 <11 / 점심 11–15 / 저녁 15–21 / 취침 ≥21 */
+/**
+ * 새벽 00–07 / 아침 07–12 / 점심 12–15(14시까지) / 오후 15–18 / 취침 전 18–24(23시까지)
+ */
 export function timeOfDaySlot(scheduledTime: string): TimeOfDaySlot {
   const minutes = parseTimeToMinutes(scheduledTime);
-  if (minutes < 11 * 60) return 'morning';
+  if (minutes < 7 * 60) return 'dawn';
+  if (minutes < 12 * 60) return 'morning';
   if (minutes < 15 * 60) return 'lunch';
-  if (minutes < 21 * 60) return 'evening';
+  if (minutes < 18 * 60) return 'afternoon';
   return 'bedtime';
 }
 

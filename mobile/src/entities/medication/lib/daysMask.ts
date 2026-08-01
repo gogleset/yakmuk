@@ -7,6 +7,8 @@ export type DaysMode = 'daily' | 'weekday';
 export type MedScheduleSlot = {
   scheduledTime: string;
   daysMask: string;
+  /** 기본 true — 로컬 알림 등록 */
+  notificationEnabled?: boolean;
 };
 
 export const WEEKDAY_LABELS = ['월', '화', '수', '목', '금', '토', '일'] as const;
@@ -53,25 +55,36 @@ export function formatDaysMaskLabel(mask: string): string {
   return days.map((d) => WEEKDAY_LABELS[d]).join('·');
 }
 
-/** 같은 일정: 공통 days_mask × 시간 N개 */
+/** 같은 일정: 공통 days_mask × 시간 N개. enabledByTime 없으면 전부 on */
 export function expandSameSchedule(
   times: string[],
   daysMask: string,
+  enabledByTime?: Record<string, boolean>,
 ): MedScheduleSlot[] {
   const uniqueTimes = [...new Set(times.map((t) => t.trim()).filter(Boolean))];
-  return uniqueTimes.map((scheduledTime) => ({ scheduledTime, daysMask }));
+  return uniqueTimes.map((scheduledTime) => ({
+    scheduledTime,
+    daysMask,
+    notificationEnabled: enabledByTime?.[scheduledTime] !== false,
+  }));
 }
 
-/** 요일마다 다르게: 요일 → 시간들 */
+/** 요일마다 다르게: 요일 → 시간들. enabledByDayTime[day][time] 없으면 on */
 export function expandPerWeekdaySchedule(
   timesByDay: Record<number, string[]>,
+  enabledByDayTime?: Record<number, Record<string, boolean>>,
 ): MedScheduleSlot[] {
   const slots: MedScheduleSlot[] = [];
   for (let day = 0; day <= 6; day++) {
     const times = timesByDay[day] ?? [];
     const unique = [...new Set(times.map((t) => t.trim()).filter(Boolean))];
     for (const scheduledTime of unique) {
-      slots.push({ scheduledTime, daysMask: String(day) });
+      slots.push({
+        scheduledTime,
+        daysMask: String(day),
+        notificationEnabled:
+          enabledByDayTime?.[day]?.[scheduledTime] !== false,
+      });
     }
   }
   return slots;

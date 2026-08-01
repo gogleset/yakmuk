@@ -11,6 +11,7 @@ function med(
   scheduledTime: string,
   daysMask: string,
   name = '약',
+  notificationEnabled = true,
 ): Medication {
   return {
     id,
@@ -20,6 +21,15 @@ function med(
     userId: 'u',
     createdAt: '',
     deletedAt: null,
+    itemSeq: null,
+    color: 'teal',
+    efficacy: null,
+    useMethod: null,
+    storage: null,
+    warning: null,
+    doseAmount: null,
+    doseUnit: null,
+    notificationEnabled,
   };
 }
 
@@ -53,5 +63,19 @@ describe('scheduleDraft', () => {
     expect(slots.map((s) => s.scheduledTime).sort((a, b) =>
       parseTimeToMinutes(a) - parseTimeToMinutes(b),
     )).toEqual(['08:00', '20:00']);
+    expect(slots.every((s) => s.notificationEnabled !== false)).toBe(true);
+  });
+
+  it('medsToScheduleDraft — 알림 off 슬롯 보존', () => {
+    const draft = medsToScheduleDraft([
+      med(1, '08:00', 'daily', '약', true),
+      med(2, '20:00', 'daily', '약', false),
+    ]);
+    expect(draft.notificationEnabledByTime['08:00']).toBe(true);
+    expect(draft.notificationEnabledByTime['20:00']).toBe(false);
+    const slots = expandScheduleDraft(draft);
+    expect(slots.find((s) => s.scheduledTime === '20:00')?.notificationEnabled).toBe(
+      false,
+    );
   });
 });

@@ -49,8 +49,8 @@ function initialCollapsed(
 }
 
 function slotIcon(slot: TimeOfDaySlot) {
-  if (slot === 'morning' || slot === 'lunch') return Icons.Sun;
-  return Icons.Moon;
+  if (slot === 'dawn' || slot === 'bedtime') return Icons.Moon;
+  return Icons.Sun;
 }
 
 function CheckToggle({ taken }: { taken: boolean }) {
@@ -98,7 +98,9 @@ export function TimeSlotMedAccordion({
         const takenCount = group.entries.filter((e) => e.taken).length;
         const collapsed = collapsedTimes[group.scheduledTime] === true;
         const Chevron = collapsed ? Icons.ChevronDown : Icons.ChevronUp;
-        const isDaySlot = slot === 'morning' || slot === 'lunch';
+        // 낮 슬롯(아침·점심·오후)은 경고색 태양, 새벽·취침 전은 뮤트 달
+        const isDaySlot =
+          slot === 'morning' || slot === 'lunch' || slot === 'afternoon';
 
         return (
           <View

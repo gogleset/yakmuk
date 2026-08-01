@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Alert, RefreshControl } from 'react-native';
 import { useAuth } from '@/providers/AuthProvider';
 import {
@@ -15,7 +15,6 @@ import { useHomeMedicationQueries } from '@/entities/medication/model/queries';
 import type { ConditionValue } from '@/entities/medication/model/types';
 import { useConditionLogMutation } from '@/features/condition-log';
 import { useDailyMedicationCheckMutations } from '@/features/daily-medication-check';
-import { syncMedicationNotifications } from '@/features/medication-notifications';
 import { ROUTES, viewMedicationRoute } from '@/shared/config/routes';
 import { todayKstDateString } from '@/shared/lib/kst';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
@@ -127,11 +126,6 @@ export function HomePage() {
       ) ?? null,
     [logsQuery.data, today],
   );
-
-  useEffect(() => {
-    if (!medsQuery.data || !takenQuery.data) return;
-    void syncMedicationNotifications(medsQuery.data, takenQuery.data);
-  }, [medsQuery.data, takenQuery.data]);
 
   const takenMedIds = takenQuery.data ?? new Set<number>();
 

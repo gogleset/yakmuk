@@ -17,6 +17,8 @@ export const ROUTES = {
   editMedication: '/edit-medication',
   /** 약 상세(readonly) */
   viewMedication: '/view-medication',
+  /** 약 알림 풀페이지 */
+  medicationAlarm: '/medication-alarm',
   /** P5 초대 생성 퍼널 */
   inviteCreate: '/invite-create',
 } as const;
@@ -48,6 +50,20 @@ export function viewMedicationRoute(
   });
   if (userId) params.set('userId', userId);
   return `${ROUTES.viewMedication}?${params.toString()}`;
+}
+
+/** 약 알림 풀페이지 — 로컬 알림 payload */
+export function medicationAlarmRoute(input: {
+  medicationId: number;
+  name?: string;
+  scheduledTime?: string;
+}): string {
+  const params = new URLSearchParams({
+    medicationId: String(input.medicationId),
+  });
+  if (input.name) params.set('name', input.name);
+  if (input.scheduledTime) params.set('scheduledTime', input.scheduledTime);
+  return `${ROUTES.medicationAlarm}?${params.toString()}`;
 }
 
 export function joinRoute(code?: string): string {

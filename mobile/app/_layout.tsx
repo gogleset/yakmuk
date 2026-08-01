@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router';
 import { View } from 'react-native';
+import { MedicationNotificationResponseBridge } from '@/features/medication-notifications';
 import { AppProviders } from '@/providers/AppProviders';
 import { COLORS, MOTION } from '@/shared/config/theme';
 import { SystemChrome } from '@/shared/lib/systemChrome';
@@ -32,6 +33,7 @@ const familyPushOptions = {
 export default function RootLayout() {
   return (
     <AppProviders>
+      <MedicationNotificationResponseBridge />
       <View style={{ flex: 1, backgroundColor: COLORS.canvas }}>
         <SystemChrome />
         <Stack
@@ -55,6 +57,14 @@ export default function RootLayout() {
           <Stack.Screen name="add-medication" options={sheetScreenOptions} />
           <Stack.Screen name="edit-medication" options={sheetScreenOptions} />
           <Stack.Screen name="view-medication" options={sheetScreenOptions} />
+          <Stack.Screen
+            name="medication-alarm"
+            options={{
+              presentation: 'fullScreenModal',
+              animation: 'fade',
+              animationDuration: MOTION.duration.normal,
+            }}
+          />
           <Stack.Screen
             name="family-member/[userId]"
             options={familyPushOptions}

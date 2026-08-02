@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { buildCarePushCopy, invokeCarePush } from '@/entities/family';
 import { listMedications } from '@/entities/medication/api/list-medications';
 import { listTodayTaken } from '@/entities/medication/api/list-today-taken';
 import { toggleTaken } from '@/entities/medication/api/toggle-taken';
@@ -14,6 +15,8 @@ type TakeParams = {
   userId: string;
   familyId: string;
   medicationIds: number[];
+  /** 푸시 카피용 */
+  nickname?: string | null;
   /** @deprecated 번복 불가 — true면 no-op */
   currentlyTaken?: boolean;
 };
@@ -28,11 +31,18 @@ export function useMedicationAlarmTakeMutation() {
       userId,
       familyId,
       medicationIds,
+      nickname,
       currentlyTaken = false,
     }: TakeParams) => {
       // 체크 완료 번복은 지원하지 않음
       if (currentlyTaken) {
-        return { userId, takenCount: 0, currentlyTaken: true };
+        return {
+          userId,
+          familyId,
+          nickname,
+          takenCount: 0,
+          currentlyTaken: true,
+        };
       }
       const ids = medicationIds.filter(
         (id) => Number.isFinite(id) && id > 0,
@@ -50,9 +60,20 @@ export function useMedicationAlarmTakeMutation() {
           }),
         ),
       );
-      return { userId, takenCount: ids.length, currentlyTaken: false };
+      return {
+        userId,
+        familyId,
+        nickname,
+        takenCount: ids.length,
+        currentlyTaken: false,
+      };
     },
-    onSuccess: async ({ userId }) => {
+    onSuccess: async ({
+      userId,
+      familyId,
+      nickname,
+      currentlyTaken,
+    }) => {
       await invalidateHomeActivity(qc);
       const today = todayKstDateString();
       const [meds, taken] = await Promise.all([
@@ -66,6 +87,17 @@ export function useMedicationAlarmTakeMutation() {
       await qc.invalidateQueries({
         queryKey: medicationKeys.list(userId),
       });
+
+      if (!currentlyTaken && familyId) {
+        const copy = buildCarePushCopy('taken', nickname);
+        void invokeCarePush({
+          kind: 'taken',
+          familyId,
+          actorUserId: userId,
+          title: copy.title,
+          body: copy.body,
+        });
+      }
     },
     onError: (error) => showMutationError(ERRORS.med.checkFailed, error),
   });

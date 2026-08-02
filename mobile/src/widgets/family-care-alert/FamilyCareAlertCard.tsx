@@ -13,8 +13,9 @@ type Props = {
 /** 케어 알림 카드 — 좌 콕이 · 우 카피·CTA · tone은 TONE_OUTLINE */
 export function FamilyCareAlertCard({ slide, onAck, width }: Props) {
   const isStuck = slide.tone === 'stuck';
-  const outline = isStuck ? TONE_OUTLINE.destructive : TONE_OUTLINE.warning;
-  const ctaColor = isStuck ? COLORS.destructive : COLORS.warning;
+  // stuck도 soft 안부 — destructive(빨간) 잔소리 톤 금지
+  const outline = TONE_OUTLINE.warning;
+  const ctaColor = isStuck ? COLORS.brand : COLORS.warning;
 
   return (
     <View style={width ? { width } : undefined} className="px-0">

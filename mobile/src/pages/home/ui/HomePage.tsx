@@ -132,6 +132,7 @@ export function HomePage() {
   const { toggle, remove } = useDailyMedicationCheckMutations({
     userId,
     familyId,
+    nickname: profile?.nickname,
     takenMedIds,
     pendingIds,
   });
@@ -139,6 +140,7 @@ export function HomePage() {
   const submitCondition = useConditionLogMutation({
     userId,
     familyId,
+    nickname: profile?.nickname,
     condition,
     message,
     pendingIds,

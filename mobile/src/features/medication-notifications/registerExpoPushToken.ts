@@ -62,6 +62,14 @@ export async function registerExpoPushToken(userId: string): Promise<void> {
         name: '공지',
         importance: Notifications.AndroidImportance.DEFAULT,
       });
+      await Notifications.setNotificationChannelAsync('care-taken', {
+        name: '가족 복약 안부',
+        importance: Notifications.AndroidImportance.DEFAULT,
+      });
+      await Notifications.setNotificationChannelAsync('care-stuck', {
+        name: '가족 안부 알림',
+        importance: Notifications.AndroidImportance.HIGH,
+      });
     }
 
     const tokenResult = await Notifications.getExpoPushTokenAsync({

@@ -1,5 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { upsertAlert } from '@/entities/family/api/upsert-alert';
+import {
+  buildCarePushCopy,
+  invokeCarePush,
+  upsertAlert,
+} from '@/entities/family';
 import { deleteMedication } from '@/entities/medication/api/delete-medication';
 import { syncDayCompleteFeedLog } from '@/entities/medication/api/sync-day-complete-feed';
 import { toggleTaken } from '@/entities/medication/api/toggle-taken';
@@ -18,6 +22,8 @@ const loopStore = createSupabaseLoopStore();
 type Params = {
   userId: string | undefined;
   familyId: string | null | undefined;
+  /** 푸시 카피용 닉네임 */
+  nickname?: string | null;
   takenMedIds: Set<number>;
   pendingIds: number[];
 };
@@ -26,6 +32,7 @@ type Params = {
 export function useDailyMedicationCheckMutations({
   userId,
   familyId,
+  nickname,
   takenMedIds,
   pendingIds,
 }: Params) {
@@ -81,7 +88,26 @@ export function useDailyMedicationCheckMutations({
               dateKst: info.dateKst,
             },
           });
+          const copy = buildCarePushCopy('stuck_escalate', nickname);
+          void invokeCarePush({
+            kind: 'stuck_escalate',
+            familyId,
+            actorUserId: userId,
+            title: copy.title,
+            body: copy.body,
+            data: { date_kst: info.dateKst },
+          });
         },
+      });
+
+      const takenCopy = buildCarePushCopy('taken', nickname);
+      void invokeCarePush({
+        kind: 'taken',
+        familyId,
+        actorUserId: userId,
+        title: takenCopy.title,
+        body: takenCopy.body,
+        data: { medication_id: medicationId },
       });
     },
     onSuccess: () => void invalidate(),

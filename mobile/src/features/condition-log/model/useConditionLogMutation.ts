@@ -1,6 +1,10 @@
 import { Alert } from 'react-native';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { upsertAlert } from '@/entities/family/api/upsert-alert';
+import {
+  buildCarePushCopy,
+  invokeCarePush,
+  upsertAlert,
+} from '@/entities/family';
 import { submitCondition } from '@/entities/medication/api/submit-condition';
 import { stepDayLoop } from '@/entities/medication/lib/loop/dayLoop';
 import type { ConditionValue } from '@/entities/medication/model/types';
@@ -16,6 +20,7 @@ const loopStore = createSupabaseLoopStore();
 type Params = {
   userId: string | undefined;
   familyId: string | null | undefined;
+  nickname?: string | null;
   condition: ConditionValue;
   message: string;
   pendingIds: number[];
@@ -25,6 +30,7 @@ type Params = {
 export function useConditionLogMutation({
   userId,
   familyId,
+  nickname,
   condition,
   message,
   pendingIds,
@@ -75,6 +81,15 @@ export function useConditionLogMutation({
               pendingCount: info.pendingCount,
               dateKst: info.dateKst,
             },
+          });
+          const copy = buildCarePushCopy('stuck_escalate', nickname);
+          void invokeCarePush({
+            kind: 'stuck_escalate',
+            familyId,
+            actorUserId: userId,
+            title: copy.title,
+            body: copy.body,
+            data: { date_kst: info.dateKst },
           });
         },
       });

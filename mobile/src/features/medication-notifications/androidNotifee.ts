@@ -3,6 +3,7 @@ import {
   MED_NOTIF_ID_PREFIX,
   MED_NOTIF_KIND,
   alarmFingerprint,
+  alarmNotifData,
   medNotifIdentifier,
 } from '@/features/medication-notifications/fingerprint';
 import { notifDebug } from '@/features/medication-notifications/notifDebug';
@@ -158,13 +159,7 @@ export async function scheduleAndroidMedicationAlarms(
         id,
         title: COPY.notif.doseTitle,
         body: COPY.notif.doseBody(alarm.name, alarm.scheduledTime),
-        data: {
-          kind: MED_NOTIF_KIND,
-          medicationId: String(alarm.medicationId),
-          scheduledTime: alarm.scheduledTime,
-          name: alarm.name,
-          fingerprint,
-        },
+        data: alarmNotifData(alarm, fingerprint),
         android: {
           channelId: 'medication',
           category: AndroidCategory.ALARM,
@@ -224,6 +219,9 @@ export async function fireAndroidFullScreenTestAlarm(input?: {
   medicationId?: number;
   name?: string;
   scheduledTime?: string;
+  useMethod?: string | null;
+  doseAmount?: number | null;
+  doseUnit?: string | null;
 }): Promise<'ok' | 'unavailable' | 'permission-denied'> {
   const loaded = await loadNotifee();
   if (!loaded) return 'unavailable';
@@ -247,19 +245,28 @@ export async function fireAndroidFullScreenTestAlarm(input?: {
   const name = input?.name ?? '테스트 약';
   const scheduledTime = input?.scheduledTime ?? '지금';
   const fingerprint = `test|fsi|${Date.now()}`;
+  // 테스트용 최소 ExpectedMedAlarm — weekday/hour는 data에 안 실림
+  const alarmData = alarmNotifData(
+    {
+      medicationId,
+      name,
+      scheduledTime,
+      hour: 0,
+      minute: 0,
+      weekdayKey: 'daily',
+      useMethod: input?.useMethod ?? null,
+      doseAmount: input?.doseAmount ?? null,
+      doseUnit: input?.doseUnit ?? null,
+    },
+    fingerprint,
+  );
 
   try {
     await loaded.api.displayNotification({
       id: `${MED_NOTIF_ID_PREFIX}fsi-test`,
       title: COPY.notif.doseTitle,
       body: COPY.notif.doseBody(name, scheduledTime),
-      data: {
-        kind: MED_NOTIF_KIND,
-        medicationId: String(medicationId),
-        scheduledTime,
-        name,
-        fingerprint,
-      },
+      data: alarmData,
       android: {
         channelId: 'medication',
         category: AndroidCategory.ALARM,

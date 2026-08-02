@@ -20,6 +20,7 @@ export { searchDrugsByName } from './api/search-drugs';
 export { medicationKeys } from './model/queryKeys';
 export {
   useHomeMedicationQueries,
+  useMedicationAlarmQueries,
   invalidateMedicationActivity,
   invalidateMedicationLists,
 } from './model/queries';

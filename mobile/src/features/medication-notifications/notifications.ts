@@ -11,6 +11,7 @@ import {
   MED_NOTIF_ID_PREFIX,
   MED_NOTIF_KIND,
   alarmFingerprint,
+  alarmNotifData,
   buildExpectedSchedule,
   diffFingerprints,
   fingerprintsOf,
@@ -152,13 +153,7 @@ async function scheduleAlarm(
   const content = {
     title: COPY.notif.doseTitle,
     body: COPY.notif.doseBody(alarm.name, alarm.scheduledTime),
-    data: {
-      kind: MED_NOTIF_KIND,
-      medicationId: alarm.medicationId,
-      scheduledTime: alarm.scheduledTime,
-      name: alarm.name,
-      fingerprint,
-    },
+    data: alarmNotifData(alarm, fingerprint),
     ...(Platform.OS === 'android' ? { channelId: 'medication' } : {}),
   };
 

@@ -13,26 +13,44 @@ import { invalidateHomeActivity } from '@/shared/lib/query-invalidation';
 type TakeParams = {
   userId: string;
   familyId: string;
-  medicationId: number;
+  medicationIds: number[];
+  /** @deprecated 번복 불가 — true면 no-op */
+  currentlyTaken?: boolean;
 };
 
-/** 알림 풀페이지에서 복약 체크 */
+/** 알림 풀페이지에서 복약 체크 (해제 없음) */
 export function useMedicationAlarmTakeMutation() {
   const qc = useQueryClient();
 
   return useMutation({
     mutationKey: medicationAlarmKeys.take(),
-    mutationFn: async ({ userId, familyId, medicationId }: TakeParams) => {
-      if (!Number.isFinite(medicationId) || medicationId <= 0) {
+    mutationFn: async ({
+      userId,
+      familyId,
+      medicationIds,
+      currentlyTaken = false,
+    }: TakeParams) => {
+      // 체크 완료 번복은 지원하지 않음
+      if (currentlyTaken) {
+        return { userId, takenCount: 0, currentlyTaken: true };
+      }
+      const ids = medicationIds.filter(
+        (id) => Number.isFinite(id) && id > 0,
+      );
+      if (ids.length === 0) {
         throw new Error(ERRORS.med.checkFailed);
       }
-      await toggleTaken({
-        userId,
-        familyId,
-        medicationId,
-        currentlyTaken: false,
-      });
-      return { userId };
+      await Promise.all(
+        ids.map((medicationId) =>
+          toggleTaken({
+            userId,
+            familyId,
+            medicationId,
+            currentlyTaken: false,
+          }),
+        ),
+      );
+      return { userId, takenCount: ids.length, currentlyTaken: false };
     },
     onSuccess: async ({ userId }) => {
       await invalidateHomeActivity(qc);
@@ -44,6 +62,9 @@ export function useMedicationAlarmTakeMutation() {
       await reconcileMedicationNotifications(meds, taken);
       await qc.invalidateQueries({
         queryKey: medicationKeys.taken(userId, today),
+      });
+      await qc.invalidateQueries({
+        queryKey: medicationKeys.list(userId),
       });
     },
     onError: (error) => showMutationError(ERRORS.med.checkFailed, error),

@@ -1,4 +1,5 @@
 import {
+  alarmNotifData,
   buildExpectedSchedule,
   diffFingerprints,
   fingerprintsOf,
@@ -84,6 +85,60 @@ describe('buildExpectedSchedule', () => {
       '1|2|9:30',
       '1|4|9:30',
     ]);
+  });
+
+  it('용량·복용법을 ExpectedMedAlarm에 실어 줌', () => {
+    const alarms = buildExpectedSchedule(
+      [
+        med({
+          id: 1,
+          name: '혈압약',
+          scheduledTime: '08:00',
+          daysMask: 'daily',
+          useMethod: '식후 30분',
+          doseAmount: 1,
+          doseUnit: 'tablet',
+        }),
+      ],
+      new Set(),
+    );
+    expect(alarms).toHaveLength(1);
+    expect(alarms[0]).toMatchObject({
+      medicationId: 1,
+      name: '혈압약',
+      useMethod: '식후 30분',
+      doseAmount: 1,
+      doseUnit: 'tablet',
+    });
+    // fingerprint는 med+시각만 — 메타 변경이 스케줄 재등록을 유발하지 않음
+    expect(fingerprintsOf(alarms)).toEqual(['1|daily|8:0']);
+  });
+
+  it('alarmNotifData — dose/useMethod를 문자열로', () => {
+    const data = alarmNotifData(
+      {
+        medicationId: 1,
+        name: '혈압약',
+        scheduledTime: '08:00',
+        hour: 8,
+        minute: 0,
+        weekdayKey: 'daily',
+        useMethod: '식후 30분',
+        doseAmount: 1,
+        doseUnit: 'tablet',
+      },
+      '1|daily|8:0',
+    );
+    expect(data).toEqual({
+      kind: 'medication',
+      medicationId: '1',
+      scheduledTime: '08:00',
+      name: '혈압약',
+      fingerprint: '1|daily|8:0',
+      useMethod: '식후 30분',
+      doseAmount: '1',
+      doseUnit: 'tablet',
+    });
   });
 });
 

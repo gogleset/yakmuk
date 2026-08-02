@@ -83,6 +83,9 @@ export const COPY = {
     /** 다른 멤버 수 (본인 제외) */
     memberCount: (count: number) => `우리 가족 ${count}명`,
     seeMoreFeed: '더보기',
+    feedStackCollapseA11y: (title: string) => `${title} 소식 접기`,
+    feedStackExpandA11y: (title: string, count: number) =>
+      `${title} 소식 ${count}개, 펼치려면 두 번 탭하세요`,
     emptyMembers: '아직 가족이 등록되지 않았어요',
     emptyMembersMessage: '가족을 초대해서 서로의 하루를 챙겨보세요.',
     inviteCta: '가족 초대하기',
@@ -195,12 +198,16 @@ export const COPY = {
     channel: '복약 알림',
     doseTitle: '약 먹을 시간이에요',
     doseBody: (name: string, time: string) => `${name} · ${time}`,
+    /** 풀페이지 히어로 — 시간 위 */
+    alarmHeadline: '약 드실 시간이에요!',
     /** 시간 슬롯 알림 토글 (짧은 라벨) */
     slotOn: '알림 켜짐',
     slotOff: '알림 꺼짐',
     alarmTaken: '먹었어요',
+    alarmTakeAll: '모두 먹었어요',
     /** __DEV__ 설정 — 풀페이지/FSI 테스트 */
     testFullPage: '풀페이지 알림 미리보기',
+    testFullPageMulti: '풀페이지 알림 (다약)',
     testFsi: 'Android FSI 즉시 발화',
     testFsiOk: '잠금화면이면 풀스크린, 아니면 헤드업이 떠요. 앱을 백그라운드로 두고 다시 눌러보세요.',
     testFsiUnavailable: '개발 빌드(Android)에서만 쓸 수 있어요. Expo Go는 안 돼요.',
@@ -208,6 +215,12 @@ export const COPY = {
 
   a11y: {
     longPressDelete: '길게 누르면 삭제할 수 있어요',
+  },
+
+  settings: {
+    startScreen: '첫 화면',
+    startScreenHome: '기록',
+    startScreenFamily: '가족',
   },
 
   common: {

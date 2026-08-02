@@ -7,13 +7,40 @@ import {
   monthRange,
 } from '@/entities/medication/lib/calendar';
 import { medicationKeys } from '@/entities/medication/model/queryKeys';
-import { type QueryClient, useQueries } from '@tanstack/react-query';
+import { type QueryClient, useQueries, useQuery } from '@tanstack/react-query';
 
 type HomeMedicationQueryParams = {
   userId: string | undefined;
   todayKst: string;
   visibleMonth: string;
 };
+
+type MedicationAlarmQueryParams = {
+  userId: string | undefined;
+  todayKst: string;
+};
+
+/** 알람 풀페이지 — 오늘 목록·복용만 (캘린더/streak 불필요) */
+export function useMedicationAlarmQueries({
+  userId,
+  todayKst,
+}: MedicationAlarmQueryParams) {
+  const enabled = !!userId;
+
+  const meds = useQuery({
+    queryKey: medicationKeys.list(userId!),
+    queryFn: () => listMedications(userId!),
+    enabled,
+  });
+
+  const taken = useQuery({
+    queryKey: medicationKeys.taken(userId!, todayKst),
+    queryFn: () => listTodayTaken(userId!, todayKst),
+    enabled,
+  });
+
+  return { meds, taken };
+}
 
 export function useHomeMedicationQueries({
   userId,

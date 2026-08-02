@@ -54,16 +54,28 @@ export function viewMedicationRoute(
 
 /** 약 알림 풀페이지 — 로컬 알림 payload */
 export function medicationAlarmRoute(input: {
-  medicationId: number;
+  /** 생략·0 이하면 페이지가 실제 약 슬롯을 hydrate */
+  medicationId?: number;
   name?: string;
   scheduledTime?: string;
+  useMethod?: string | null;
+  doseAmount?: number | null;
+  doseUnit?: string | null;
+  /** __DEV__ 다약 UI — 실제 다약 슬롯 우선, 없으면 mock */
+  previewMulti?: boolean;
 }): string {
-  const params = new URLSearchParams({
-    medicationId: String(input.medicationId),
-  });
+  const params = new URLSearchParams();
+  if (input.medicationId != null && input.medicationId > 0) {
+    params.set('medicationId', String(input.medicationId));
+  }
   if (input.name) params.set('name', input.name);
   if (input.scheduledTime) params.set('scheduledTime', input.scheduledTime);
-  return `${ROUTES.medicationAlarm}?${params.toString()}`;
+  if (input.useMethod) params.set('useMethod', input.useMethod);
+  if (input.doseAmount != null) params.set('doseAmount', String(input.doseAmount));
+  if (input.doseUnit) params.set('doseUnit', input.doseUnit);
+  if (input.previewMulti) params.set('previewMulti', '1');
+  const q = params.toString();
+  return q ? `${ROUTES.medicationAlarm}?${q}` : ROUTES.medicationAlarm;
 }
 
 export function joinRoute(code?: string): string {

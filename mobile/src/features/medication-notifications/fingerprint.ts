@@ -10,6 +10,10 @@ export type ExpectedMedAlarm = {
   minute: number;
   /** 'daily' | expo weekday 1(일)…7(토) */
   weekdayKey: 'daily' | number;
+  /** 풀페이지 알림 표시용 — fingerprint에는 미포함 */
+  useMethod: string | null;
+  doseAmount: number | null;
+  doseUnit: string | null;
 };
 
 export const MED_NOTIF_KIND = 'medication' as const;
@@ -21,6 +25,24 @@ export function medNotifIdentifier(alarm: ExpectedMedAlarm): string {
 
 export function alarmFingerprint(alarm: ExpectedMedAlarm): string {
   return `${alarm.medicationId}|${alarm.weekdayKey}|${alarm.hour}:${alarm.minute}`;
+}
+
+/** OS notif / Notifee data — 값은 문자열(플랫폼 공통) */
+export function alarmNotifData(
+  alarm: ExpectedMedAlarm,
+  fingerprint: string,
+): Record<string, string> {
+  const data: Record<string, string> = {
+    kind: MED_NOTIF_KIND,
+    medicationId: String(alarm.medicationId),
+    scheduledTime: alarm.scheduledTime,
+    name: alarm.name,
+    fingerprint,
+  };
+  if (alarm.useMethod) data.useMethod = alarm.useMethod;
+  if (alarm.doseAmount != null) data.doseAmount = String(alarm.doseAmount);
+  if (alarm.doseUnit) data.doseUnit = alarm.doseUnit;
+  return data;
 }
 
 function parseHourMinute(
@@ -64,6 +86,9 @@ export function buildExpectedSchedule(
       scheduledTime: med.scheduledTime,
       hour: hm.hour,
       minute: hm.minute,
+      useMethod: med.useMethod,
+      doseAmount: med.doseAmount,
+      doseUnit: med.doseUnit,
     };
 
     if (mode === 'daily' || days.length === 0 || days.length === 7) {

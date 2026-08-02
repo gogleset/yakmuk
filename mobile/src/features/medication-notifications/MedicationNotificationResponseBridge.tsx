@@ -29,11 +29,19 @@ function openAlarmFromData(data: Record<string, unknown> | null | undefined) {
     return;
   }
 
+  const doseAmountRaw =
+    typeof data.doseAmount === 'string' || typeof data.doseAmount === 'number'
+      ? Number(data.doseAmount)
+      : NaN;
+
   const href = medicationAlarmRoute({
     medicationId,
     name: typeof data.name === 'string' ? data.name : undefined,
     scheduledTime:
       typeof data.scheduledTime === 'string' ? data.scheduledTime : undefined,
+    useMethod: typeof data.useMethod === 'string' ? data.useMethod : undefined,
+    doseAmount: Number.isFinite(doseAmountRaw) ? doseAmountRaw : undefined,
+    doseUnit: typeof data.doseUnit === 'string' ? data.doseUnit : undefined,
   });
   notifDebug('navigate alarm', { medicationId, href });
   router.push(href as never);

@@ -438,6 +438,7 @@ export function MedicationSheet({
           />
           <Button
             label={ACTIONS.edit}
+            shape="round"
             className="flex-[1.4]"
             onPress={() => onEditPress?.()}
           />
@@ -448,6 +449,7 @@ export function MedicationSheet({
       return (
         <Button
           label={COPY.med.nextStep}
+          shape="round"
           disabled={!query.trim()}
           onPress={confirmNameFromQuery}
         />
@@ -464,6 +466,7 @@ export function MedicationSheet({
           />
           <Button
             label={COPY.med.nextStep}
+            shape="round"
             className="flex-[1.4]"
             onPress={goNextToSchedule}
           />
@@ -481,6 +484,7 @@ export function MedicationSheet({
           />
           <Button
             label={addMut.isPending ? '추가 중…' : '등록하기'}
+            shape="round"
             className="flex-[1.4]"
             disabled={!scheduleValid || addMut.isPending}
             onPress={submitCreate}
@@ -499,6 +503,7 @@ export function MedicationSheet({
         />
         <Button
           label={replaceMut.isPending ? '저장 중…' : ACTIONS.save}
+          shape="round"
           className="flex-[1.4]"
           disabled={!editDirty || !scheduleValid || replaceMut.isPending}
           onPress={submitEdit}
@@ -678,6 +683,7 @@ export function MedicationSheet({
               />
               <Button
                 label={COPY.med.selectThisDrug}
+                shape="round"
                 className="flex-[1.4]"
                 onPress={() => confirmNameFromSearch(detailItem)}
               />

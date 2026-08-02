@@ -25,7 +25,7 @@
 | trigger | 인앱 버튼 + HTTP webhook | — |
 | 로컬 알림 | expo-notifications (iOS) · Notifee FSI (Android) · 앱 시작/AppState reconcile · `[yakmuk:notif]` | FR-05 |
 | 약 알림 on/off | `medications.notification_enabled` (슬롯 단위) · 서버 push 아님 | FR-05 |
-| 원격 푸시 | **공지 stub** Edge `announce-push` + `users.expo_push_token` · EAS projectId 후속(없으면 skip) · 약 스케줄 서버 발송 안 함 | FR-05 부분 |
+| 원격 푸시 | Edge `care-push`(taken/stuck) + `announce-push` 공지 · `users.expo_push_token` · EAS projectId 없으면 등록 skip · 약 스케줄 서버 발송 안 함 | FR-05 |
 | 알림 시각 | 디바이스 로컬 시계 (`scheduled_time` TZ 없음 · KST 전제) | — |
 | HTTP trigger | `supabase/functions/loop-trigger` | pre CONTRACT || RLS | 동일 `family_id`만 · runs는 owner | Two-tier |
 | 컨디션 | goal 필수 · message 선택 | FR-03 |
@@ -37,6 +37,7 @@
 | run 경계 | **run = 유저·날짜(KST) 하루 goal** · 탭=turn | 매 탭마다 새 run 금지 |
 | **앱 IA** | **홈 / 가족 / 설정** 3탭 | 홈=내 약+캘린더, 가족=상태·피드·초대 |
 | **내 약** | **전 역할** medications CRUD + TAKEN/컨디션 | 보호자도 본인 복약 |
+| 약 목적 태그 | **product later** · SoT [docs/product/med-purpose-tags.md](../../docs/product/med-purpose-tags.md) · Gate 0 전 구현 금지 | 스키마 미확정 · decisions #9 |
 
 ## FR (P0)
 

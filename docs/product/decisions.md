@@ -45,7 +45,17 @@ stuck 배너 + 빨간 경고 **병행 금지** (brand #4A와 동일 정신).
 착수 시 brand README에 단계 추가 + [brand/gates.md](../brand/gates.md) 루프.  
 **이 폴더 gates와 단계 번호를 섞지 말 것.**
 
-## #8 원격 푸시 미준비 시
+## #8 원격 푸시 (care-push)
 
-인프라(EAS·Edge 운영) 없으면 G0.4를 가짜 PASS 하지 말 것.  
-플랜에 **범위 밖 + 코드 가드/skip**을 명시 ([plan-with-gates](../../.agents/rules/plan-with-gates.mdc)).
+- **구현:** Edge `care-push` · mutation 성공 후 user JWT invoke · 토큰=`users.expo_push_token`
+- **이벤트:** `taken` + `stuck_escalate` · 행위자 제외 동가족
+- **가드:** EAS `projectId` 없으면 토큰 등록 skip · 푸시 실패해도 체크/stuck DB는 유지
+- **후속:** DB webhook 트리거 · 다중 기기 토큰
+- G0.4 **실기기 수신** 확인 전 가짜 PASS 금지
+
+## #9 약 목적 태그 (purpose)
+
+- **Gate 0 전부 PASS 전 구현 금지** (스키마·UI 포함). Gate 1 필수 아님 · 3순위 later
+- **단일** `purpose` 선택 · 등록 필수 아님 · ATC/다중 자유 태그 금지
+- 인앱 통계 대시보드·배지로 쓰지 말 것 (#6)
+- SoT: [med-purpose-tags.md](med-purpose-tags.md)

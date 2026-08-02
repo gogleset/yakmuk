@@ -13,10 +13,10 @@
 
 | 항목 | 지금 | 갭 | 근거 |
 |------|------|-----|------|
-| TAKEN → 보호자 피드 | Realtime 구독 코드 있음 | 2시뮬 E2E 미체크 | [family-tab-flow-brief](../flows/family-tab-flow-brief.md) · CHECKLIST |
-| stuck → 가족 알림 | `family_alerts` · worried 카드 | 실기기 stuck 시나리오 미완 | loop CONTRACT · FamilyCareAlert |
-| 약 알람 → 체크 | 로컬 알림 + `MedicationAlarmPage` | OS별 실기기 “제시간·한 탭” 검증 | medication-notifications |
-| 보호자 원격 푸시 | Expo token 저장·Edge는 prod stub | 백그라운드 안심 푸시 미운영 | FR-05 prod · flow brief `prod-only` |
+| TAKEN → 보호자 피드 | Realtime 구독 + DB TAKEN 확인 | **2클라 UI E2E 수동** | CHECKLIST |
+| stuck → 가족 알림 | `family_alerts` · worried · soft outline | 실기기 stuck 시나리오 | FamilyCareAlert |
+| 약 알람 → 체크 | 로컬 알림 + `MedicationAlarmPage` | **Android 실기기 E2E** | medication-notifications |
+| 보호자 원격 푸시 | `care-push` Edge + invoke + 토큰 컬럼 | EAS projectId · 백그라운드 수신 | FR-05 / decisions #8 |
 
 **한 줄:** 기능 추가 금지. **이미 있는 루프를 믿게 만들기.**
 
@@ -39,6 +39,7 @@
 | F8 `cheer` / `lantern` / `heart` | brand deferred | beat 훅 확정 후 |
 | streak 컷 · 정식 콕이 overwrite | brand deferred | retention 보조, 결제 동기 아님 |
 | 퍼널 P6 FunnelShell 승격 | brand deferred | 입력 UX |
+| 약 목적 태그 (`purpose`) | [med-purpose-tags.md](med-purpose-tags.md) | Gate 0 후 · [decisions #9](decisions.md) |
 | AI · 병원 연동 · 대시보드 | — | **하지 말 것** ([decisions](decisions.md)) |
 
 ---

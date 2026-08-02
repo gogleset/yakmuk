@@ -11,6 +11,7 @@
 | [gates.md](gates.md) | 단계별 **목표·게이트** · 검토→실행 루프 |
 | [priorities.md](priorities.md) | 보완 우선순위 표 · 근거(코드/체크리스트) |
 | [decisions.md](decisions.md) | 잠긴 결정 · 하지 말 것 |
+| [med-purpose-tags.md](med-purpose-tags.md) | 약 목적 태그 later 스펙 (Gate 0 전 구현 금지) |
 
 > 파일명 `gates.md` = 단계 게이트 SoT.  
 > 브랜드도 같은 이름(`[docs/brand/gates.md](../brand/gates.md)`) — **폴더로 축 구분** (`product` vs `brand`).

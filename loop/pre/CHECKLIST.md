@@ -12,11 +12,11 @@
 ## 인프라
 
 - [x] `supabase init` + 마이그레이션 SQL (`supabase/migrations/…`)
-- [ ] `supabase start` (Docker Desktop 필요) + anon key → `mobile/.env`
+- [x] `supabase start` (Docker Desktop 필요) + anon key → `mobile/.env`
 - [ ] OAuth 프로바이더 로컬 설정 (Google/Apple) — 개발용 이메일 로그인으로 대체 가능
 - [x] 로컬 env 예시 (`mobile/.env.example`)
 - [x] 퍼블릭 배포를 완료 조건으로 쓰지 않음
-- [ ] `family_alerts` 마이그레이션 적용 (`supabase db reset` 또는 migration up)
+- [x] `family_alerts` 마이그레이션 적용 (`supabase db reset` 또는 migration up)
 
 ## 축
 
@@ -38,5 +38,5 @@
 - [x] 피드 humanize (닉네임·약명)
 - [x] 로컬 알림 (`expo-notifications`)
 - [x] BAD / stuck escalate → `family_alerts`
-- [ ] **2 시뮬: 피보호자 TAKEN → 보호자 피드** (Docker 기동 후)
-- [x] Edge 푸시 stub (DECISIONS)
+- [ ] **2 시뮬: 피보호자 TAKEN → 보호자 피드** (Docker 기동 후) — 코드·DB OK, UI E2E 수동
+- [x] Edge 푸시 stub (DECISIONS) · **care-push** (taken/stuck) 추가 — 실기기 수신은 EAS projectId 후

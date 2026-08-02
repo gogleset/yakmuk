@@ -71,11 +71,11 @@ F5 **beat**(가족 컷) ≠ 퍼널 **P1**(가족 입력).
 - **beat:** 보호자 stuck/미복용 안부에 `worried`. **경고·빨간 배너 대체** (병행 아님)
 - **훅:** `FamilyGuardianDashboard.tsx`
 
-## F8 — 예약만 (Action, UI열 없음)
+## F8 — Action (알림·후속)
 
-| 컷 | 시트 카피 | 나중에 | 이번 |
-|----|-----------|--------|------|
-| `pill` | 약 먹을 시간이에요 | 복용 전 nudge / 알림 랜딩 | 파일만 |
+| 컷 | 시트 카피 | 훅 | 상태 |
+|----|-----------|-----|------|
+| `pill` | (풀페이지 히어로 — 시간+콕이, doseTitle은 OS notif만) | 복용 전 nudge / 알림 랜딩 `MedicationAlarmPage` | **연결** |
 | `cheer` | 힘내요! | 오후 미복용 soft CTA | 파일만 |
 | `lantern` | 함께 지켜요 | 보호자 온보딩 | 파일만 |
 | `heart` | 참 잘했어요 | F6 강화 후보 | 파일만 |
@@ -88,7 +88,8 @@ F5 **beat**(가족 컷) ≠ 퍼널 **P1**(가족 입력).
 |------|------|------|
 | 1차 | F1, F2, F6 | 매일 경로. 성공=전부 완료만 |
 | 2차 | F5, F7, F4 | 가족·stuck·streak(N=3) |
-| 보류 | F8, F3(개별) | F8 에셋 예약. F3는 #1로 폐기 |
+| 연결 | F8 `pill` | 알림 풀페이지 `MedicationAlarmPage` |
+| 보류 | F8 나머지, F3(개별) | cheer/lantern/heart 예약. F3는 #1로 폐기 |
 
 입력 퍼널 차수 → [funnels.md](funnels.md)  
 작업 순서 SoT → [README.md](README.md)

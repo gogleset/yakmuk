@@ -2,7 +2,7 @@
 
 > GPT/이미지 생성용 입력 문서. 코드·PRD 스캔 결과.  
 > 생성일: 2026-08-01 · stage: pre · 근거: `main` @ `6bf9097`  
-> 범위: `/(tabs)/settings` · 계정·알림·고객지원·법적 stub (가족 ops는 [family-tab-flow-brief.md](./family-tab-flow-brief.md) · `/family-manage`)  
+> 범위: `/(tabs)/settings` · 계정·첫 화면·알림·고객지원·법적 stub (가족 ops는 [family-tab-flow-brief.md](./family-tab-flow-brief.md) · `/family-manage`)  
 > 관련: [family-tab-flow-brief.md](./family-tab-flow-brief.md) (가족명 섹션「관리」·empty CTA·초대)
 
 ---
@@ -10,7 +10,7 @@
 ## 1. 제품 한 줄
 
 멀리 사는 가족이 **오늘 복약·컨디션**과 **한 줄 안부**로 서로를 챙기는 앱(약콕).  
-설정은 **프로필·계정·알림·문의**의 관리 허브. 가족 운영(이름·초대·멤버·삭제)은 **가족 탭** → `/family-manage`.
+설정은 **프로필·계정·첫 화면·알림·문의**의 관리 허브. 가족 운영(이름·초대·멤버·삭제)은 **가족 탭** → `/family-manage`.
 
 **브랜드/톤 (이미지 스타일 힌트)**
 
@@ -50,6 +50,7 @@ PRD 요약의 “보호자/피보호자” 이분법 → 코드는 **3역할**.
 |----------------------|------|------|
 | 프로필 | ✅ 카드 + 닉네임 시트 · `가족 · {name}` 표시 | implemented |
 | 알림 권한 | ✅ “약 알림” 행 | OS 권한만 · 슬롯 토글 없음 |
+| (PRD 미기재) 첫 화면 | ✅ 기록 \| 가족 · 기기 로컬 AsyncStorage | implemented — 다음 앱 진입 시 적용 |
 | 로그아웃 | ✅ | implemented |
 | (PRD 미기재) 탈퇴 | ✅ | PRD FR-01은 prod deferred — **코드는 pre에 구현** |
 | (PRD 미기재) 가족 관리 | ❌ 설정에서 제거 | 가족 탭 섹션「관리」(leader) → `/family-manage` |
@@ -176,7 +177,36 @@ flowchart TD
 
 ---
 
-### F6. 약 알림 권한 — `partial`
+### F6. 첫 화면 설정 — `implemented`
+
+- **역할**: both
+- **진입**: 앱 섹션 “첫 화면” (약 알림 위)
+- **관련 코드**: `shared/lib/startTab` (`getStartTab` · `setStartTab`) · `app/index.tsx` Redirect · `COPY.settings`
+
+| # | 스텝 | 화면/UI | 사용자 행동 | 시스템 반응 | 상태 |
+|---|------|---------|-------------|-------------|------|
+| 1 | 행 | SettingsRow · value `기록`/`가족` | 탭 | BottomSheet 선택지 | implemented |
+| 2 | 선택 | BottomSheet 기록 \| 가족 | 고름 | AsyncStorage 저장 · value 갱신 · 시트 닫힘. **당장 탭 이동 없음** | implemented |
+| 3 | 적용 | 앱 재진입 / index | — | `getStartTab` → `/(tabs)/home` 또는 `/(tabs)/family` | implemented |
+
+**분기**
+
+- 기본값 · 깨진 값 → `home`(기록)
+- 설정 탭은 후보 아님
+- 이 기기만 — 계정 동기화 없음. 앱 삭제 시 기본으로 복귀
+
+```mermaid
+flowchart TD
+  A[첫 화면 행] --> B[BottomSheet 기록/가족]
+  B -->|저장| C[AsyncStorage]
+  C --> D[다음 index Redirect]
+  D -->|home| E["/(tabs)/home"]
+  D -->|family| F["/(tabs)/family"]
+```
+
+---
+
+### F7. 약 알림 권한 — `partial`
 
 - **역할**: both
 - **진입**: 앱 섹션 “약 알림”
@@ -197,7 +227,7 @@ flowchart TD
 
 ---
 
-### F7. 고객지원 · 법적 문서 — `partial`
+### F8. 고객지원 · 법적 문서 — `partial`
 
 - **역할**: both
 - **진입**: 고객지원 / 정보 섹션
@@ -221,8 +251,9 @@ flowchart TD
 | F3 로그아웃 | ✅ | ✅ | ✅ | |
 | F3 탈퇴 | ✅ (가족 삭제) | ✅ (본인만) | ✅ (본인만) | PRD는 prod deferred |
 | F4·F5 가족 ops·초대 | — | — | — | 가족 탭 `/family-manage` |
-| F6 약 알림 권한 | ✅ | ✅ | ✅ | 토글 UI missing |
-| F7 문의·약관 stub | ✅ | ✅ | ✅ | URL은 prod |
+| F6 첫 화면 | ✅ | ✅ | ✅ | 기기 로컬 · 기록\|가족 |
+| F7 약 알림 권한 | ✅ | ✅ | ✅ | 토글 UI missing |
+| F8 문의·약관 stub | ✅ | ✅ | ✅ | URL은 prod |
 
 범례: ✅ 가능 · ❌ 불가 · — 해당 없음
 
@@ -234,12 +265,12 @@ flowchart TD
 
 | ID | 갭 | 근거 | 영향 플로우 | 우선 |
 |----|-----|------|-------------|------|
-| G1 | 이용약관·개인정보 URL stub | `SUPPORT.termsUrl`/`privacyUrl` = null | F7 | P1 → 스토어 전 **P0** |
-| G2 | 알림 = OS 권한 요청만. 슬롯/채널 토글 없음 | `SettingsPage` `onNotifPermission` | F6 | P2 |
+| G1 | 이용약관·개인정보 URL stub | `SUPPORT.termsUrl`/`privacyUrl` = null | F8 | P1 → 스토어 전 **P0** |
+| G2 | 알림 = OS 권한 요청만. 슬롯/채널 토글 없음 | `SettingsPage` `onNotifPermission` | F7 | P2 |
 | G3 | 비leader “가족 나가기” 전용 없음 | 탈퇴만 (`withdraw_my_account`) | F3·F4 | P2 |
 | G4 | PRD vs 코드: 탈퇴는 FR-01 **prod**인데 pre 구현됨 | SUMMARY vs `withdrawMyAccount` | F3 | docs sync |
 | G5 | OAuth 로컬 프로바이더 | CHECKLIST 미체크 | auth (설정 밖) | P1 |
-| G6 | Edge 푸시·운영 알림 설정 UI | FR-05 prod | F6 | prod-only |
+| G6 | Edge 푸시·운영 알림 설정 UI | FR-05 prod | F7 | prod-only |
 
 **의도적으로 빠진 것 (out of scope / stage)**
 
@@ -265,8 +296,9 @@ flowchart TD
 1) F1 설정 루트: 탭 → 프로필 카드(가족명 표시만) → 계정/앱/지원/정보
 2) F2 닉네임: 카드 탭 → BottomSheet → 저장
 3) F3 로그아웃 / 탈퇴: Alert → Welcome (리더 탈퇴=가족 전체 삭제 강조)
-4) F6 약 알림: 권한 요청 → 안내 Alert
-5) F7 문의 mailto · 약관은 점선 “곧 공개”
+4) F6 첫 화면: BottomSheet 기록|가족 → 기기 로컬 저장 → 다음 앱 진입 시 탭
+5) F7 약 알림: 권한 요청 → 안내 Alert
+6) F8 문의 mailto · 약관은 점선 “곧 공개”
 (가족 관리·초대는 이 장에 넣지 않음 — 가족 탭 다이어그램)
 
 갭은 점선 노드 + "미구현/부분":
@@ -274,12 +306,12 @@ flowchart TD
 - G2 알림 슬롯 토글 없음
 - G3 비리더 가족 나가기 전용 없음
 
-출력: 가로 16:9 한 장. 설정 루트(F1–F3,F6–F7) 중심
+출력: 가로 16:9 한 장. 설정 루트(F1–F3,F6–F8) 중심
 ```
 
 **패널 분할 제안** (이미지 여러 장일 때)
 
-1. Settings root (F1–F3, F6–F7)  
+1. Settings root (F1–F3, F6–F8)  
 2. Gaps overlay (G1–G6)
 
 ---
@@ -288,5 +320,6 @@ flowchart TD
 
 | 날짜 | 요약 |
 |------|------|
+| 2026-08-02 | 첫 화면 설정(F6) — 기록\|가족 · 기기 로컬 · index Redirect |
 | 2026-08-01 | 설정 탭 스코프 초안 · 재검토 후 저장 (`SettingsPage`·`SettingsFamilyPage`·invite·auth·SUPPORT 코드 기준) |
 | 2026-08-01 | 가족 관리 설정 제거 · `/family-manage`는 가족 탭 진입으로 이관 |

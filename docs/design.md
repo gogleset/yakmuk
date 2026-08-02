@@ -159,11 +159,11 @@ Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타�
 | Input / outline / 미선택 토글 | Input default = `bg-surface`(흰) · soft=`brandSoft`. **unfocused = border 없음**, focus=`brand` 보더. outline 버튼 = `surfaceSoft` |
 | Sheet                      | `bg-surface` (흰). 안쪽 컨트롤은 soft/brandSoft fill                                                                   |
 | Radius                     | sm 8 · md 10 · lg 12 (`rounded-xl` ≈ 12)                                                                               |
-| Button                     | `rounded-xl` — default(`brand`) / outline(`surfaceSoft`) / oauth(흰+`line`, Google·Apple) / secondary(`brandSoft`) / ghost / destructive |
+| Button                     | `shape`: default=`rounded-xl` / **round=`rounded-full` pill**. variant: default(`brand`) / outline(`surfaceSoft`) / oauth(흰+`line`) / secondary(`brandSoft`) / ghost / destructive |
 | Taken row                  | `brandSoft` fill                                                                                                       |
 | FAB                        | `brand` circle, `ink` 아이콘                                                                                           |
 | Tabs                       | **label + icon** — `기록 \| 가족 \| 설정`, bar = `surface`, active = `brand`                                           |
-| Home empty CTA           | `rounded-full` pill CTA 허용                                                                                           |
+| Home empty · 1차 CTA       | `Button shape="round"` pill — 「첫 약 등록하기」·컨디션 남기기·퍼널 CTA·알람 먹었어요 등 brand 단독 CTA               |
 
 ### 8.1 Border
 

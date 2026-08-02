@@ -187,17 +187,26 @@ export function TimeSlotMedAccordion({
                             >
                               {body}
                             </Pressable>
-                            {onToggleKey ? (
+                            {onToggleKey && !entry.taken ? (
                               <Pressable
                                 accessibilityRole="checkbox"
-                                accessibilityState={{ checked: entry.taken }}
+                                accessibilityState={{ checked: false }}
                                 hitSlop={LAYOUT.hitSlop.sm}
                                 onPress={() => onToggleKey(entry.key)}
                               >
-                                <CheckToggle taken={entry.taken} />
+                                <CheckToggle taken={false} />
                               </Pressable>
                             ) : (
-                              <CheckToggle taken={entry.taken} />
+                              // 체크 완료 — 번복 불가
+                              <View
+                                accessibilityRole="checkbox"
+                                accessibilityState={{
+                                  checked: entry.taken,
+                                  disabled: entry.taken,
+                                }}
+                              >
+                                <CheckToggle taken={entry.taken} />
+                              </View>
                             )}
                           </View>
                         </View>

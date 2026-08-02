@@ -36,16 +36,16 @@ export function useDailyMedicationCheckMutations({
     mutationKey: dailyMedicationCheckKeys.toggle(),
     mutationFn: async (medicationId: number) => {
       if (!userId || !familyId) throw new Error(ERRORS.auth.profileLoadFailed);
-      const currentlyTaken = takenMedIds.has(medicationId);
-      const pendingIdsAfter = currentlyTaken
-        ? [...pendingIds, medicationId]
-        : pendingIds.filter((id) => id !== medicationId);
+      // 체크 완료분은 번복 불가
+      if (takenMedIds.has(medicationId)) return;
+
+      const pendingIdsAfter = pendingIds.filter((id) => id !== medicationId);
 
       await toggleTaken({
         userId,
         familyId,
         medicationId,
-        currentlyTaken,
+        currentlyTaken: false,
       });
 
       // 스케줄 약이 있을 때만 — 전부 복용 시 피드용 day_complete
@@ -65,7 +65,7 @@ export function useDailyMedicationCheckMutations({
         plan: { action: 'toggle_medication', medicationId },
         actResult: {
           kind: 'toggle_medication',
-          payload: { medicationId, taken: !currentlyTaken },
+          payload: { medicationId, taken: true },
         },
         pendingMedicationIds: pendingIdsAfter,
         onStuckEscalate: async (info) => {

@@ -1,14 +1,13 @@
 import {
   createContext,
-  useCallback,
   useContext,
-  useState,
   type ReactNode,
 } from 'react';
 import {
   ScrollView,
   SectionList,
   View,
+  type LayoutChangeEvent,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
   type ScrollViewProps,
@@ -18,11 +17,14 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { FadeEdges } from '@/shared/ui/composites/FadeEdge';
+import { useScrollFadeEdges } from '@/shared/ui/composites/useScrollFadeEdges';
 import { cn } from '@/shared/lib/cn';
 
 type FadeScrollContextValue = {
-  /** 맨 위면 상단 fade 해제 */
   onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  onScrollEnd: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  onLayout: (event: LayoutChangeEvent) => void;
+  onContentSizeChange: (width: number, height: number) => void;
   scrollEventThrottle: number;
 };
 
@@ -30,22 +32,26 @@ const ScreenFadeScrollContext = createContext<FadeScrollContextValue | null>(
   null,
 );
 
-/** 이 이상 스크롤해야 상단 fade 표시 (터치 지터 방지) */
-const TOP_FADE_SHOW_AFTER_Y = 8;
-
 function useScreenFadeScroll(): FadeScrollContextValue {
   const ctx = useContext(ScreenFadeScrollContext);
   return (
     ctx ?? {
       onScroll: () => undefined,
+      onScrollEnd: () => undefined,
+      onLayout: () => undefined,
+      onContentSizeChange: () => undefined,
       scrollEventThrottle: 16,
     }
   );
 }
 
-/** Screen 안 ScrollView — fadeTop과 스크롤 연동 */
+/** Screen 안 ScrollView — FadeEdge와 스크롤 연동 */
 export function ScreenScrollView({
   onScroll,
+  onScrollEndDrag,
+  onMomentumScrollEnd,
+  onLayout,
+  onContentSizeChange,
   scrollEventThrottle,
   ...rest
 }: ScrollViewProps) {
@@ -58,16 +64,40 @@ export function ScreenScrollView({
         fade.onScroll(event);
         onScroll?.(event);
       }}
+      onScrollEndDrag={(event) => {
+        fade.onScrollEnd(event);
+        onScrollEndDrag?.(event);
+      }}
+      onMomentumScrollEnd={(event) => {
+        fade.onScrollEnd(event);
+        onMomentumScrollEnd?.(event);
+      }}
+      onLayout={(event) => {
+        fade.onLayout(event);
+        onLayout?.(event);
+      }}
+      onContentSizeChange={(w, h) => {
+        fade.onContentSizeChange(w, h);
+        onContentSizeChange?.(w, h);
+      }}
     />
   );
 }
 
-/** Screen 안 SectionList — fadeTop과 스크롤 연동 */
+/** Screen 안 SectionList — FadeEdge와 스크롤 연동 */
 export function ScreenSectionList<ItemT, SectionT>(
   props: SectionListProps<ItemT, SectionT>,
 ) {
   const fade = useScreenFadeScroll();
-  const { onScroll, scrollEventThrottle, ...rest } = props;
+  const {
+    onScroll,
+    onScrollEndDrag,
+    onMomentumScrollEnd,
+    onLayout,
+    onContentSizeChange,
+    scrollEventThrottle,
+    ...rest
+  } = props;
   return (
     <SectionList
       {...rest}
@@ -75,6 +105,22 @@ export function ScreenSectionList<ItemT, SectionT>(
       onScroll={(event) => {
         fade.onScroll(event);
         onScroll?.(event);
+      }}
+      onScrollEndDrag={(event) => {
+        fade.onScrollEnd(event);
+        onScrollEndDrag?.(event);
+      }}
+      onMomentumScrollEnd={(event) => {
+        fade.onScrollEnd(event);
+        onMomentumScrollEnd?.(event);
+      }}
+      onLayout={(event) => {
+        fade.onLayout(event);
+        onLayout?.(event);
+      }}
+      onContentSizeChange={(w, h) => {
+        fade.onContentSizeChange(w, h);
+        onContentSizeChange?.(w, h);
       }}
     />
   );
@@ -87,7 +133,7 @@ type Props = ViewProps & {
   safeTop?: boolean;
   /** 상단 스크롤 fade — true면 기본 높이, number면 커스텀. 맨 위면 자동 숨김 */
   fadeTop?: boolean | number;
-  /** 하단 스크롤 fade */
+  /** 하단 스크롤 fade — 맨 아래면 자동 숨김 */
   fadeBottom?: boolean | number;
 };
 
@@ -110,25 +156,29 @@ export function Screen({
       : topPad +
         (typeof fadeTop === 'number' ? fadeTop : LAYOUT.fade.defaultTop);
 
-  // 맨 위(y≈0)면 상단 fade 끔 — Android elevation이 헤더를 가리는 문제 방지
-  const [topFadeVisible, setTopFadeVisible] = useState(false);
+  const trackTop = fadeTop !== false;
+  const trackBottom = fadeBottom !== false;
 
-  const onScroll = useCallback(
-    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      if (fadeTop === false) return;
-      const y = event.nativeEvent.contentOffset.y;
-      const next = y > TOP_FADE_SHOW_AFTER_Y;
-      setTopFadeVisible((prev) => (prev === next ? prev : next));
-    },
-    [fadeTop],
-  );
+  const {
+    showTopFade,
+    showBottomFade,
+    onScroll,
+    onScrollEnd,
+    onLayout,
+    onContentSizeChange,
+    scrollEventThrottle,
+  } = useScrollFadeEdges({
+    top: trackTop,
+    bottom: trackBottom,
+  });
 
   const fadeScrollValue: FadeScrollContextValue = {
     onScroll,
-    scrollEventThrottle: 16,
+    onScrollEnd,
+    onLayout,
+    onContentSizeChange,
+    scrollEventThrottle,
   };
-
-  const showTopFade = fadeTop !== false && topFadeVisible;
 
   return (
     <ScreenFadeScrollContext.Provider value={fadeScrollValue}>
@@ -140,10 +190,16 @@ export function Screen({
         <View className="flex-1" style={{ paddingTop: topPad }}>
           {children}
         </View>
-        {fadeTop || fadeBottom ? (
+        {trackTop || trackBottom ? (
           <FadeEdges
-            top={showTopFade ? topFadeHeight : false}
-            bottom={fadeBottom}
+            top={trackTop && showTopFade ? topFadeHeight : false}
+            bottom={
+              trackBottom && showBottomFade
+                ? typeof fadeBottom === 'number'
+                  ? fadeBottom
+                  : true
+                : false
+            }
           />
         ) : null}
       </View>

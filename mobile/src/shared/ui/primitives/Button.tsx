@@ -5,8 +5,9 @@ import { COLORS, LAYOUT } from "@/shared/config/theme";
 import { cn } from "@/shared/lib/cn";
 import type { IconComponent } from "@/shared/ui/primitives/Icon";
 
-const buttonVariants = cva(
-  "flex-row items-center justify-center gap-2 rounded-xl active:opacity-80 disabled:opacity-50",
+/** 테스트·스토리용 — shape 클래스 계약 */
+export const buttonVariants = cva(
+  "flex-row items-center justify-center gap-2 active:opacity-80 disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -24,10 +25,16 @@ const buttonVariants = cva(
         lg: "px-6 py-4",
         icon: "h-11 w-11 p-0",
       },
+      shape: {
+        default: "rounded-xl",
+        /** pill — 홈 empty「첫 약 등록하기」1차 CTA */
+        round: "rounded-full",
+      },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
+      shape: "default",
     },
   },
 );
@@ -72,6 +79,7 @@ export function Button({
   icon: Icon,
   variant = "default",
   size = "default",
+  shape = "default",
   disabled,
   className,
   children,
@@ -84,7 +92,11 @@ export function Button({
       accessibilityRole="button"
       disabled={disabled}
       className={cn(
-        buttonVariants({ variant: resolvedVariant, size }),
+        buttonVariants({
+          variant: resolvedVariant,
+          size,
+          shape: shape ?? "default",
+        }),
         className,
       )}
       {...rest}

@@ -17,6 +17,11 @@ export { AlertBanner } from "./composites/AlertBanner";
 export { ChoiceCard } from "./composites/ChoiceCard";
 export { Fab } from "./composites/Fab";
 export { FadeEdge, FadeEdges } from "./composites/FadeEdge";
+export {
+  useScrollFadeEdges,
+  computeScrollFadeVisibility,
+  SCROLL_FADE_SLACK,
+} from "./composites/useScrollFadeEdges";
 export { FadeInView } from "./composites/FadeInView";
 export { Fallback } from "./composites/Fallback";
 export { FunnelShell } from "./composites/FunnelShell";

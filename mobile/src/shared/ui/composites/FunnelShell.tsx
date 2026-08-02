@@ -184,6 +184,7 @@ export function FunnelShell({
         <FadeInView key={`cta-${stepIndex}`} step={bodyStep} className="px-5 pt-2">
           <Button
             label={ctaLoading ? '잠시만요…' : ctaLabel}
+            shape="round"
             disabled={ctaDisabled || ctaLoading}
             onPress={onCtaPress}
           />

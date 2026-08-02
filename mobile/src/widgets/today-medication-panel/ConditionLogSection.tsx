@@ -93,7 +93,7 @@ export function ConditionLogSection({
       />
       <Button
         label={COPY.condition.submit}
-        variant="secondary"
+        shape="round"
         onPress={onSubmit}
       />
     </View>

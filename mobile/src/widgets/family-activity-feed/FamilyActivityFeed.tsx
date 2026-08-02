@@ -1,30 +1,27 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from "react-native";
 import type {
   ConditionValue,
   DailyLog,
-} from '@/entities/medication/model/types';
-import { isDayCompleteFeedLog } from '@/entities/medication';
-import {
-  formatFriendlyTime,
-  formatRelativeTime,
-} from '@/shared/lib/format';
-import { LAYOUT, TONE_OUTLINE } from '@/shared/config/theme';
-import { COPY } from '@/shared/copy';
-import { Card, InitialAvatar, Muted } from '@/shared/ui';
+} from "@/entities/medication/model/types";
+import { isDayCompleteFeedLog } from "@/entities/medication";
+import { formatRelativeTime } from "@/shared/lib/format";
+import { LAYOUT, TONE_OUTLINE } from "@/shared/config/theme";
+import { COPY } from "@/shared/copy";
+import { Card, InitialAvatar, Muted } from "@/shared/ui";
 
 /** 컨디션 피드용 — "~이에요" 자연스럽게 */
 const CONDITION_FEED_LABEL: Record<ConditionValue, string> = {
-  GOOD: '좋아요',
-  NORMAL: '보통이에요',
-  BAD: '안 좋아요',
+  GOOD: "좋아요",
+  NORMAL: "보통이에요",
+  BAD: "안 좋아요",
 };
 
 function feedTitle(item: DailyLog): string {
-  const who = item.nickname?.trim() || '가족';
+  const who = item.nickname?.trim() || "가족";
   if (isDayCompleteFeedLog(item)) {
     return COPY.family.feedAllTaken(who);
   }
-  if (item.status === 'TAKEN') {
+  if (item.status === "TAKEN") {
     return COPY.family.feedTaken(who);
   }
   if (item.condition) {
@@ -35,7 +32,7 @@ function feedTitle(item: DailyLog): string {
 
 function feedSubtitle(item: DailyLog): string | null {
   if (isDayCompleteFeedLog(item)) return null;
-  if (item.status === 'TAKEN') {
+  if (item.status === "TAKEN") {
     return item.medicationName ?? null;
   }
   if (item.message) return item.message;
@@ -47,38 +44,50 @@ type Props = {
   onPress?: (userId: string, nickname: string | null) => void;
 };
 
-/** 가족 피드 카드 — 이니셜 · 제목 · 서브 · 절대/상대 시각 (중립 톤) */
+/** 가족 피드 카드 — 이니셜 · 제목 · 서브 · 상대 시각만 (날짜는 DayHeader) */
 export function FamilyActivityFeedItem({ item, onPress }: Props) {
-  const isBad = item.condition === 'BAD';
+  const isBad = item.condition === "BAD";
   const subtitle = feedSubtitle(item);
-  const absolute = formatFriendlyTime(item.createdAt);
   const relative = formatRelativeTime(item.createdAt);
 
   const content = (
     <Card
-      className="flex-row items-start gap-3 bg-surface py-3.5"
-      style={[
-        LAYOUT.shadow.sameFill,
-        isBad ? TONE_OUTLINE.warning : undefined,
-      ]}
+      className="flex-row items-center gap-3 bg-surface py-2.5"
+      style={[LAYOUT.shadow.sameFill, isBad ? TONE_OUTLINE.warning : undefined]}
     >
       <InitialAvatar nickname={item.nickname} size="md" />
-      <View className="min-w-0 flex-1 gap-1">
-        <Text
-          className="text-[15px] font-bold text-text"
-          numberOfLines={2}
-        >
-          {feedTitle(item)}
-        </Text>
+      <View className="min-w-0 flex-1 gap-0.5">
+        {/* 약 없으면 제목+시간 한 줄 → 아바타와 세로 가운데 */}
         {subtitle ? (
-          <Text className="text-sm text-brand-muted" numberOfLines={2}>
-            {subtitle}
-          </Text>
-        ) : null}
-        <View className="mt-0.5 flex-row items-center justify-between gap-2">
-          {absolute ? <Muted className="text-xs">{absolute}</Muted> : <View />}
-          {relative ? <Muted className="text-xs">{relative}</Muted> : null}
-        </View>
+          <>
+            <Text className="text-[15px] font-bold text-text" numberOfLines={2}>
+              {feedTitle(item)}
+            </Text>
+            <View className="flex-row items-center gap-2">
+              <Text
+                className="min-w-0 flex-1 text-sm text-brand-muted"
+                numberOfLines={1}
+              >
+                {subtitle}
+              </Text>
+              {relative ? (
+                <Muted className="shrink-0 text-xs">{relative}</Muted>
+              ) : null}
+            </View>
+          </>
+        ) : (
+          <View className="flex-row items-center gap-2">
+            <Text
+              className="min-w-0 flex-1 text-[15px] font-bold text-text"
+              numberOfLines={2}
+            >
+              {feedTitle(item)}
+            </Text>
+            {relative ? (
+              <Muted className="shrink-0 text-xs">{relative}</Muted>
+            ) : null}
+          </View>
+        )}
       </View>
     </Card>
   );

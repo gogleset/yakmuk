@@ -237,6 +237,7 @@ export function WelcomePage() {
           <FadeInView step={2} className="gap-3">
             <Button
               label={COPY.welcome.createFamily}
+              shape="round"
               onPress={() => setPath('leader')}
             />
             <Button
@@ -318,6 +319,7 @@ export function WelcomePage() {
                   />
                   <Button
                     label={busy ? '잠시만요…' : '이메일로 시작하기'}
+                    shape="round"
                     disabled={busy}
                     onPress={() => void onLeaderDev()}
                   />

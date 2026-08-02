@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Pressable, RefreshControl, Text, View } from 'react-native';
+import { RefreshControl, View } from 'react-native';
 import { useAuth } from '@/providers/AuthProvider';
 import {
   invalidateFamilyActivity,
@@ -23,8 +23,7 @@ import {
   ScreenScrollView,
 } from '@/shared/ui';
 import {
-  FamilyActivityFeedItem,
-  FamilyFeedDayHeader,
+  FamilyActivityFeedStack,
   filterFamilyFeedLastDays,
   groupFamilyFeedByDate,
   sliceFamilyFeedSections,
@@ -115,10 +114,6 @@ export function FamilyPage() {
     feedSections,
     LIMITS.familyFeedPreviewCount,
   );
-  const previewCount = feedPreviewSections.reduce(
-    (n, s) => n + s.data.length,
-    0,
-  );
   const hasMembers = statusMembers.length > 0;
   // 프리뷰: 멤버 empty여도 최근 소식 empty 같이 노출
   const showFeedSection = hasMembers || FAMILY_TAB_EMPTY_UI_PREVIEW;
@@ -197,31 +192,16 @@ export function FamilyPage() {
                   message={COPY.family.emptyFeedMessage}
                 />
               ) : (
-                <>
+                <View className="gap-2.5">
                   {feedPreviewSections.map((section) => (
-                    <View key={section.dateYmd} className="gap-2.5">
-                      <FamilyFeedDayHeader title={section.title} />
-                      {section.data.map((item) => (
-                        <FamilyActivityFeedItem
-                          key={item.id}
-                          item={item}
-                          onPress={openMember}
-                        />
-                      ))}
-                    </View>
+                    <FamilyActivityFeedStack
+                      key={section.dateYmd}
+                      title={section.title}
+                      items={section.data}
+                      onItemPress={openMember}
+                    />
                   ))}
-                  {feedCount > previewCount ? (
-                    <Pressable
-                      accessibilityRole="button"
-                      onPress={openFeed}
-                      className="items-center py-2"
-                    >
-                      <Text className="text-sm font-semibold text-text">
-                        {COPY.family.seeMoreFeed}
-                      </Text>
-                    </Pressable>
-                  ) : null}
-                </>
+                </View>
               )}
             </View>
           ) : null}

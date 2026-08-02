@@ -66,6 +66,15 @@ export const LAYOUT = {
       elevation: 1,
     },
   },
+  /** 가족 피드 iOS 알림형 스택 peek */
+  feedStack: {
+    /** 앞 카드 뒤로 보이는 레이어 수 */
+    peekCount: 2,
+    /** 레이어당 아래로 밀리는 px */
+    peekOffset: 7,
+    /** 레이어당 좌우 inset */
+    peekInset: 10,
+  },
 } as const;
 
 /** 탭·스택 내비 */

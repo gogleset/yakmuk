@@ -61,7 +61,7 @@ export function RichEmptyState({
           <Button
             label={ctaLabel}
             onPress={onCtaPress}
-            className="rounded-2xl"
+            shape="round"
           />
         ) : null}
       </View>
@@ -86,7 +86,8 @@ export function RichEmptyState({
         <Button
           label={ctaLabel}
           onPress={onCtaPress}
-          className="mt-1 self-stretch rounded-full"
+          shape="round"
+          className="mt-1 self-stretch"
         />
       ) : null}
     </View>

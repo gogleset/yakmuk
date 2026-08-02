@@ -8,7 +8,6 @@ import {
   useFamilyFeedSubscription,
   useFamilyScreenQueries,
 } from '@/entities/family';
-import type { DailyLog } from '@/entities/medication/model/types';
 import { familyMemberRoute } from '@/shared/config/routes';
 import { todayKstDateString } from '@/shared/lib/kst';
 import { COLORS, LAYOUT, LIMITS } from '@/shared/config/theme';
@@ -21,8 +20,7 @@ import {
   StackHeader,
 } from '@/shared/ui';
 import {
-  FamilyActivityFeedItem,
-  FamilyFeedDayHeader,
+  FamilyActivityFeedStack,
   filterFamilyFeedLastDays,
   groupFamilyFeedByDate,
   type FamilyFeedSection,
@@ -44,7 +42,8 @@ export function FamilyFeedPage() {
 
   useFamilyFeedSubscription(familyId, qc);
 
-  const sections = useMemo(() => {
+  /** 한 섹션에 날짜 스택들을 넣어 헤더/아이템 분리 없이 렌더 */
+  const listSections = useMemo(() => {
     const others = (feedQuery.data ?? []).filter(
       (item) => item.userId !== myUserId,
     );
@@ -53,7 +52,7 @@ export function FamilyFeedPage() {
       today,
       LIMITS.familyFeedWindowDays,
     );
-    return groupFamilyFeedByDate(week, today);
+    return [{ data: groupFamilyFeedByDate(week, today) }];
   }, [feedQuery.data, myUserId, today]);
 
   const onRefresh = async () => {
@@ -77,17 +76,14 @@ export function FamilyFeedPage() {
   );
 
   const renderItem = useCallback(
-    ({ item }: { item: DailyLog }) => (
-      <FamilyActivityFeedItem item={item} onPress={openMember} />
+    ({ item }: { item: FamilyFeedSection }) => (
+      <FamilyActivityFeedStack
+        title={item.title}
+        items={item.data}
+        onItemPress={openMember}
+      />
     ),
     [openMember],
-  );
-
-  const renderSectionHeader = useCallback(
-    ({ section }: { section: FamilyFeedSection }) => (
-      <FamilyFeedDayHeader title={section.title} />
-    ),
-    [],
   );
 
   return (
@@ -95,8 +91,8 @@ export function FamilyFeedPage() {
       <StackHeader title={COPY.family.recentFeed} />
 
       <ScreenSectionList
-        sections={sections}
-        keyExtractor={(item) => String(item.id)}
+        sections={listSections}
+        keyExtractor={(item) => item.dateYmd}
         contentContainerClassName="gap-2.5 px-5 pb-10 pt-2"
         stickySectionHeadersEnabled={false}
         refreshControl={
@@ -114,7 +110,6 @@ export function FamilyFeedPage() {
             fill
           />
         }
-        renderSectionHeader={renderSectionHeader}
         renderItem={renderItem}
       />
     </Screen>

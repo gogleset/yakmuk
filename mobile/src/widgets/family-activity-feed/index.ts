@@ -1,4 +1,5 @@
 export { FamilyActivityFeedItem } from './FamilyActivityFeed';
+export { FamilyActivityFeedStack } from './FamilyActivityFeedStack';
 export { FamilyFeedDayHeader } from './FamilyFeedDayHeader';
 export {
   filterFamilyFeedLastDays,

@@ -10,6 +10,8 @@
 우선순위·근거 → [priorities.md](priorities.md)  
 잠긴 결정 → [decisions.md](decisions.md)
 
+브랜드 게이트 SoT는 [docs/brand/gates.md](../brand/gates.md) (단계 번호 **섞지 말 것**).
+
 ---
 
 ## 루프 (매 단계)

@@ -3,7 +3,7 @@
 ← [README](README.md)
 
 **작업 순서 SoT = [README.md](README.md) § 작업 순서.**  
-**단계 목표·게이트 SoT = [goals.md](goals.md)** (PASS 전 다음 단계 금지).  
+**단계 목표·게이트 SoT = [gates.md](gates.md)** (PASS 전 다음 단계 금지).  
 ID 용어(F / 퍼널 P / 1차·2차)도 README 참고.
 
 ---

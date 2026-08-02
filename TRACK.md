@@ -12,7 +12,7 @@
 - **지금:** Expo RN + `supabase start` + 루프 7축
 - Auth: **보호자 OAuth** · **피보호자 코드/QR** (초기 nickname은 보호자가 설정)
 - **다음(prod):** hosted Supabase + EAS + OAuth/딥링크 프로덕션 + bound 하드캡 · [loop/prod/](loop/prod/)
-- **제품 목표(안심 루프):** [docs/goals/](docs/goals/) — 현재 단계 `0` 신뢰(Realtime·stuck·알람·원격 푸시)
+- **제품 목표(안심 루프):** [docs/product/](docs/product/) — 현재 단계 `0` 신뢰(Realtime·stuck·알람·원격 푸시)
 - 기획: `~/Downloads/prd_yakmeogeotyak_mvp.pdf`, `prd_yakmeogeotyak_mvp_v1.1.pdf`
 - 요약: [docs/prd/SUMMARY.md](docs/prd/SUMMARY.md)
 - 진입: [loop/pre/](loop/pre/) · 앱: [mobile/](mobile/) · DB: [supabase/](supabase/)

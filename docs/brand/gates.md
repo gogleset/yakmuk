@@ -29,7 +29,7 @@
 | 한 단계씩 | 단계 N이 PASS 되기 전에 N+1 착수 금지. README 의존도상 4∥5 가능해도 **번호 순** 따름 |
 | 검토 먼저 | “다 한 것 같다”로 넘어가지 말 것. 게이트를 항목별로 확인 |
 | 범위 밖 금지 | 해당 단계 목표에 없는 작업(예: 단계 2에서 sage hex) 하지 말 것 |
-| 충돌 시 | [decisions.md](decisions.md) > goals 게이트 문구 > README 끝 조건 · 상세 문서 |
+| 충돌 시 | [decisions.md](decisions.md) > gates 게이트 문구 > README 끝 조건 · 상세 문서 |
 | 기록 | 단계 PASS 시 [impl.md](impl.md) 해당 행 `done`. 아래 **현재 단계**도 갱신 |
 
 **현재 단계:** `닫힘` ← 루프 돌릴 때마다 여기만 고친다.

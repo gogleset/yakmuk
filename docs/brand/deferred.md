@@ -3,11 +3,11 @@
 ← [README](README.md)
 
 브랜드 플랜 0–8 **닫힘** 이후에도 안 한 것.  
-착수 시 README에 **새 번호 단계**를 추가하고 [goals.md](goals.md) 게이트 루프로 돌린다. 이 문서만 보고 몰래 넣지 말 것.
+착수 시 README에 **새 번호 단계**를 추가하고 [gates.md](gates.md) 게이트 루프로 돌린다. 이 문서만 보고 몰래 넣지 말 것.
 
 잠긴 결정: [decisions.md](decisions.md) (#1 `happy`, #8 soft 틸)
 
-**별축:** 안심 구독·푸시·위젯·주간요약 우선순위는 브랜드 deferred가 아님 → [docs/goals/](../goals/) (`docs/goals/decisions.md` #7).
+**별축:** 안심 구독·푸시·위젯·주간요약 우선순위는 브랜드 deferred가 아님 → [docs/product/](../product/) (`docs/product/decisions.md` #7).
 
 ---
 

@@ -22,7 +22,7 @@
 | [TRACK.md](TRACK.md) | 트랙·스테이지 |
 | [loop/pre/](loop/pre/) | CONTRACT · CHECKLIST |
 | [docs/prd/SUMMARY.md](docs/prd/SUMMARY.md) | PRD |
-| [docs/goals/](docs/goals/) | 제품 목표 · 안심 구독 우선순위 |
+| [docs/product/](docs/product/) | 제품 목표 · 안심 구독 우선순위 |
 | [docs/brand/](docs/brand/) | 콕이 브랜드 플랜 (닫힘 → deferred) |
 | [docs/design.md](docs/design.md) | 시각·톤 (틸 · 라이트/다크) |
 

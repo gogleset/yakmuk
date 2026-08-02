@@ -38,4 +38,4 @@
 - “광고 제거”만 premium  
 - 개별 약 체크마다 캐릭터 폭죽 (brand #1 — 성공 beat는 오늘 전부 완료만)
 
-상세 우선순위·게이트 → [priorities.md](priorities.md) · [goals.md](goals.md) · [decisions.md](decisions.md)
+상세 우선순위·게이트 → [priorities.md](priorities.md) · [gates.md](gates.md) · [decisions.md](decisions.md)

@@ -8,9 +8,12 @@
 | 파일 | 내용 |
 |------|------|
 | [thesis.md](thesis.md) | 가치 한 줄 · 누가 왜 내나 · 무료/유료 경계 |
-| [goals.md](goals.md) | 단계별 **목표·게이트** · 검토→실행 루프 |
+| [gates.md](gates.md) | 단계별 **목표·게이트** · 검토→실행 루프 |
 | [priorities.md](priorities.md) | 보완 우선순위 표 · 근거(코드/체크리스트) |
-| [decisions.md](decisions.md) | 잠근 결정 · 하지 말 것 |
+| [decisions.md](decisions.md) | 잠긴 결정 · 하지 말 것 |
+
+> 파일명 `gates.md` = 단계 게이트 SoT.  
+> 브랜드도 같은 이름(`[docs/brand/gates.md](../brand/gates.md)`) — **폴더로 축 구분** (`product` vs `brand`).
 
 ## 다른 문서와의 관계
 
@@ -21,7 +24,7 @@
 | [loop/pre/CHECKLIST.md](../../loop/pre/CHECKLIST.md) | 루프·Realtime·stuck 실검증 |
 | [docs/flows/](../flows/) | 화면 플로우 브리프 (구현 스냅샷) |
 
-**충돌 시:** `docs/goals/decisions.md` > goals 게이트 > priorities 서술.  
+**충돌 시:** `docs/product/decisions.md` > gates 게이트 > priorities 서술.  
 브랜드 beat 규칙(`happy` 개별 금지 등)은 **brand decisions가 우선** — 이 폴더는 그걸 깨지 않는다.
 
 ## 한줄 결론
@@ -31,7 +34,7 @@
 
 ## 작업 순서
 
-에이전트/사람이 이 폴더를 보고 착수할 때 **[goals.md](goals.md) 번호만** 따른다.  
+에이전트/사람이 이 폴더를 보고 착수할 때 **[gates.md](gates.md) 번호만** 따른다.  
 매 단계: 목표 읽기 → 게이트 검토 → FAIL만 실행 → PASS 후 다음.
 
 요약 우선순위만 보려면 [priorities.md](priorities.md).

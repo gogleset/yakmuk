@@ -19,7 +19,7 @@ SoT: [thesis.md](thesis.md).
 
 ## #3 신뢰 먼저, 예쁨 나중
 
-goals §0(Realtime·stuck·알람·원격 푸시) PASS 전에  
+gates §0(Realtime·stuck·알람·원격 푸시) PASS 전에  
 위젯·다이제스트·브랜드 컷·퍼널 폴리시를 **유료 필수**로 올리지 말 것.
 
 ## #4 Soft escalate만
@@ -42,8 +42,8 @@ stuck 배너 + 빨간 경고 **병행 금지** (brand #4A와 동일 정신).
 ## #7 브랜드 deferred ≠ 이 플랜
 
 [docs/brand/deferred.md](../brand/deferred.md)는 브랜드 플랜 잔여.  
-착수 시 brand README에 단계 추가 + brand goals 루프.  
-**이 폴더 goals와 번호를 섞지 말 것.**
+착수 시 brand README에 단계 추가 + [brand/gates.md](../brand/gates.md) 루프.  
+**이 폴더 gates와 단계 번호를 섞지 말 것.**
 
 ## #8 원격 푸시 미준비 시
 

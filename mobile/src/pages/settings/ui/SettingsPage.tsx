@@ -1,7 +1,7 @@
 import Constants from "expo-constants";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Linking, Platform, Text, View } from "react-native";
+import { Alert, Linking, Platform, Pressable, Text, View } from "react-native";
 import { useAuth } from "@/providers/AuthProvider";
 import { ROLE_LABEL } from "@/entities/user";
 import {
@@ -22,6 +22,12 @@ import { adsMailTo, SUPPORT, supportMailTo } from "@/shared/config/support";
 import { COLORS, LAYOUT, LIMITS } from "@/shared/config/theme";
 import { COPY } from "@/shared/copy";
 import {
+  DEFAULT_START_TAB,
+  getStartTab,
+  setStartTab,
+  type StartTab,
+} from "@/shared/lib/startTab";
+import {
   Badge,
   BottomSheet,
   Button,
@@ -40,6 +46,17 @@ import {
   SettingsRow,
 } from "@/shared/ui";
 
+const START_TAB_OPTIONS: { tab: StartTab; label: string }[] = [
+  { tab: "home", label: COPY.settings.startScreenHome },
+  { tab: "family", label: COPY.settings.startScreenFamily },
+];
+
+function startTabLabel(tab: StartTab): string {
+  return tab === "family"
+    ? COPY.settings.startScreenFamily
+    : COPY.settings.startScreenHome;
+}
+
 /** 설정 루트 — grouped list만. 무거운 ops는 서브/시트 */
 export function SettingsPage() {
   const { profile, refreshProfile } = useAuth();
@@ -53,10 +70,22 @@ export function SettingsPage() {
 
   const [nicknameSheetOpen, setNicknameSheetOpen] = useState(false);
   const [nicknameDraft, setNicknameDraft] = useState(profile?.nickname ?? "");
+  const [startTab, setStartTabState] = useState<StartTab>(DEFAULT_START_TAB);
+  const [startScreenSheetOpen, setStartScreenSheetOpen] = useState(false);
 
   useEffect(() => {
     setNicknameDraft(profile?.nickname ?? "");
   }, [profile?.nickname]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void getStartTab().then((tab) => {
+      if (!cancelled) setStartTabState(tab);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const familyName = familyQuery.data?.name?.trim() || null;
   const roleLabel = profile?.role ? ROLE_LABEL[profile.role] : null;
@@ -109,13 +138,26 @@ export function SettingsPage() {
     );
   };
 
-  /** __DEV__: 풀페이지 UI만 — Expo Go에서도 가능 */
+  /** 첫 화면 — 이 기기만. 다음 앱 진입 시 적용 */
+  const onStartScreenPress = () => setStartScreenSheetOpen(true);
+
+  const onSelectStartTab = (tab: StartTab) => {
+    void setStartTab(tab).then(() => {
+      setStartTabState(tab);
+      setStartScreenSheetOpen(false);
+    });
+  };
+
+  /** __DEV__: 풀페이지 — 실제 약 있으면 hydrate, 없으면 payload 폴백 */
   const onTestFullPage = () => {
+    router.push(medicationAlarmRoute({}) as never);
+  };
+
+  /** __DEV__: 다약 리스트 — 실제 다약 슬롯 우선, 없으면 mock */
+  const onTestFullPageMulti = () => {
     router.push(
       medicationAlarmRoute({
-        medicationId: 3,
-        name: "테스트 약",
-        scheduledTime: "15:32",
+        previewMulti: true,
       }) as never,
     );
   };
@@ -243,6 +285,12 @@ export function SettingsPage() {
           <SectionHeader title="앱" />
           <SettingsGroup>
             <SettingsRow
+              label={COPY.settings.startScreen}
+              value={startTabLabel(startTab)}
+              icon={Icons.Home}
+              onPress={onStartScreenPress}
+            />
+            <SettingsRow
               label="약 알림"
               icon={Icons.Radio}
               onPress={() => void onNotifPermission()}
@@ -252,6 +300,13 @@ export function SettingsPage() {
                 label={COPY.notif.testFullPage}
                 icon={Icons.Bell}
                 onPress={onTestFullPage}
+              />
+            ) : null}
+            {__DEV__ ? (
+              <SettingsRow
+                label={COPY.notif.testFullPageMulti}
+                icon={Icons.Bell}
+                onPress={onTestFullPageMulti}
               />
             ) : null}
             {__DEV__ && Platform.OS === "android" ? (
@@ -300,6 +355,52 @@ export function SettingsPage() {
           </SettingsGroup>
         </FadeInView>
       </ScreenScrollView>
+
+      <BottomSheet
+        visible={startScreenSheetOpen}
+        title={COPY.settings.startScreen}
+        onClose={() => setStartScreenSheetOpen(false)}
+      >
+        {/* 2열 그리드 · 화이트 톤 + sameFill (시트와 동색 구분) */}
+        <View className="flex-row gap-2.5">
+          {START_TAB_OPTIONS.map((option) => {
+            const selected = startTab === option.tab;
+            const OptionIcon =
+              option.tab === "home" ? Icons.Pill : Icons.Users;
+            return (
+              <Pressable
+                key={option.tab}
+                accessibilityRole="radio"
+                accessibilityState={{ selected }}
+                onPress={() => onSelectStartTab(option.tab)}
+                style={LAYOUT.shadow.sameFill}
+                className="min-h-[96px] flex-1 items-center justify-center gap-2 rounded-xl bg-surface px-3 py-4"
+              >
+                <OptionIcon
+                  size={LAYOUT.icon.lg}
+                  color={selected ? COLORS.brand : COLORS.muted}
+                />
+                <Text
+                  className={`text-base font-semibold ${
+                    selected ? "text-brand" : "text-text"
+                  }`}
+                >
+                  {option.label}
+                </Text>
+                {selected ? (
+                  <Icons.Check
+                    size={LAYOUT.icon.sm}
+                    color={COLORS.brand}
+                    strokeWidth={2.5}
+                  />
+                ) : (
+                  <View className="h-4" />
+                )}
+              </Pressable>
+            );
+          })}
+        </View>
+      </BottomSheet>
 
       <BottomSheet
         visible={nicknameSheetOpen}

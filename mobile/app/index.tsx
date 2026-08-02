@@ -1,18 +1,26 @@
+import { useEffect, useState } from 'react';
 import { Redirect } from 'expo-router';
 import { ActivityIndicator, View } from 'react-native';
 import { useAuth } from '@/providers/AuthProvider';
 import { ROUTES } from '@/shared/config/routes';
+import { getStartTab, startTabHref, type StartTabHref } from '@/shared/lib/startTab';
 
 export default function Index() {
   const { loading, profile, sessionUserId } = useAuth();
+  const [startHref, setStartHref] = useState<StartTabHref | null>(null);
 
-  console.log('[auth-debug] index gate', {
-    loading,
-    sessionUserId,
-    familyId: profile?.familyId ?? null,
-  });
+  useEffect(() => {
+    let cancelled = false;
+    void getStartTab().then((tab) => {
+      if (!cancelled) setStartHref(startTabHref(tab));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
-  if (loading) {
+  // auth · 첫 화면 pref 둘 다 준비될 때까지 스피너 (깜빡임 방지)
+  if (loading || startHref == null) {
     return (
       <View className="flex-1 items-center justify-center bg-canvas">
         <ActivityIndicator />
@@ -21,10 +29,8 @@ export default function Index() {
   }
 
   if (!sessionUserId || !profile?.familyId) {
-    console.warn('[auth-debug] index → welcome');
     return <Redirect href={ROUTES.welcome} />;
   }
 
-  console.log('[auth-debug] index → home');
-  return <Redirect href={ROUTES.home} />;
+  return <Redirect href={startHref} />;
 }

@@ -7,7 +7,10 @@ import {
   type AlarmSlotSource,
   resolveAlarmSlot,
 } from '@/features/medication-notifications/lib/pendingAtTime';
-import { useMedicationAlarmTakeMutation } from '@/features/medication-notifications';
+import {
+  cancelDisplayedMedicationNotifications,
+  useMedicationAlarmTakeMutation,
+} from '@/features/medication-notifications';
 import { useAuth } from '@/providers/AuthProvider';
 import { formatMedDose } from '@/shared/constants/medDoseUnits';
 import { COLORS } from '@/shared/config/theme';
@@ -239,6 +242,11 @@ export function MedicationAlarmPage() {
     if (slotItems.length > 1) setKeepChecklist(true);
   }, [slotItems.length]);
 
+  // 풀페이지 진입 시 알림음/진동 끊기
+  useEffect(() => {
+    void cancelDisplayedMedicationNotifications();
+  }, []);
+
   const isItemTaken = (medicationId: number): boolean => {
     if (isLocalOnly) return mockTakenIds.has(medicationId);
     return takenQuery.data?.has(medicationId) ?? false;
@@ -250,15 +258,16 @@ export function MedicationAlarmPage() {
     [slotItems, mockTakenIds, takenQuery.data, isLocalOnly],
   );
 
-  // 실데이터 단약: 슬롯 비면 닫기. mock/체크리스트는 유지
+  // 실데이터: 슬롯 비거나 전부 이미 복용이면 닫기.
+  // (이전에 med 3 TAKEN인데 08:00 슬롯으로 열려 홈처럼 보임)
   useEffect(() => {
-    if (!queriesReady || dismissedRef.current || keepChecklist) return;
+    if (!queriesReady || dismissedRef.current) return;
     if (isLocalOnly) return;
-    if (slotItems.length === 0) {
+    if (slotItems.length === 0 || uncheckedItems.length === 0) {
       dismissedRef.current = true;
       dismissAlarm();
     }
-  }, [queriesReady, keepChecklist, isLocalOnly, slotItems.length]);
+  }, [queriesReady, isLocalOnly, slotItems.length, uncheckedItems.length]);
 
   const canInteract =
     !take.isPending &&
@@ -280,6 +289,7 @@ export function MedicationAlarmPage() {
         userId: profile.id,
         familyId: profile.familyId,
         medicationIds: [medicationId],
+        nickname: profile.nickname,
         currentlyTaken: false,
       },
       {
@@ -314,6 +324,7 @@ export function MedicationAlarmPage() {
         userId: profile.id,
         familyId: profile.familyId,
         medicationIds: ids,
+        nickname: profile.nickname,
         currentlyTaken: false,
       },
       {

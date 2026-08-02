@@ -1,9 +1,12 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
-import { Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import type { Medication } from '@/entities/medication/model/types';
 import {
   cancelAndroidMedicationTriggers,
   ensureAndroidMedicationChannel,
+  getAndroidExactAlarmStatus,
+  getAndroidFullScreenIntentStatus,
+  openAndroidExactAlarmSettings,
   readAndroidScheduledFingerprints,
   scheduleAndroidMedicationAlarms,
 } from '@/features/medication-notifications/androidNotifee';
@@ -62,6 +65,9 @@ async function loadNotifications(): Promise<NotificationsModule | null> {
 let permissionCache: boolean | null = null;
 let permissionInflight: Promise<boolean> | null = null;
 
+/** exact alarm 설정 유도 Alert — 세션당 1회 (AppState 루프 방지) */
+let exactAlarmPromptedThisSession = false;
+
 /** 알림 권한 — undetermined일 때만 요청. 거절/Expo Go면 false */
 export async function ensureNotificationPermission(): Promise<boolean> {
   if (permissionCache != null) return permissionCache;
@@ -89,9 +95,11 @@ export async function ensureNotificationPermission(): Promise<boolean> {
     if (!permissionCache) return false;
 
     if (Platform.OS === 'android') {
-      await Notifications.setNotificationChannelAsync('medication', {
+      await Notifications.setNotificationChannelAsync('medication-alarm', {
         name: COPY.notif.channel,
         importance: Notifications.AndroidImportance.HIGH,
+        bypassDnd: true,
+        vibrationPattern: [0, 250, 250, 250],
       });
       await ensureAndroidMedicationChannel();
     }
@@ -154,7 +162,7 @@ async function scheduleAlarm(
     title: COPY.notif.doseTitle,
     body: COPY.notif.doseBody(alarm.name, alarm.scheduledTime),
     data: alarmNotifData(alarm, fingerprint),
-    ...(Platform.OS === 'android' ? { channelId: 'medication' } : {}),
+    ...(Platform.OS === 'android' ? { channelId: 'medication-alarm' } : {}),
   };
 
   const identifier = medNotifIdentifier(alarm);
@@ -268,6 +276,29 @@ export async function reconcileMedicationNotifications(
       return;
     }
 
+    // Android 12+: 알림 권한과 별개 — 꺼져 있으면 스케줄은 잡혀도 발화 안 됨
+    const exactAlarm = await getAndroidExactAlarmStatus();
+    const fsiStatus = await getAndroidFullScreenIntentStatus();
+    notifDebug('exact-alarm', { status: exactAlarm });
+    notifDebug('fsi-permission', { status: fsiStatus });
+    if (exactAlarm === 'disabled') {
+      if (!exactAlarmPromptedThisSession) {
+        exactAlarmPromptedThisSession = true;
+        Alert.alert(COPY.notif.exactAlarmTitle, COPY.notif.exactAlarmBody, [
+          { text: COPY.notif.exactAlarmLater, style: 'cancel' },
+          {
+            text: COPY.notif.exactAlarmOpen,
+            onPress: () => {
+              void openAndroidExactAlarmSettings();
+            },
+          },
+        ]);
+      }
+      // Notifee DB엔 남아 in-sync처럼 보여도 AlarmManager는 드롭 → 스케줄 등록 보류
+      notifDebug('skip', { reason: 'exact-alarm-disabled' });
+      return;
+    }
+
     let scheduledFp: string[] = [];
     try {
       scheduledFp = await readAndroidScheduledFingerprints();
@@ -283,6 +314,8 @@ export async function reconcileMedicationNotifications(
       expectedFp,
       scheduledFp,
       platform: 'android-notifee',
+      exactAlarm,
+      fsiStatus,
     });
 
     const { missing, extra, inSync } = diffFingerprints(

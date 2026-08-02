@@ -15,7 +15,10 @@ import {
 import {
   ensureNotificationPermission,
   fireAndroidFullScreenTestAlarm,
+  openAndroidExactAlarmSettings,
+  openAndroidFullScreenIntentSettings,
   resetNotificationPermissionCache,
+  scheduleAndroidTestTriggerInSeconds,
 } from "@/features/medication-notifications";
 import { medicationAlarmRoute, ROUTES } from "@/shared/config/routes";
 import { adsMailTo, SUPPORT, supportMailTo } from "@/shared/config/support";
@@ -162,18 +165,77 @@ export function SettingsPage() {
     );
   };
 
-  /** __DEV__ Android: Notifee FSI 즉시 발화 */
+  /** __DEV__ Android: FSI — 15초 뒤 + 잠금 필수 */
   const onTestFsi = async () => {
+    // 실약/이미 TAKEN과 겹치지 않는 가상 id — 풀페이지 fallback 고정
     const result = await fireAndroidFullScreenTestAlarm({
-      medicationId: 3,
-      name: "폐렴",
-      scheduledTime: "08:00",
+      medicationId: 900001,
+      name: "FSI 테스트",
+      scheduledTime: "지금",
+      mode: "lock-screen",
+      delaySeconds: 15,
     });
     if (result === "ok") {
       Alert.alert(COPY.notif.testFsi, COPY.notif.testFsiOk);
       return;
     }
+    if (result === "exact-alarm-disabled") {
+      Alert.alert(COPY.notif.exactAlarmTitle, COPY.notif.testDelayExactOff, [
+        { text: COPY.notif.exactAlarmLater, style: "cancel" },
+        {
+          text: COPY.notif.exactAlarmOpen,
+          onPress: () => void openAndroidExactAlarmSettings(),
+        },
+      ]);
+      return;
+    }
     Alert.alert(COPY.notif.testFsi, COPY.notif.testFsiUnavailable);
+  };
+
+  /** __DEV__ Android: 포그라운드 즉시 (헤드업만 — 진짜 FSI 아님) */
+  const onTestFsiImmediate = async () => {
+    const result = await fireAndroidFullScreenTestAlarm({
+      medicationId: 900001,
+      name: "FSI 테스트",
+      scheduledTime: "지금",
+      mode: "immediate",
+    });
+    if (result === "ok") {
+      Alert.alert(COPY.notif.testFsiImmediate, COPY.notif.testFsiImmediateOk);
+      return;
+    }
+    Alert.alert(COPY.notif.testFsiImmediate, COPY.notif.testFsiUnavailable);
+  };
+
+  /** Android: 정확 알람(Alarms & reminders) 설정 */
+  const onOpenExactAlarmSettings = () => {
+    void openAndroidExactAlarmSettings();
+  };
+
+  /** Android 14+: 전체 화면 알림(FSI) 설정 */
+  const onOpenFsiSettings = () => {
+    void openAndroidFullScreenIntentSettings();
+  };
+
+  /** __DEV__ Android: N초 뒤 트리거 — AlarmManager 발화 검증 */
+  const onTestDelay = async () => {
+    const delaySec = 60;
+    const result = await scheduleAndroidTestTriggerInSeconds(delaySec);
+    if (result === "ok") {
+      Alert.alert(COPY.notif.testDelay, COPY.notif.testDelayOk(delaySec));
+      return;
+    }
+    if (result === "exact-alarm-disabled") {
+      Alert.alert(COPY.notif.exactAlarmTitle, COPY.notif.testDelayExactOff, [
+        { text: COPY.notif.exactAlarmLater, style: "cancel" },
+        {
+          text: COPY.notif.exactAlarmOpen,
+          onPress: () => void openAndroidExactAlarmSettings(),
+        },
+      ]);
+      return;
+    }
+    Alert.alert(COPY.notif.testDelay, COPY.notif.testFsiUnavailable);
   };
 
   const onSaveNickname = () => {
@@ -295,6 +357,20 @@ export function SettingsPage() {
               icon={Icons.Radio}
               onPress={() => void onNotifPermission()}
             />
+            {Platform.OS === "android" ? (
+              <SettingsRow
+                label={COPY.notif.exactAlarmSettings}
+                icon={Icons.AlarmClock}
+                onPress={onOpenExactAlarmSettings}
+              />
+            ) : null}
+            {Platform.OS === "android" ? (
+              <SettingsRow
+                label={COPY.notif.fsiSettings}
+                icon={Icons.Radio}
+                onPress={onOpenFsiSettings}
+              />
+            ) : null}
             {__DEV__ ? (
               <SettingsRow
                 label={COPY.notif.testFullPage}
@@ -312,8 +388,22 @@ export function SettingsPage() {
             {__DEV__ && Platform.OS === "android" ? (
               <SettingsRow
                 label={COPY.notif.testFsi}
-                icon={Icons.Radio}
+                icon={Icons.AlarmClock}
                 onPress={() => void onTestFsi()}
+              />
+            ) : null}
+            {__DEV__ && Platform.OS === "android" ? (
+              <SettingsRow
+                label={COPY.notif.testFsiImmediate}
+                icon={Icons.Radio}
+                onPress={() => void onTestFsiImmediate()}
+              />
+            ) : null}
+            {__DEV__ && Platform.OS === "android" ? (
+              <SettingsRow
+                label={COPY.notif.testDelay}
+                icon={Icons.AlarmClock}
+                onPress={() => void onTestDelay()}
               />
             ) : null}
           </SettingsGroup>

@@ -44,8 +44,8 @@ describe('buildExpectedSchedule', () => {
       new Set(),
     );
     expect(fingerprintsOf(alarms)).toEqual([
-      '3|daily|8:0',
-      '4|daily|15:32',
+      '3|daily|8:0|clk3',
+      '4|daily|15:32|clk3',
     ]);
   });
 
@@ -82,8 +82,8 @@ describe('buildExpectedSchedule', () => {
       new Set(),
     );
     expect(fingerprintsOf(alarms)).toEqual([
-      '1|2|9:30',
-      '1|4|9:30',
+      '1|2|9:30|clk3',
+      '1|4|9:30|clk3',
     ]);
   });
 
@@ -110,8 +110,8 @@ describe('buildExpectedSchedule', () => {
       doseAmount: 1,
       doseUnit: 'tablet',
     });
-    // fingerprint는 med+시각만 — 메타 변경이 스케줄 재등록을 유발하지 않음
-    expect(fingerprintsOf(alarms)).toEqual(['1|daily|8:0']);
+    // fingerprint는 med+시각(+fsi 태그) — 메타 변경이 스케줄 재등록을 유발하지 않음
+    expect(fingerprintsOf(alarms)).toEqual(['1|daily|8:0|clk3']);
   });
 
   it('alarmNotifData — dose/useMethod를 문자열로', () => {
@@ -127,14 +127,14 @@ describe('buildExpectedSchedule', () => {
         doseAmount: 1,
         doseUnit: 'tablet',
       },
-      '1|daily|8:0',
+      '1|daily|8:0|clk3',
     );
     expect(data).toEqual({
       kind: 'medication',
       medicationId: '1',
       scheduledTime: '08:00',
       name: '혈압약',
-      fingerprint: '1|daily|8:0',
+      fingerprint: '1|daily|8:0|clk3',
       useMethod: '식후 30분',
       doseAmount: '1',
       doseUnit: 'tablet',

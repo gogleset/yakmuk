@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import {
   Activity,
+  AlarmClock,
   Bell,
   CalendarDays,
   Check,
@@ -56,6 +57,7 @@ function withClassName(Icon: LucideIcon) {
 
 export const Icons = {
   Activity: withClassName(Activity),
+  AlarmClock: withClassName(AlarmClock),
   Bell: withClassName(Bell),
   Calendar: withClassName(CalendarDays),
   Check: withClassName(Check),

@@ -1,7 +1,8 @@
 ---
 description: >-
-  플랜·Plan mode·다단계 작업 시 필수. Part A(개발 상세)+Part B(쉬운 말 설명),
-  S1→Sn 빌드 순서, 직전-step 회귀 게이트. CreatePlan / .plan.md 작성·구현 착수 전.
+  플랜·Plan mode·다단계 작업 시 필수. 애매하면 무조건 질문(기술 용어 말고 쉬운 말).
+  Part A(개발 상세)+Part B(쉬운 말 설명), S1→Sn 빌드 순서, 직전-step 회귀 게이트.
+  CreatePlan / .plan.md 작성·구현 착수 전.
 alwaysApply: true
 ---
 
@@ -20,12 +21,16 @@ alwaysApply: true
 
 ## 플랜 확정 전
 
-1. 코드베이스·DECISIONS·OS/스토어 한계 프리리드
-2. 아키텍처를 가르는 질문만 1–2개, **쉬운 말**. 플랜에 A/B·optional 남기지 말고 **한 가지 확정**
-3. 놓친 사항: 다기기·권한·채널·Expo Go/dev build·TZ·owner≠viewer 등
-4. 미준비 인프라(EAS 등): 범위 밖 + 코드 **가드/skip**
-5. 문서는 템플릿 준수 — **위 Part A → 아래 Part B**
-6. overview·todos = `S1…Sn` + 각 `Sn-regress` 쌍
+1. 코드베이스·DECISIONS·OS/스토어 한계 프리리드  
+   - **안심·푸시·stuck·알람·위젯·주간요약·유료/우선순위** 플랜이면 [docs/goals/](../../docs/goals/) 선독 (`thesis` · `goals` 현재 단계 · `decisions`). 브랜드 beat/deferred와 **축 섞지 말 것**
+2. **애매한 부분은 무조건 질문** — 추측·가정·TBD로 메우지 말 것. 불명확하면 **플랜 작성·구현 착수 전에** 물어보고 답을 받은 뒤에만 진행
+   - 질문은 **기술 용어·약어·옵션 코드명으로 던지지 말고**, 일상어로 풀어서: 뭐가 다른지·사용자/기기에 어떻게 보이는지·트레이드오프 한 줄 포함
+   - 대상: 요구·범위·우선순위·플랫폼·권한·데이터 소유·UX·인프라 등
+3. 답이 오면 플랜에 A/B·optional 남기지 말고 **한 가지 확정**. 아키텍처를 가르는 선택은 특히 명시
+4. 놓친 사항 점검: 다기기·권한·채널·Expo Go/dev build·TZ·owner≠viewer 등 — 여기도 애매하면 질문
+5. 미준비 인프라(EAS 등): 범위 밖 + 코드 **가드/skip** (애매하면 “지금 넣을지” 먼저 질문)
+6. 문서는 템플릿 준수 — **위 Part A → 아래 Part B**
+7. overview·todos = `S1…Sn` + 각 `Sn-regress` 쌍
 
 ## 2단 구조 (필수)
 
@@ -58,6 +63,8 @@ Part B 자가점검: Part A 없이 Part B만 읽어도 “뭘·왜 나누는지�
 
 ## Don’t
 
+- 애매한 채 추측해서 플랜·구현 진행 (무조건 질문)
+- 질문을 기술 용어·약어만으로 던지기 (쉬운 말로 풀어서 설명 후 질문)
 - Part A/B 없는 한 덩어리 플랜
 - 열린 A/B·optional·TBD를 플랜에 방치
 - 회귀 없는 긴 todo만 나열

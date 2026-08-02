@@ -25,6 +25,7 @@ description: >-
 | 소스 | 용도 |
 |------|------|
 | [docs/prd/SUMMARY.md](../../../docs/prd/SUMMARY.md) | 제품 한 줄·역할·탭·P0 |
+| [docs/goals/](../../../docs/goals/) | 안심 루프 우선순위·갭 (푸시·stuck·glance) — 갭 §에 반영 |
 | [TRACK.md](../../../TRACK.md) · [loop/pre/CHECKLIST.md](../../../loop/pre/CHECKLIST.md) | stage·완료/미완료 |
 | `mobile/app/**/*.tsx` | 실제 라우트 목록 |
 | `mobile/src/pages/**` | 화면 조립 |
@@ -66,5 +67,6 @@ description: >-
 ## Related
 
 - PRD: [docs/prd/SUMMARY.md](../../../docs/prd/SUMMARY.md)
+- 제품 목표: [docs/goals/](../../../docs/goals/)
 - 디자인: [docs/design.md](../../../docs/design.md)
 - 진입: [AGENTS.md](../../../AGENTS.md)

@@ -12,8 +12,10 @@ yakmuk/
 ├── AGENTS.md                 # 이 파일
 ├── TRACK.md                  # 트랙·스테이지
 ├── docs/design.md            # 시각·톤·카피 원칙
+├── docs/goals/               # 제품 목표 · 안심 구독 (신뢰→glance→주간요약)
 ├── docs/brand/               # 약콕·콕이 브랜드 플랜 (갭·beat·토스형 퍼널·design 수정안)
 ├── docs/prd/                 # PRD 요약
+├── docs/flows/               # 화면 플로우 브리프
 ├── loop/pre/                 # CONTRACT · CHECKLIST · DECISIONS
 ├── supabase/                 # migrations · functions · seed
 ├── mobile/                   # Expo Router + FSD
@@ -55,6 +57,20 @@ Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 - 사용자 메시지 키(raise exception) ↔ `mobile/src/shared/copy/errors.ts` 동기
 - 상세: [`.agents/rules/supabase.mdc`](.agents/rules/supabase.mdc)
 
+## Product goals (안심 루프)
+
+유료(~월 1200) · 우선순위 · “전화 안 해도 된다” 신뢰 축: **[docs/goals/](docs/goals/)**.
+
+| 문서 | 언제 |
+|------|------|
+| [thesis](docs/goals/thesis.md) | 가치·무료/유료 경계 |
+| [goals](docs/goals/goals.md) | 단계 게이트 (0 신뢰 → 1 glance → 2 주간 → 3 soft) |
+| [priorities](docs/goals/priorities.md) | 보완 순서·코드 갭 |
+| [decisions](docs/goals/decisions.md) | 잠근 결정 · 하지 말 것 |
+
+브랜드 예쁨/beat는 [docs/brand/](docs/brand/) (플랜 닫힘 → [deferred](docs/brand/deferred.md)). **축을 섞지 말 것.**  
+안심·푸시·stuck·위젯 플랜 시 `docs/goals/` 선독 + [plan-with-gates](.agents/rules/plan-with-gates.mdc).
+
 ## Design & copy
 
 - 구현 토큰 먼저: [`theme.ts`](mobile/src/shared/config/theme.ts) (`COLORS` · `TONE_OUTLINE`) · [`shared/constants/`](mobile/src/shared/constants/) · tailwind
@@ -78,6 +94,7 @@ Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 
 | Skill | 언제 |
 |-------|------|
+| [product-goals](.agents/skills/product-goals/SKILL.md) | 안심 구독·유료·우선순위 · [docs/goals/](docs/goals/) |
 | [add-fsd-feature](.agents/skills/add-fsd-feature/SKILL.md) | mobile feature/entity/page 추가 |
 | [add-supabase-migration](.agents/skills/add-supabase-migration/SKILL.md) | RPC·테이블·한도 변경 |
 | [document-user-flows](.agents/skills/document-user-flows/SKILL.md) | 사용자 플로우·갭 브리프 (GPT 이미지용) |

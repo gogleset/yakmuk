@@ -16,6 +16,8 @@
 | [decisions.md](decisions.md) | 기획 질문으로 **잠근 결정** |
 | [deferred.md](deferred.md) | 플랜 닫힘 후 **보류·후속** 백로그 |
 
+제품(안심 루프·유료 우선순위)은 **별축** → [docs/goals/](../goals/). 브랜드 단계 번호와 섞지 말 것.
+
 ## ID 용어 (헷갈리지 말 것)
 
 | 말 | 뜻 | 예 |

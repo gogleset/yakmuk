@@ -8,5 +8,5 @@
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "nativewind-env.d.ts"],
-  "exclude": ["**/__tests__/**", "node_modules"]
+  "exclude": ["**/__tests__/**", "node_modules", "yakmuk"]
 }

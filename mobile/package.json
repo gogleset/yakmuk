@@ -1,7 +1,7 @@
 {
   "name": "mobile",
   "version": "1.0.0",
-  "main": "expo-router/entry",
+  "main": "index.ts",
   "packageManager": "pnpm@10.14.0",
   "dependencies": {
     "@notifee/react-native": "^9.1.8",

@@ -41,3 +41,6 @@ pnpm-debug.*
 # generated native folders
 /ios
 /android
+
+# accidental nested create-expo-app scaffold (do not ship)
+/yakmuk

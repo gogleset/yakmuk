@@ -16,7 +16,7 @@
     "supportsTablet": true,
     "bundleIdentifier": "com.yakmuk.app",
     "infoPlist": {
-      "UIViewControllerBasedStatusBarAppearance": true
+      "UIViewControllerBasedStatusBarAppearance": false
     }
   },
   "android": {
@@ -33,7 +33,9 @@
     },
     "permissions": [
       "android.permission.SCHEDULE_EXACT_ALARM",
+      "android.permission.USE_EXACT_ALARM",
       "android.permission.USE_FULL_SCREEN_INTENT",
+      "android.permission.WAKE_LOCK",
       "android.permission.POST_NOTIFICATIONS",
       "android.permission.RECEIVE_BOOT_COMPLETED",
       "android.permission.VIBRATE"
@@ -62,6 +64,9 @@
         "enforceContrast": false
       }
     ],
-    "./plugins/withNotifeeMaven.js"
+    "./plugins/withNotifeeMaven.js",
+    "./plugins/withAndroidLockScreenWake.js",
+    "./plugins/withAndroidAlarmLauncher.js",
+    "./plugins/withAndroidAlarmFsi.js"
   ]
 }

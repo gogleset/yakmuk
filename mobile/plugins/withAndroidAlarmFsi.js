@@ -14,7 +14,7 @@ function withAlarmFsiFiles(config) {
     async (mod) => {
       const dir = path.join(
         mod.modRequest.platformProjectRoot,
-        'app/src/main/java/com/yakmuk/app',
+        'app/src/main/java/com/jinlabs/yakok',
       );
       fs.mkdirSync(dir, { recursive: true });
 
@@ -90,4 +90,4 @@ function withAndroidAlarmFsi(config) {
   return config;
 }
 
-module.exports = createRunOncePlugin(withAndroidAlarmFsi, TAG, '1.1.0');
+module.exports = createRunOncePlugin(withAndroidAlarmFsi, TAG, '1.1.1');

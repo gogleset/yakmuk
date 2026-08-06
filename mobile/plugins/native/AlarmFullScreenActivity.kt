@@ -1,4 +1,4 @@
-package com.yakmuk.app
+package com.jinlabs.yakok
 
 import android.app.Activity
 import android.app.KeyguardManager

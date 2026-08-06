@@ -26,7 +26,8 @@
       "backgroundImage": "./assets/android-icon-background.png",
       "monochromeImage": "./assets/android-icon-monochrome.png"
     },
-    "package": "com.yakmuk.app",
+    "package": "com.jinlabs.yakok",
+    "googleServicesFile": "./google-services.json",
     "navigationBar": {
       "backgroundColor": "#FFFFFF",
       "barStyle": "dark-content"

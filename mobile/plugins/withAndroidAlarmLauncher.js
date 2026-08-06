@@ -8,7 +8,7 @@ const path = require('path');
 
 const TAG = 'withAndroidAlarmLauncher';
 
-const MODULE_KT = `package com.yakmuk.app
+const MODULE_KT = `package com.jinlabs.yakok
 
 import android.app.ActivityOptions
 import android.app.AlarmManager
@@ -392,7 +392,7 @@ class AlarmLauncherModule(
 `;
 
 
-const PACKAGE_KT = `package com.yakmuk.app
+const PACKAGE_KT = `package com.jinlabs.yakok
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
@@ -416,7 +416,7 @@ function withAlarmLauncherFiles(config) {
     async (mod) => {
       const dir = path.join(
         mod.modRequest.platformProjectRoot,
-        'app/src/main/java/com/yakmuk/app',
+        'app/src/main/java/com/jinlabs/yakok',
       );
       fs.mkdirSync(dir, { recursive: true });
       fs.writeFileSync(path.join(dir, 'AlarmLauncherModule.kt'), MODULE_KT);
@@ -455,5 +455,5 @@ function withAndroidAlarmLauncher(config) {
 
 module.exports = createRunOncePlugin(
   withAndroidAlarmLauncher,
-  TAG, '1.0.7',
+  TAG, '1.0.8',
 );

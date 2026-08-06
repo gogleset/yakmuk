@@ -1,4 +1,4 @@
-package com.yakmuk.app
+package com.jinlabs.yakok
 
 import android.app.ActivityOptions
 import android.app.PendingIntent
@@ -133,6 +133,6 @@ class AlarmReceiver : BroadcastReceiver() {
     private const val NOTIF_ID = 9702
     private const val REQ_FSI = 9702
     private const val REQ_CONTENT = 9703
-    const val ACTION_PREFIX = "com.yakmuk.app.ALARM_CLOCK_"
+    const val ACTION_PREFIX = "com.jinlabs.yakok.ALARM_CLOCK_"
   }
 }

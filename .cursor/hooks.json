@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": "python3 .cursor/hooks/before-shell-gate.py",
+        "failClosed": false
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": "python3 .cursor/hooks/after-edit-hint.py",
+        "matcher": "Write|StrReplace|EditNotebook",
+        "failClosed": false
+      }
+    ]
+  }
+}

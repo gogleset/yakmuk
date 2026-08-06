@@ -21,9 +21,12 @@ yakmuk/
 ├── mobile/                   # Expo Router + FSD
 │   ├── app/                  # 라우트 thin wrapper만
 │   └── src/                  # providers · pages · widgets · features · entities · shared
-└── .agents/
-    ├── rules/                # 파일 범위 규칙 (.mdc)
-    └── skills/               # 작업 스킬
+├── .agents/
+│   ├── rules/                # 파일 범위 규칙 (.mdc)
+│   └── skills/               # 작업 스킬
+└── .cursor/
+    ├── agents/               # FSD·알람·RPC 전담 subagent
+    └── hooks.json            # 위험 셸 ask · 편집 힌트
 ```
 
 ## Stack
@@ -101,6 +104,17 @@ Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 | [store-review-check](.agents/skills/store-review-check/SKILL.md) | 스토어 심사 리젝 후보 스캔 |
 | [git-commit](.agents/skills/git-commit/SKILL.md) | `@git-commit` → 작업별 스테이징·커밋 |
 | [git-pr](.agents/skills/git-pr/SKILL.md) | `@git-pr` → `pr-body.md` 생성 |
+
+## Cursor agents · hooks (프로젝트)
+
+| 경로 | 역할 |
+|------|------|
+| [`.cursor/agents/fsd-reviewer`](.cursor/agents/fsd-reviewer.md) | mobile FSD/Query 안티패턴 리뷰 |
+| [`.cursor/agents/android-alarm-debugger`](.cursor/agents/android-alarm-debugger.md) | 복약 FSI·AlarmClock·logcat |
+| [`.cursor/agents/supabase-rpc-auditor`](.cursor/agents/supabase-rpc-auditor.md) | migration/RPC/ERRORS 감사 |
+| [`.cursor/hooks.json`](.cursor/hooks.json) | 위험 셸·시크릿 ask · 편집 후 경로 힌트 |
+
+훅이 안 보이면 Cursor **Hooks** 탭에서 프로젝트 훅 허용·리로드.
 
 ## Do / Don’t
 

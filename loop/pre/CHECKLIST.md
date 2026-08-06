@@ -39,4 +39,4 @@
 - [x] 로컬 알림 (`expo-notifications`)
 - [x] BAD / stuck escalate → `family_alerts`
 - [ ] **2 시뮬: 피보호자 TAKEN → 보호자 피드** (Docker 기동 후) — 코드·DB OK, UI E2E 수동
-- [x] Edge 푸시 stub (DECISIONS) · **care-push** (taken/stuck) 추가 — 실기기 수신은 EAS projectId 후
+- [x] Edge 푸시 stub (DECISIONS) · **care-push** (taken/stuck) 추가 — **삼성/실기기 2클라 수신·LAN URL은 수동** (G0.4)

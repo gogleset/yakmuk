@@ -39,14 +39,14 @@
 
 에이전트: 단계 시작 시 이 문서 해당 절 + README + 관련 상세만 연다.
 
-### 단계 0 진행 (2026-08-02)
+### 단계 0 진행 (2026-08-06)
 
 | 게이트 | 상태 | 메모 |
 |--------|------|------|
 | G0.1 | **partial** | 코드·DB TAKEN 경로 OK · seed 가족 동일 `family_id` · **2클라 Realtime UI는 수동 재현 남음** |
 | G0.2 | **partial** | stuck→`family_alerts`·worried 카드 경로 OK · 카드 tone soft(warning)로 조정 · **실기기 stuck 시나리오 수동** |
-| G0.3 | **pending** | Android 실기기·개발 빌드 E2E 필요 (에이전트 환경 밖) |
-| G0.4 | **partial** | Edge `care-push` + mutation invoke + `users.expo_push_token` · EAS `projectId`·실기기 수신은 **수동** (`EXPO_PUBLIC_EAS_PROJECT_ID`) |
+| G0.3 | **pending** | 코드: fp `clk4` + FSI denied UX. **삼성 실기기** Settings FSI → 실약 시각 E2E 남음 |
+| G0.4 | **partial** | Edge `care-push` + invoke + 토큰 컬럼. **실기기 2클라 수신** + LAN Supabase URL 확인 남음 |
 
 가짜 PASS 없음. 전부 PASS 후 단계 `1`.
 

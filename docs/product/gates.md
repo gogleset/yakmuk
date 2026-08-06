@@ -35,20 +35,33 @@
 | 충돌 시 | [decisions.md](decisions.md) > 이 게이트 > [priorities.md](priorities.md) |
 | 브랜드 | beat/퍼널 규칙은 [docs/brand/decisions.md](../brand/decisions.md) 준수 |
 
-**현재 단계:** `0` ← 루프 돌릴 때마다 여기만 고친다.
+**현재 단계:** `0` ← G0.1·G0.2 수동 PASS 후 `1` (G0.4는 보류로 닫음). Gate 1–2 **코드는 구현됨** — 공식 승격은 Gate 0 닫힌 뒤.
 
 에이전트: 단계 시작 시 이 문서 해당 절 + README + 관련 상세만 연다.
 
 ### 단계 0 진행 (2026-08-06)
 
+플레이북: [gate0-trust-playbook.md](gate0-trust-playbook.md) · FSI/care-push: [samsung-fsi-care-push-test.md](samsung-fsi-care-push-test.md)
+
 | 게이트 | 상태 | 메모 |
 |--------|------|------|
-| G0.1 | **partial** | 코드·DB TAKEN 경로 OK · seed 가족 동일 `family_id` · **2클라 Realtime UI는 수동 재현 남음** |
-| G0.2 | **partial** | stuck→`family_alerts`·worried 카드 경로 OK · 카드 tone soft(warning)로 조정 · **실기기 stuck 시나리오 수동** |
-| G0.3 | **pending** | 코드: fp `clk4` + FSI denied UX. **삼성 실기기** Settings FSI → 실약 시각 E2E 남음 |
-| G0.4 | **partial** | Edge `care-push` + invoke + 토큰 컬럼. **실기기 2클라 수신** + LAN Supabase URL 확인 남음 |
+| G0.1 | **partial** | 코드·DB OK · 플레이북 고정 · **2클라 UI 수동** ([playbook](gate0-trust-playbook.md)) |
+| G0.2 | **partial** | stuck→worried soft 경로 OK · 플레이북 고정 · **실기기 수동** |
+| G0.3 | **PASS** | 삼성 T1/T2 (2026-08-06) — fp `clk4` · 실약 시각 FSI→체크 |
+| G0.4 | **보류** | Edge invoke OK · 실수신 미완(DNS·FCM). decisions #8 · 가짜 PASS 아님 |
 
-가짜 PASS 없음. 전부 PASS 후 단계 `1`.
+가짜 PASS 없음. G0.1·G0.2 PASS + G0.4 보류(또는 PASS) 후 단계 `1`.
+
+### 단계 1–2 코드 (2026-08-06) — 공식 PASS는 Gate 0 닫힌 뒤
+
+| 게이트 | 코드 | 메모 |
+|--------|------|------|
+| G1.1 | **구현** | 보호자 고정/교체 알림 (`care-glance`) · OS 홈 위젯 아님 · iOS는 id 교체(고정 불가) |
+| G1.2 | **구현** | `memberStatusLabel` · 분수/점수 금지 |
+| G1.3 | **구현** | stale 30분 · decisions #10 |
+| G2.1 | **구현** | 채널=**인앱** 잠금 (decisions #11) |
+| G2.2 | **구현** | 대략 문장 + 특이일만 |
+| G2.3 | **구현** | 설정 옵트 · `week_start` dismiss |
 
 ---
 

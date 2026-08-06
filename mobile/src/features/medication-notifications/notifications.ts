@@ -119,6 +119,20 @@ export function resetNotificationPermissionCache(): void {
   permissionCache = null;
 }
 
+/** 조회만 — 시트 안 띄움. 설정 스위치 동기화용 */
+export async function getNotificationPermissionGranted(): Promise<boolean> {
+  const Notifications = await loadNotifications();
+  if (!Notifications) return false;
+  try {
+    const current = await Notifications.getPermissionsAsync();
+    const granted = current.granted;
+    permissionCache = granted;
+    return granted;
+  } catch {
+    return false;
+  }
+}
+
 async function cancelMedicationScheduled(
   Notifications: NotificationsModule,
 ): Promise<void> {

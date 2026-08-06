@@ -5,7 +5,7 @@
 [thesis.md](thesis.md) 기준으로 **무엇을 먼저 보완할지**.  
 게이트·착수 순서 SoT는 [gates.md](gates.md).
 
-상태 기준일: **2026-08-02** · stage: pre
+상태 기준일: **2026-08-06** · stage: pre · gates 현재 `0` (G0.1·G0.2 수동) · Gate1–2 코드 착수됨
 
 ---
 
@@ -13,12 +13,12 @@
 
 | 항목 | 지금 | 갭 | 근거 |
 |------|------|-----|------|
-| TAKEN → 보호자 피드 | Realtime 구독 + DB TAKEN 확인 | **2클라 UI E2E 수동** | CHECKLIST |
-| stuck → 가족 알림 | `family_alerts` · worried · soft outline | 실기기 stuck 시나리오 | FamilyCareAlert |
-| 약 알람 → 체크 | 로컬 알림 + `MedicationAlarmPage` | **Android 실기기 E2E** | medication-notifications |
-| 보호자 원격 푸시 | `care-push` Edge + invoke + 토큰 컬럼 | EAS projectId · 백그라운드 수신 | FR-05 / decisions #8 |
+| TAKEN → 보호자 피드 | Realtime 구독 + DB TAKEN 확인 | **2클라 UI E2E 수동** | [playbook](gate0-trust-playbook.md) |
+| stuck → 가족 알림 | `family_alerts` · worried · soft outline | 실기기 stuck 시나리오 | playbook G0.2 |
+| 약 알람 → 체크 | 로컬 알림 + FSI | **PASS** (삼성 T2) | samsung-fsi |
+| 보호자 원격 푸시 | care-push Edge | **보류** (DNS·FCM) | decisions #8 |
 
-**한 줄:** 기능 추가 금지. **이미 있는 루프를 믿게 만들기.**
+**한 줄:** 기능 추가 금지였음 → G0.3 PASS·G0.4 보류 후 glance/주간 **코드** 진행. G0.1·G0.2 수동은 플레이북.
 
 ---
 
@@ -26,9 +26,9 @@
 
 | 항목 | 왜 | 비고 |
 |------|-----|------|
-| 홈 위젯 / 잠금 한 줄 | 앱 안 열어도 안심 → 구독 유지 | glance |
-| 주 1회 안부 다이제스트 | 보호자 “돈 낸 보상” | 통계판 아님 |
-| (연계) 알림 슬롯 on/off | 설정은 권한만 있음 | settings brief `missing` — 1순위 후 |
+| 보호자 고정/교체 알림 | 앱 안 열어도 안심 | **코드됨** · decisions #10 · iOS=교체형 |
+| 주 1회 안부 인앱 카드 | 보호자 “돈 낸 보상” | **코드됨** · decisions #11 · 푸시 아님 |
+| (연계) 알림 슬롯 on/off | 설정은 권한+glance/주간 옵트 | 약 폼 슬롯은 기존 · 설정 탭 슬롯은 later |
 
 ---
 

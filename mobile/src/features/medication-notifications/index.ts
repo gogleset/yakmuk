@@ -19,11 +19,17 @@ export {
 } from './fingerprint';
 export {
   ensureNotificationPermission,
+  getNotificationPermissionGranted,
   notifDebug,
   reconcileMedicationNotifications,
   resetNotificationPermissionCache,
   syncMedicationNotifications,
 } from './notifications';
+export {
+  basicNotifSwitchOn,
+  fullPageFsiSwitchOn,
+  isFullPageSwitchDisabled,
+} from './lib/settingsNotifSwitches';
 export {
   clearExpoPushToken,
   pushDebug,

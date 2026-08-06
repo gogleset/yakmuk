@@ -1,6 +1,19 @@
 const { withProjectBuildGradle } = require('expo/config-plugins');
 
-const MAVEN_SNIPPET = `    maven { url "$rootDir/../node_modules/@notifee/react-native/android/libs" }`;
+const MARKER = '@notifee/react-native/android/libs';
+
+/** app.notifee:* 는 로컬 libs에서만 resolve — JitPack/중앙 repo 스캔·타임아웃 방지 */
+const EXCLUSIVE_CONTENT_SNIPPET = `
+    exclusiveContent {
+      forRepository {
+        maven {
+          url "$rootDir/../node_modules/@notifee/react-native/android/libs"
+        }
+      }
+      filter {
+        includeGroup "app.notifee"
+      }
+    }`;
 
 /**
  * Notifee `app.notifee:core`는 로컬 libs maven에만 있음.
@@ -10,14 +23,14 @@ function withNotifeeMaven(config) {
   return withProjectBuildGradle(config, (mod) => {
     if (mod.modResults.language !== 'groovy') return mod;
     const contents = mod.modResults.contents;
-    if (contents.includes('@notifee/react-native/android/libs')) {
+    if (contents.includes(MARKER)) {
       return mod;
     }
 
-    // allprojects.repositories 블록 안에 삽입
+    // allprojects.repositories 블록 안에 exclusiveContent 삽입
     const next = contents.replace(
       /allprojects\s*\{\s*repositories\s*\{/,
-      (match) => `${match}\n${MAVEN_SNIPPET}`,
+      (match) => `${match}\n${EXCLUSIVE_CONTENT_SNIPPET}`,
     );
 
     if (next === contents) {

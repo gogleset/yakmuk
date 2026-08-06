@@ -34,6 +34,8 @@ import {
   mapFamilyAlertsToSlides,
   MOCK_CARE_ALERTS,
 } from '@/widgets/family-care-alert';
+import { FamilyWeeklyDigestCard } from '@/widgets/family-weekly-digest';
+import { useFamilyWeeklyDigestCard } from '@/features/care-weekly-digest';
 import {
   FamilyFeedSectionHeader,
   FamilyGuardianDashboard,
@@ -70,6 +72,12 @@ export function FamilyPage() {
   useFamilyFeedSubscription(familyId, qc);
 
   const ackMut = useAckFamilyAlertMutation();
+
+  const weekly = useFamilyWeeklyDigestCard({
+    familyId,
+    todayKst: today,
+    role: profile?.role,
+  });
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -170,6 +178,13 @@ export function FamilyPage() {
             slides={careSlides}
             onAck={onAckCareAlert}
           />
+
+          {weekly.visible && weekly.digest ? (
+            <FamilyWeeklyDigestCard
+              digest={weekly.digest}
+              onAck={weekly.onAck}
+            />
+          ) : null}
 
           <FamilyGuardianDashboard
             members={statusMembers}

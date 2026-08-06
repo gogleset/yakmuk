@@ -3,6 +3,8 @@ export const familyKeys = {
   info: (familyId: string) => [...familyKeys.all, 'info', familyId] as const,
   status: (familyId: string, dateKst: string) =>
     [...familyKeys.all, 'status', familyId, dateKst] as const,
+  weeklyDigest: (familyId: string, weekStartYmd: string) =>
+    [...familyKeys.all, 'weekly-digest', familyId, weekStartYmd] as const,
   alerts: (familyId: string) => [...familyKeys.all, 'alerts', familyId] as const,
   feed: (familyId: string, sinceLogDate: string) =>
     [...familyKeys.all, 'feed', familyId, sinceLogDate] as const,

@@ -42,5 +42,9 @@ export {
 } from "./composites/Screen";
 export { SectionHeader } from "./composites/SectionHeader";
 export { StackHeader } from "./composites/StackHeader";
-export { SettingsGroup, SettingsRow } from "./composites/SettingsRow";
+export {
+  SettingsGroup,
+  SettingsRow,
+  SettingsSwitchRow,
+} from "./composites/SettingsRow";
 export { BottomSheet, PageSheet } from "./composites/Sheet";

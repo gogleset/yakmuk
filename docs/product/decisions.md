@@ -52,6 +52,21 @@ stuck 배너 + 빨간 경고 **병행 금지** (brand #4A와 동일 정신).
 - **가드:** EAS `projectId` 없으면 토큰 등록 skip · 푸시 실패해도 체크/stuck DB는 유지
 - **후속:** DB webhook 트리거 · 다중 기기 토큰
 - G0.4 **실기기 수신** 확인 전 가짜 PASS 금지
+- **G0.4 보류 (2026-08-06):** 로컬 Edge→`exp.host` DNS 실패 · Android FCM/`google-services` 미정합으로 토큰 자동 등록·수신 E2E 미완. **가짜 PASS 아님.** 착수 조건: FCM 자격+재빌드 + Edge 아웃바운드 DNS 정상 후 [samsung-fsi-care-push-test.md](samsung-fsi-care-push-test.md) T4
+
+## #10 Glance 표면 (Gate 1)
+
+- **표면:** OS 홈 위젯 아님. 보호자 **고정/교체 알림** 한 줄 (`이름 · memberStatusLabel`)
+- **Android:** Notifee `ongoing` · 채널 `care-glance` · importance LOW
+- **iOS:** 동일 notificationId로 내용 교체 (OS상 진짜 고정 불가 → 동등 표면)
+- **Stale:** 최대 30분 또는 TAKEN/stuck/포그라운드 시 갱신
+- **멤버 여러 명:** 알림 1개 — 안부(`hasUnackedAlert`) 우선, 없으면 첫 피보호자
+
+## #11 주간 안부 채널 (Gate 2)
+
+- **채널:** **인앱만** (가족 탭 카드). 주간 푸시 다이제스트는 후속
+- **내용:** 복약 대략 문장 + 특이일(놓침·BAD)만. 통계 대시보드 금지
+- **스팸:** `week_start`(KST) 기준 주당 1노출 · dismiss 후 같은 주 재노출 없음 · 설정 옵트
 
 ## #9 약 목적 태그 (purpose)
 

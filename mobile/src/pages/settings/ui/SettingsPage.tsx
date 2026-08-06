@@ -1,7 +1,16 @@
 import Constants from "expo-constants";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
-import { Alert, Linking, Platform, Pressable, Text, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import {
+  Alert,
+  AppState,
+  type AppStateStatus,
+  Linking,
+  Platform,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
 import { useAuth } from "@/providers/AuthProvider";
 import { ROLE_LABEL } from "@/entities/user";
 import {
@@ -15,12 +24,26 @@ import {
 import {
   ensureNotificationPermission,
   fireAndroidFullScreenTestAlarm,
+  getAndroidExactAlarmStatus,
   getAndroidFullScreenIntentStatus,
+  getNotificationPermissionGranted,
   openAndroidExactAlarmSettings,
   openAndroidFullScreenIntentSettings,
   resetNotificationPermissionCache,
   scheduleAndroidTestTriggerInSeconds,
+  basicNotifSwitchOn,
+  fullPageFsiSwitchOn,
+  isFullPageSwitchDisabled,
 } from "@/features/medication-notifications";
+import {
+  getCareGlanceOpt,
+  isGlanceViewerRole,
+  setCareGlanceOpt,
+} from "@/features/care-glance-notification";
+import {
+  getWeeklyDigestOpt,
+  setWeeklyDigestOpt,
+} from "@/features/care-weekly-digest";
 import { medicationAlarmRoute, ROUTES } from "@/shared/config/routes";
 import { adsMailTo, SUPPORT, supportMailTo } from "@/shared/config/support";
 import { COLORS, LAYOUT, LIMITS } from "@/shared/config/theme";
@@ -48,6 +71,7 @@ import {
   SectionHeader,
   SettingsGroup,
   SettingsRow,
+  SettingsSwitchRow,
 } from "@/shared/ui";
 
 const START_TAB_OPTIONS: { tab: StartTab; label: string }[] = [
@@ -76,7 +100,13 @@ export function SettingsPage() {
   const [nicknameDraft, setNicknameDraft] = useState(profile?.nickname ?? "");
   const [startTab, setStartTabState] = useState<StartTab>(DEFAULT_START_TAB);
   const [startScreenSheetOpen, setStartScreenSheetOpen] = useState(false);
-  const [fsiStatusLabel, setFsiStatusLabel] = useState<string | undefined>();
+  const [notifGranted, setNotifGranted] = useState(false);
+  const [fsiAllowed, setFsiAllowed] = useState(false);
+  const [careGlanceOn, setCareGlanceOn] = useState(true);
+  const [weeklyDigestOn, setWeeklyDigestOn] = useState(true);
+  const showCareOpts = isGlanceViewerRole(profile?.role);
+  const exactAlarmPromptedRef = useRef(false);
+  const appStateRef = useRef<AppStateStatus>(AppState.currentState);
 
   useEffect(() => {
     setNicknameDraft(profile?.nickname ?? "");
@@ -87,29 +117,49 @@ export function SettingsPage() {
     void getStartTab().then((tab) => {
       if (!cancelled) setStartTabState(tab);
     });
+    void getCareGlanceOpt().then((on) => {
+      if (!cancelled) setCareGlanceOn(on);
+    });
+    void getWeeklyDigestOpt().then((on) => {
+      if (!cancelled) setWeeklyDigestOn(on);
+    });
     return () => {
       cancelled = true;
     };
   }, []);
 
+  /** OS 권한 → 스위치 동기화 (마운트 + 설정 복귀) */
+  const refreshNotifSwitches = async () => {
+    const granted = await getNotificationPermissionGranted();
+    setNotifGranted(basicNotifSwitchOn(granted));
+    if (Platform.OS !== "android") {
+      setFsiAllowed(false);
+      return;
+    }
+    const fsiStatus = await getAndroidFullScreenIntentStatus();
+    setFsiAllowed(fullPageFsiSwitchOn(fsiStatus));
+  };
+
   useEffect(() => {
-    if (Platform.OS !== "android") return;
     let cancelled = false;
-    void getAndroidFullScreenIntentStatus().then((status) => {
+    const sync = async () => {
+      await refreshNotifSwitches();
       if (cancelled) return;
-      if (status === "allowed") {
-        setFsiStatusLabel(COPY.notif.fsiStatusAllowed);
-      } else if (status === "denied") {
-        setFsiStatusLabel(COPY.notif.fsiStatusDenied);
-      } else if (status === "unsupported") {
-        setFsiStatusLabel(undefined);
-      } else {
-        setFsiStatusLabel(COPY.notif.fsiStatusUnknown);
-      }
-    });
+    };
+    void sync();
+    const onChange = (next: AppStateStatus) => {
+      const prev = appStateRef.current;
+      appStateRef.current = next;
+      if (next !== "active" || prev === "active") return;
+      void refreshNotifSwitches();
+    };
+    const sub = AppState.addEventListener("change", onChange);
     return () => {
       cancelled = true;
+      sub.remove();
     };
+    // mount 1회 — refreshNotifSwitches는 setState만
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const familyName = familyQuery.data?.name?.trim() || null;
@@ -151,16 +201,66 @@ export function SettingsPage() {
     ]);
   };
 
-  const onNotifPermission = async () => {
-    // 설정에서 다시 물을 수 있게 세션 캐시 리셋
-    resetNotificationPermissionCache();
-    const ok = await ensureNotificationPermission();
-    Alert.alert(
-      "알림",
-      ok
-        ? "약 먹을 시간에 알려드릴 수 있어요"
-        : "알림 권한이 꺼져 있어요. 기기 설정에서 허용해 주세요.",
-    );
+  const onNotifSwitchChange = (next: boolean) => {
+    void (async () => {
+      if (next) {
+        resetNotificationPermissionCache();
+        const ok = await ensureNotificationPermission();
+        await refreshNotifSwitches();
+        if (!ok) {
+          // 거절·미허용 — 시스템 설정으로
+          await Linking.openSettings();
+          return;
+        }
+        // Android exact — 설정 화면 토글 시 세션 1회
+        if (Platform.OS === "android" && !exactAlarmPromptedRef.current) {
+          const exact = await getAndroidExactAlarmStatus();
+          if (exact === "disabled") {
+            exactAlarmPromptedRef.current = true;
+            Alert.alert(COPY.notif.exactAlarmTitle, COPY.notif.exactAlarmBody, [
+              { text: COPY.notif.exactAlarmLater, style: "cancel" },
+              {
+                text: COPY.notif.exactAlarmOpen,
+                onPress: () => void openAndroidExactAlarmSettings(),
+              },
+            ]);
+          }
+        }
+        return;
+      }
+      // revoke 불가 — OS 설정 열기, 복귀 시 AppState로 재조회
+      await Linking.openSettings();
+    })();
+  };
+
+  const onFsiSwitchChange = (_next: boolean) => {
+    // OS 진실만 — 토글은 시스템 FSI 설정으로 보냄
+    void openAndroidFullScreenIntentSettings();
+  };
+
+  const onToggleCareGlance = () => {
+    const next = !careGlanceOn;
+    setCareGlanceOn(next);
+    void (async () => {
+      if (next) {
+        resetNotificationPermissionCache();
+        const ok = await ensureNotificationPermission();
+        if (!ok) {
+          setCareGlanceOn(false);
+          await setCareGlanceOpt(false);
+          Alert.alert("알림", COPY.glance.permissionHint);
+          return;
+        }
+        await refreshNotifSwitches();
+      }
+      await setCareGlanceOpt(next);
+    })();
+  };
+
+  const onToggleWeeklyDigest = () => {
+    const next = !weeklyDigestOn;
+    setWeeklyDigestOn(next);
+    void setWeeklyDigestOpt(next);
   };
 
   /** 첫 화면 — 이 기기만. 다음 앱 진입 시 적용 */
@@ -187,7 +287,7 @@ export function SettingsPage() {
     );
   };
 
-  /** __DEV__ Android: FSI — 15초 뒤 + 잠금 필수 */
+  /** __DEV__ Android: FSI — 60초 · 잠금/꺼짐 */
   const onTestFsi = async () => {
     // 실약/이미 TAKEN과 겹치지 않는 가상 id — 풀페이지 fallback 고정
     const result = await fireAndroidFullScreenTestAlarm({
@@ -195,7 +295,7 @@ export function SettingsPage() {
       name: "FSI 테스트",
       scheduledTime: "지금",
       mode: "lock-screen",
-      delaySeconds: 15,
+      delaySeconds: 60,
     });
     if (result === "ok") {
       Alert.alert(COPY.notif.testFsi, COPY.notif.testFsiOk);
@@ -239,29 +339,9 @@ export function SettingsPage() {
     Alert.alert(COPY.notif.testFsiImmediate, COPY.notif.testFsiUnavailable);
   };
 
-  /** Android: 정확 알람(Alarms & reminders) 설정 */
-  const onOpenExactAlarmSettings = () => {
-    void openAndroidExactAlarmSettings();
-  };
-
-  /** Android 14+: 전체 화면 알림(FSI) 설정 */
-  const onOpenFsiSettings = () => {
-    void openAndroidFullScreenIntentSettings().then(() => {
-      void getAndroidFullScreenIntentStatus().then((status) => {
-        if (status === "allowed") {
-          setFsiStatusLabel(COPY.notif.fsiStatusAllowed);
-        } else if (status === "denied") {
-          setFsiStatusLabel(COPY.notif.fsiStatusDenied);
-        } else if (status !== "unsupported") {
-          setFsiStatusLabel(COPY.notif.fsiStatusUnknown);
-        }
-      });
-    });
-  };
-
-  /** __DEV__ Android: N초 뒤 트리거 — AlarmManager 발화 검증 */
+  /** __DEV__ Android: 90초 뒤 FSI */
   const onTestDelay = async () => {
-    const delaySec = 60;
+    const delaySec = 90;
     const result = await scheduleAndroidTestTriggerInSeconds(delaySec);
     if (result === "ok") {
       Alert.alert(COPY.notif.testDelay, COPY.notif.testDelayOk(delaySec));
@@ -386,32 +466,41 @@ export function SettingsPage() {
             />
           </SettingsGroup>
 
-          <SectionHeader title="앱" />
+          <SectionHeader title="알림" />
           <SettingsGroup>
-            <SettingsRow
-              label={COPY.settings.startScreen}
-              value={startTabLabel(startTab)}
-              icon={Icons.Home}
-              onPress={onStartScreenPress}
-            />
-            <SettingsRow
-              label="약 알림"
-              icon={Icons.Radio}
-              onPress={() => void onNotifPermission()}
+            <SettingsSwitchRow
+              label={COPY.notif.basicSwitch}
+              value={notifGranted}
+              icon={Icons.Bell}
+              onValueChange={onNotifSwitchChange}
             />
             {Platform.OS === "android" ? (
-              <SettingsRow
-                label={COPY.notif.exactAlarmSettings}
-                icon={Icons.AlarmClock}
-                onPress={onOpenExactAlarmSettings}
+              <SettingsSwitchRow
+                label={COPY.notif.fullPageSwitch}
+                value={fsiAllowed}
+                icon={Icons.Radio}
+                disabled={isFullPageSwitchDisabled(notifGranted)}
+                onValueChange={onFsiSwitchChange}
               />
             ) : null}
-            {Platform.OS === "android" ? (
+            {showCareOpts ? (
               <SettingsRow
-                label={COPY.notif.fsiSettings}
-                value={fsiStatusLabel}
-                icon={Icons.Radio}
-                onPress={onOpenFsiSettings}
+                label={COPY.settings.careGlance}
+                value={
+                  careGlanceOn ? COPY.settings.optOn : COPY.settings.optOff
+                }
+                icon={Icons.Bell}
+                onPress={onToggleCareGlance}
+              />
+            ) : null}
+            {showCareOpts ? (
+              <SettingsRow
+                label={COPY.settings.weeklyDigest}
+                value={
+                  weeklyDigestOn ? COPY.settings.optOn : COPY.settings.optOff
+                }
+                icon={Icons.Home}
+                onPress={onToggleWeeklyDigest}
               />
             ) : null}
             {__DEV__ ? (
@@ -449,6 +538,16 @@ export function SettingsPage() {
                 onPress={() => void onTestDelay()}
               />
             ) : null}
+          </SettingsGroup>
+
+          <SectionHeader title="앱" />
+          <SettingsGroup>
+            <SettingsRow
+              label={COPY.settings.startScreen}
+              value={startTabLabel(startTab)}
+              icon={Icons.Home}
+              onPress={onStartScreenPress}
+            />
           </SettingsGroup>
 
           <SectionHeader title="고객지원" />

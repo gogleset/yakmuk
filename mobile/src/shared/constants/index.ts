@@ -2,6 +2,7 @@ export { MOTION, staggerDelay } from './motion';
 export type { MotionDuration } from './motion';
 export { LAYOUT, NAV, OVERLAY } from './layout';
 export { LIMITS } from './limits';
+export { CARE_GLANCE, WEEKLY_DIGEST } from './careGlance';
 export {
   MED_COLOR_DEFAULT,
   MED_COLOR_SOFT_ALPHA,

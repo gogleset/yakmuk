@@ -20,9 +20,21 @@
 
 ---
 
-## T1 — Settings FSI
+## DEV — 설정 「알림」 섹션
 
-| 결과 | **PASS** |
+| UI | 동기화 |
+|----|--------|
+| Section **알림** → **기본 알림** Switch | OS 알림 권한 |
+| Section **알림** → **풀페이지 알림** Switch (Android) | 시스템 FSI (`canUseFullScreenIntent`) |
+| 알람·리마인더 단독 row | 제거 — 기본 ON 시 exact 꺼져 있으면 Alert |
+
+T1: 스위치 ON/OFF ↔ 시스템 설정 왕복 후 상태 일치.
+
+---
+
+## T1 — Settings FSI (2depth 스위치)
+
+| 결과 | **PASS** (구 UI) · 2depth는 재확인 |
 | 일시 | 2026-08-06 |
 
 ---

@@ -116,6 +116,18 @@ export const COPY = {
     careEmpty: '서로의 하루를 응원해요',
     /** 푸시 카피용 — 닉네임 없을 때 */
     memberFallback: '가족',
+    /** glance 알림 한 줄 — `이름 · 라벨` */
+    glanceLine: (who: string, status: string) => `${who} · ${status}`,
+    /** 주간 안부 (인앱) */
+    weeklyTitle: '이번 주 안부',
+    weeklyOk: '이번 주 괜찮았어요',
+    weeklyMostly: '이번 주 대체로 잘 챙겼어요',
+    weeklyUneven: '이번 주 챙김이 들쑥날쑥했어요',
+    weeklyNoMeds: '이번 주 등록된 약이 없어요',
+    weeklyMissedDay: (when: string) => `${when} 약이 조금 남았어요`,
+    weeklyBadDay: (when: string) => `${when} 컨디션이 안 좋았어요`,
+    weeklyAck: '확인했어요',
+    weeklyEmptyAnomaly: '특이했던 날은 없어요',
   },
 
   /** 원격 안심 푸시 (care-push) */
@@ -205,6 +217,12 @@ export const COPY = {
     legendScheduled: '약 있는 날',
   },
 
+  glance: {
+    channel: '가족 한눈',
+    title: '가족 안부',
+    permissionHint: '알림을 허용하면 앱 밖에서도 가족 상태를 볼 수 있어요.',
+  },
+
   notif: {
     channel: '복약 알림',
     doseTitle: '약 먹을 시간이에요',
@@ -216,6 +234,10 @@ export const COPY = {
     slotOff: '알림 꺼짐',
     alarmTaken: '먹었어요',
     alarmTakeAll: '모두 먹었어요',
+    /** 설정 2depth — OS 권한 스위치 */
+    settingsGroup: '약 알림',
+    basicSwitch: '기본 알림',
+    fullPageSwitch: '풀페이지 알림',
     /** Android 12+ — 알림 권한과 별개 (Alarms & reminders) */
     exactAlarmTitle: '정확한 알림 시간',
     exactAlarmBody:
@@ -235,16 +257,16 @@ export const COPY = {
     /** __DEV__ 설정 — 풀페이지/FSI 테스트 */
     testFullPage: '풀페이지 알림 미리보기',
     testFullPageMulti: '풀페이지 알림 (다약)',
-    testFsi: 'Android FSI (15초·잠금)',
+    testFsi: 'Android FSI (60초·잠금/꺼짐)',
     testFsiOk:
-      '15초 뒤 앱이 강제 기동돼야 해요. 종료해 두고 기다려 보세요. (잠금해도 OK)',
+      '60초 뒤. 화면 끄거나 잠그면 FSI로 앱이 떠요. 다른 앱 위에선 헤드업만(탭 필요) — Android 스펙.',
     testFsiImmediate: 'Android FSI 즉시(헤드업)',
     testFsiImmediateOk:
-      '잠금이 아니면 헤드업+풀페이지로 가요. 진짜 FSI는 「15초·잠금」으로 보세요.',
+      '잠금이 아니면 헤드업+풀페이지로 가요. 진짜 FSI는 「60초·잠금/꺼짐」으로 보세요.',
     testFsiUnavailable: '개발 빌드(Android)에서만 쓸 수 있어요. Expo Go는 안 돼요.',
-    testDelay: '60초 뒤 알림 테스트',
+    testDelay: '90초 뒤 FSI 테스트',
     testDelayOk: (sec: number) =>
-      `${sec}초 뒤에 알림이 떠요. 앱을 백그라운드로 두세요.`,
+      `${sec}초 뒤. 잠금/화면꺼짐이면 FSI, 다른 앱이면 헤드업. 스케줄은 reconcile에 안 지워짐.`,
     testDelayBody: (sec: number) => `${sec}초 테스트 알림`,
     testDelayExactOff:
       '「알람 및 리마인더」가 꺼져 있어요. 설정에서 켠 뒤 다시 눌러 주세요.',
@@ -258,6 +280,10 @@ export const COPY = {
     startScreen: '첫 화면',
     startScreenHome: '기록',
     startScreenFamily: '가족',
+    careGlance: '가족 한눈 알림',
+    weeklyDigest: '주간 안부',
+    optOn: '켜짐',
+    optOff: '꺼짐',
   },
 
   common: {

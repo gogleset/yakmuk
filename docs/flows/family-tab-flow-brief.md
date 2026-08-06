@@ -46,8 +46,10 @@ PRD 요약의 “보호자/피보호자” 이분법 → 코드는 **3역할**. 
 | 의도 화면/요소 | PRD/메모 | 상태 |
 |----------------|----------|------|
 | 가족 탭 **초대 FAB** | CHECKLIST·PRD “초대 FAB” | partial — empty CTA(`가족 초대하기`) + 섹션「관리」→ `/family-manage`. 탭 상시 FAB 없음 (의도) |
-| 2시뮬 Realtime E2E | CHECKLIST 미체크 | partial — 구독 코드 있음, 실기기 검증 미완 |
-| Edge 푸시 → 가족 알림 | DECISIONS stub / prod | prod-only / stub |
+| 2시뮬 Realtime E2E | CHECKLIST 미체크 | partial — [gate0-trust-playbook](../product/gate0-trust-playbook.md) |
+| Edge 푸시 → 가족 알림 | DECISIONS stub / prod | **보류** (G0.4 · DNS/FCM) |
+| 보호자 glance 알림 | product Gate 1 | implemented — `care-glance` 고정/교체 알림 |
+| 주간 안부 인앱 카드 | product Gate 2 | implemented — 가족 탭 카드 · 설정 옵트 |
 
 ---
 

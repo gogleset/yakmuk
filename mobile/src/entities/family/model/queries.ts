@@ -4,7 +4,9 @@ import { listAlerts } from '@/entities/family/api/list-alerts';
 import { listFamilyMembers } from '@/entities/family/api/list-family-members';
 import { listFeed } from '@/entities/family/api/list-feed';
 import { listTodayStatus } from '@/entities/family/api/list-today-status';
+import { listWeeklyDigest } from '@/entities/family/api/list-weekly-digest';
 import { subscribeFeed } from '@/entities/family/api/subscribe-feed';
+import { weekStartMondayKst } from '@/entities/family/lib/buildWeeklyDigest';
 import { familyKeys } from '@/entities/family/model/queryKeys';
 import { LIMITS } from '@/shared/constants';
 import { addDaysKst } from '@/shared/lib/kst';
@@ -59,6 +61,20 @@ export function useFamilyMembersQuery(familyId: string | null | undefined) {
     queryKey: familyKeys.members(familyId!),
     queryFn: () => listFamilyMembers(familyId!),
     enabled: !!familyId,
+  });
+}
+
+/** 보호자 주간 안부 — weekStart로 캐시 */
+export function useWeeklyDigestQuery(
+  familyId: string | null | undefined,
+  todayKst: string,
+  enabled = true,
+) {
+  const weekStart = weekStartMondayKst(todayKst);
+  return useQuery({
+    queryKey: familyKeys.weeklyDigest(familyId ?? '', weekStart),
+    queryFn: () => listWeeklyDigest(familyId!, todayKst),
+    enabled: !!familyId && enabled,
   });
 }
 

@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   Animated,
-  Dimensions,
   Easing,
   KeyboardAvoidingView,
   Modal,
@@ -10,11 +9,15 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, LAYOUT, OVERLAY } from '@/shared/config/theme';
 import { MOTION } from '@/shared/constants';
+import { subscribeKeyboardBottomInset } from '@/shared/lib/keyboardBottomInset';
+import { scrollYToRevealField } from '@/shared/lib/scrollToRevealField';
 import { Icons } from '@/shared/ui/primitives/Icon';
 
 type SheetProps = {
@@ -47,13 +50,80 @@ export function BottomSheet({
   presentation = 'modal',
 }: SheetProps) {
   const insets = useSafeAreaInsets();
-  const windowHeight = Dimensions.get('window').height;
+  const { height: windowHeight } = useWindowDimensions();
   const maxHeight = windowHeight * LAYOUT.sheet.maxHeightRatio;
   const [mounted, setMounted] = useState(visible);
+  const [keyboardInset, setKeyboardInset] = useState(0);
   const sheetTranslateY = useRef(new Animated.Value(windowHeight)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   const onClosedRef = useRef(onClosed);
   onClosedRef.current = onClosed;
+
+  const scrollRef = useRef<ScrollView>(null);
+  const scrollYRef = useRef(0);
+  const viewportHeightRef = useRef(0);
+  const keyboardInsetRef = useRef(0);
+
+  // Android: ScrollView paddingBottom. iOS는 KAV padding만.
+  useEffect(() => {
+    return subscribeKeyboardBottomInset((inset) => {
+      keyboardInsetRef.current = inset;
+      setKeyboardInset(inset);
+    });
+  }, []);
+
+  const revealFocusedField = useCallback(() => {
+    const scroll = scrollRef.current;
+    if (!scroll) return;
+
+    const focused =
+      typeof TextInput.State?.currentlyFocusedInput === 'function'
+        ? TextInput.State.currentlyFocusedInput()
+        : null;
+    if (!focused) return;
+
+    const viewportHeight = viewportHeightRef.current;
+    if (viewportHeight <= 0) return;
+
+    type Measurable = {
+      measureInWindow: (
+        callback: (x: number, y: number, w: number, h: number) => void,
+      ) => void;
+    };
+
+    const scrollMeasurable = scroll as unknown as Measurable;
+    const focusedMeasurable = focused as unknown as Measurable;
+    if (typeof focusedMeasurable.measureInWindow !== 'function') return;
+
+    // measureInWindow로 스크롤 콘텐츠 Y 역산
+    scrollMeasurable.measureInWindow((_sx, sy) => {
+      focusedMeasurable.measureInWindow((_ix, iy, _iw, ih) => {
+        // 헤더 검색 등 ScrollView 밖 포커스는 스크롤 스킵 (시트 전체가 올라감)
+        if (iy + ih <= sy) return;
+
+        const fieldY = scrollYRef.current + (iy - sy);
+        const target = scrollYToRevealField({
+          fieldY,
+          fieldHeight: ih,
+          viewportHeight,
+          // overlay에서 resize가 약하면 뷰포트 하단을 키보드가 가림
+          keyboardInset: keyboardInsetRef.current,
+          footerHeight: 0,
+          currentScrollY: scrollYRef.current,
+          gap: LAYOUT.sheet.contentGap,
+        });
+        if (target == null) return;
+        scroll.scrollTo({ y: target, animated: true });
+      });
+    });
+  }, []);
+
+  // 키보드 확정 후 재측정 (Android DidShow)
+  useEffect(() => {
+    if (keyboardInset <= 0) return;
+    const t = setTimeout(() => revealFocusedField(), 50);
+    return () => clearTimeout(t);
+  }, [keyboardInset, revealFocusedField]);
 
   useEffect(() => {
     if (visible) {
@@ -170,12 +240,38 @@ export function BottomSheet({
           {header ? <View className="pb-2">{header}</View> : null}
 
           <ScrollView
+            ref={scrollRef}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
             bounces={false}
-            contentContainerStyle={{ gap: LAYOUT.sheet.contentGap }}
+            onLayout={(e) => {
+              viewportHeightRef.current = e.nativeEvent.layout.height;
+            }}
+            onScroll={(e) => {
+              scrollYRef.current = e.nativeEvent.contentOffset.y;
+            }}
+            scrollEventThrottle={16}
+            // 포커스 버블 대신 탭 후 레이아웃 안정화 시 재측정
+            onContentSizeChange={() => {
+              if (keyboardInset > 0) revealFocusedField();
+            }}
+            contentContainerStyle={{
+              gap: LAYOUT.sheet.contentGap,
+              paddingBottom: keyboardInset,
+            }}
           >
-            {children}
+            {/* 포커스 시 스크롤 — TextInput focus는 버블 안 되므로 Pressable 래퍼 대신 리스너 */}
+            <View
+              onStartShouldSetResponderCapture={() => {
+                // 다음 틱에 포커스 확정 후 측정
+                requestAnimationFrame(() => {
+                  setTimeout(revealFocusedField, 100);
+                });
+                return false;
+              }}
+            >
+              {children}
+            </View>
           </ScrollView>
 
           {footer ? <View className="pt-2">{footer}</View> : null}
@@ -218,6 +314,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sheetHost: {
+    flex: 1,
     justifyContent: 'flex-end',
   },
   sheet: {

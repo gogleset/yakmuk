@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "211728002550",
+    "project_id": "jinlabs-dev",
+    "storage_bucket": "jinlabs-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:211728002550:android:c499293d97616dde07ebd7",
+        "android_client_info": {
+          "package_name": "com.jinlabs.yakok"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcQ2qGmc0o-swc2grGGM9eAMkySj1aHcc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

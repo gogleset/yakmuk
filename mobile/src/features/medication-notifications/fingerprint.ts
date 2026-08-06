@@ -19,7 +19,7 @@ export type ExpectedMedAlarm = {
 export const MED_NOTIF_KIND = 'medication' as const;
 export const MED_NOTIF_ID_PREFIX = 'yakmuk-med-';
 /** Android AlarmClock Activity 강제기동 버전 — fingerprint에 넣어 재등록 */
-export const MED_ALARM_FP_TAG = 'clk3';
+export const MED_ALARM_FP_TAG = 'clk4';
 
 export function medNotifIdentifier(alarm: ExpectedMedAlarm): string {
   return `${MED_NOTIF_ID_PREFIX}${alarm.medicationId}-${alarm.weekdayKey}-${alarm.hour}-${alarm.minute}`;

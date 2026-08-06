@@ -15,6 +15,7 @@ import {
 import {
   ensureNotificationPermission,
   fireAndroidFullScreenTestAlarm,
+  getAndroidFullScreenIntentStatus,
   openAndroidExactAlarmSettings,
   openAndroidFullScreenIntentSettings,
   resetNotificationPermissionCache,
@@ -75,6 +76,7 @@ export function SettingsPage() {
   const [nicknameDraft, setNicknameDraft] = useState(profile?.nickname ?? "");
   const [startTab, setStartTabState] = useState<StartTab>(DEFAULT_START_TAB);
   const [startScreenSheetOpen, setStartScreenSheetOpen] = useState(false);
+  const [fsiStatusLabel, setFsiStatusLabel] = useState<string | undefined>();
 
   useEffect(() => {
     setNicknameDraft(profile?.nickname ?? "");
@@ -84,6 +86,26 @@ export function SettingsPage() {
     let cancelled = false;
     void getStartTab().then((tab) => {
       if (!cancelled) setStartTabState(tab);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS !== "android") return;
+    let cancelled = false;
+    void getAndroidFullScreenIntentStatus().then((status) => {
+      if (cancelled) return;
+      if (status === "allowed") {
+        setFsiStatusLabel(COPY.notif.fsiStatusAllowed);
+      } else if (status === "denied") {
+        setFsiStatusLabel(COPY.notif.fsiStatusDenied);
+      } else if (status === "unsupported") {
+        setFsiStatusLabel(undefined);
+      } else {
+        setFsiStatusLabel(COPY.notif.fsiStatusUnknown);
+      }
     });
     return () => {
       cancelled = true;
@@ -189,6 +211,16 @@ export function SettingsPage() {
       ]);
       return;
     }
+    if (result === "permission-denied") {
+      Alert.alert(COPY.notif.fsiTitle, COPY.notif.testFsiDenied, [
+        { text: COPY.notif.exactAlarmLater, style: "cancel" },
+        {
+          text: COPY.notif.exactAlarmOpen,
+          onPress: () => void openAndroidFullScreenIntentSettings(),
+        },
+      ]);
+      return;
+    }
     Alert.alert(COPY.notif.testFsi, COPY.notif.testFsiUnavailable);
   };
 
@@ -214,7 +246,17 @@ export function SettingsPage() {
 
   /** Android 14+: 전체 화면 알림(FSI) 설정 */
   const onOpenFsiSettings = () => {
-    void openAndroidFullScreenIntentSettings();
+    void openAndroidFullScreenIntentSettings().then(() => {
+      void getAndroidFullScreenIntentStatus().then((status) => {
+        if (status === "allowed") {
+          setFsiStatusLabel(COPY.notif.fsiStatusAllowed);
+        } else if (status === "denied") {
+          setFsiStatusLabel(COPY.notif.fsiStatusDenied);
+        } else if (status !== "unsupported") {
+          setFsiStatusLabel(COPY.notif.fsiStatusUnknown);
+        }
+      });
+    });
   };
 
   /** __DEV__ Android: N초 뒤 트리거 — AlarmManager 발화 검증 */
@@ -367,6 +409,7 @@ export function SettingsPage() {
             {Platform.OS === "android" ? (
               <SettingsRow
                 label={COPY.notif.fsiSettings}
+                value={fsiStatusLabel}
                 icon={Icons.Radio}
                 onPress={onOpenFsiSettings}
               />

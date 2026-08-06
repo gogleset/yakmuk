@@ -227,6 +227,11 @@ export const COPY = {
     fsiBody:
       '화면이 꺼져 있거나 앱이 종료돼 있어도 복약 화면을 띄우려면 「전체 화면 알림」을 허용해 주세요.',
     fsiSettings: '전체 화면 알림 권한',
+    fsiStatusAllowed: '허용됨',
+    fsiStatusDenied: '꺼짐 · 설정에서 켜 주세요',
+    fsiStatusUnknown: '확인 필요',
+    testFsiDenied:
+      '「전체 화면 알림」이 꺼져 있어요. 설정에서 켠 뒤 다시 눌러 주세요.',
     /** __DEV__ 설정 — 풀페이지/FSI 테스트 */
     testFullPage: '풀페이지 알림 미리보기',
     testFullPageMulti: '풀페이지 알림 (다약)',

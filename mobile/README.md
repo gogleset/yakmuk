@@ -67,7 +67,10 @@ OAuth(Google/Apple)는 로컬 프로바이더 설정 후 버튼 사용. 미설�
 ### Edge 푸시 · 로컬 알림
 
 - **약 알림:** 폰 로컬만 (`expo-notifications` / Android Notifee). 서버가 보내지 않음. 앱 시작·복귀 시 서버 스케줄과 reconcile. 로그: `[yakmuk:notif]`
-- **안심 푸시:** 복용(`taken`)·stuck → Edge `care-push` → 동가족 `users.expo_push_token`. 토큰 등록은 EAS `projectId` 필요 (`EXPO_PUBLIC_EAS_PROJECT_ID` / `app.config.js`). 없으면 skip (`[yakmuk:push]`).
+- **안심 푸시:** 복용(`taken`)·stuck → Edge `care-push` → 동가족 `users.expo_push_token`.
+  - 클라이언트: EAS `projectId` + Android **`google-services.json`** (`app.json` → `android.googleServicesFile`). Firebase 앱 **패키지 = `com.jinlabs.yakok`** 이어야 함.
+  - 서버 발송(Expo→FCM V1): EAS Credentials에 **Service Account** JSON 업로드 (로컬 `google-services.json`과 별개, gitignore).
+  - 미설정 시 `[yakmuk:push] register failed` / skip.
 - **공지:** Edge `announce-push` (service_role / secret) — care와 분리.
 
 ```bash

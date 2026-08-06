@@ -285,7 +285,7 @@ function medicationAndroidNotifOpts(loaded: LoadedNotifee) {
     // 커스텀 flags가 FSI PendingIntent를 깨는 기기 있음.
     fullScreenAction: {
       id: 'default',
-      launchActivity: 'com.yakmuk.app.AlarmFullScreenActivity',
+      launchActivity: 'com.jinlabs.yakok.AlarmFullScreenActivity',
     },
     // 무한 울림 금지 — 한 번만 (구버전 loopSound:true 트리거는 fp 태그로 재등록)
     ongoing: false,
@@ -338,7 +338,7 @@ export async function scheduleAndroidMedicationAlarms(
       fingerprint,
       nextAt: nextAt.toISOString(),
       local: `${nextAt.getFullYear()}-${String(nextAt.getMonth() + 1).padStart(2, '0')}-${String(nextAt.getDate()).padStart(2, '0')} ${String(nextAt.getHours()).padStart(2, '0')}:${String(nextAt.getMinutes()).padStart(2, '0')}`,
-      alarmType: 'SET_ALARM_CLOCK+Activity',
+      alarmType: 'SET_ALARM_CLOCK+FSI',
     });
 
     await loaded.api.createTriggerNotification(
@@ -458,7 +458,7 @@ export async function subscribeAndroidNotifeeOpen(
 /** Android 14+ 전체 화면 알림 설정 (실패 시 앱 알림 설정) */
 export async function openAndroidFullScreenIntentSettings(): Promise<boolean> {
   const { Linking } = await import('react-native');
-  const pkg = 'com.yakmuk.app';
+  const pkg = 'com.jinlabs.yakok';
   try {
     // 기기/API에 따라 Activity 없을 수 있음 → 알림 설정으로 폴백
     await Linking.sendIntent(
@@ -520,6 +520,8 @@ export async function fireAndroidFullScreenTestAlarm(input?: {
   if (mode === 'lock-screen') {
     const alarmStatus = await getAndroidExactAlarmStatus();
     if (alarmStatus === 'disabled') return 'exact-alarm-disabled';
+    const fsiStatus = await getAndroidFullScreenIntentStatus();
+    if (fsiStatus === 'denied') return 'permission-denied';
   }
 
   await ensureAndroidMedicationChannel();
@@ -570,7 +572,7 @@ export async function fireAndroidFullScreenTestAlarm(input?: {
       },
       alarmClockTrigger(loaded, timestamp),
     );
-    // 강제 기동 본체 — Notifee 알림과 별도로 Activity PI
+    // 강제 기동 본체 — Notifee와 별도 setAlarmClock → AlarmReceiver → FSI
     await scheduleNativeAlarmClock({
       triggerAtMs: timestamp,
       fingerprint,

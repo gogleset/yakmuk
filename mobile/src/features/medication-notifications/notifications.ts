@@ -7,6 +7,7 @@ import {
   getAndroidExactAlarmStatus,
   getAndroidFullScreenIntentStatus,
   openAndroidExactAlarmSettings,
+  openAndroidFullScreenIntentSettings,
   readAndroidScheduledFingerprints,
   scheduleAndroidMedicationAlarms,
 } from '@/features/medication-notifications/androidNotifee';
@@ -67,6 +68,7 @@ let permissionInflight: Promise<boolean> | null = null;
 
 /** exact alarm 설정 유도 Alert — 세션당 1회 (AppState 루프 방지) */
 let exactAlarmPromptedThisSession = false;
+let fsiPromptedThisSession = false;
 
 /** 알림 권한 — undetermined일 때만 요청. 거절/Expo Go면 false */
 export async function ensureNotificationPermission(): Promise<boolean> {
@@ -297,6 +299,20 @@ export async function reconcileMedicationNotifications(
       // Notifee DB엔 남아 in-sync처럼 보여도 AlarmManager는 드롭 → 스케줄 등록 보류
       notifDebug('skip', { reason: 'exact-alarm-disabled' });
       return;
+    }
+
+    // FSI 거부여도 스케줄은 계속 (헤드업 폴백). 세션 1회만 안내.
+    if (fsiStatus === 'denied' && !fsiPromptedThisSession) {
+      fsiPromptedThisSession = true;
+      Alert.alert(COPY.notif.fsiTitle, COPY.notif.fsiBody, [
+        { text: COPY.notif.exactAlarmLater, style: 'cancel' },
+        {
+          text: COPY.notif.exactAlarmOpen,
+          onPress: () => {
+            void openAndroidFullScreenIntentSettings();
+          },
+        },
+      ]);
     }
 
     let scheduledFp: string[] = [];

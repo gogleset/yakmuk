@@ -15,6 +15,7 @@
   "ios": {
     "supportsTablet": true,
     "bundleIdentifier": "com.yakmuk.app",
+    "usesAppleSignIn": true,
     "infoPlist": {
       "UIViewControllerBasedStatusBarAppearance": false
     }
@@ -51,6 +52,8 @@
     "expo-system-ui",
     "expo-secure-store",
     "expo-web-browser",
+    "expo-apple-authentication",
+    "@react-native-google-signin/google-signin",
     [
       "expo-notifications",
       {

@@ -2,7 +2,8 @@
 .branches
 .temp
 
-# dotenvx
+# Auth secrets (example only is committed)
+.env
 .env.keys
 .env.local
 .env.*.local

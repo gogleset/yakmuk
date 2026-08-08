@@ -1,5 +1,6 @@
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
+import { ERRORS } from '@/shared/copy';
 
 /** 에뮬레이터에서 host 루프백 주소 보정 */
 function resolveLocalSupabaseUrl(url: string): string {
@@ -32,6 +33,18 @@ export function getSupabaseAnonKey(): string {
 
 export const appScheme =
   Constants.expoConfig?.scheme?.toString() ?? 'yakmuk';
+
+/**
+ * Google 네이티브 Sign-In용 Web Client ID (Secret 아님).
+ * 미설정 시 Google 로그인 버튼은 실패 — supabase/.env.example · mobile/.env.example 참고.
+ */
+export function getGoogleWebClientId(): string {
+  const id = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID?.trim();
+  if (!id) {
+    throw new Error(ERRORS.auth.googleWebClientMissing);
+  }
+  return id;
+}
 
 /**
  * 공공데이터포털 인증키 (식약처 e약은요).

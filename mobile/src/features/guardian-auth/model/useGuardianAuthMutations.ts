@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { createFamily } from '@/entities/user/api/create-family';
 import { signInGuardianDev } from '@/entities/user/api/sign-in-guardian-dev';
-import { signInGuardianOAuth } from '@/entities/user/api/sign-in-guardian-oauth';
+import { signInGuardianNative } from '@/entities/user/api/sign-in-guardian-native';
 import { signOut } from '@/entities/user/api/sign-out';
 import { withdrawMyAccount } from '@/entities/user/api/withdraw-my-account';
 import { showMutationError } from '@/shared/lib/mutation';
@@ -10,7 +10,7 @@ import { ERRORS } from '@/shared/copy';
 export const guardianAuthKeys = {
   all: ['guardian-auth'] as const,
   signInDev: () => [...guardianAuthKeys.all, 'sign-in-dev'] as const,
-  signInOAuth: () => [...guardianAuthKeys.all, 'sign-in-oauth'] as const,
+  signInNative: () => [...guardianAuthKeys.all, 'sign-in-native'] as const,
   createFamily: () => [...guardianAuthKeys.all, 'create-family'] as const,
   signOut: () => [...guardianAuthKeys.all, 'sign-out'] as const,
   withdraw: () => [...guardianAuthKeys.all, 'withdraw'] as const,
@@ -25,11 +25,13 @@ export function useGuardianSignInDevMutation() {
   });
 }
 
-export function useGuardianSignInOAuthMutation() {
+export function useGuardianSignInNativeMutation(onAuthFailureDismiss?: () => void) {
   return useMutation({
-    mutationKey: guardianAuthKeys.signInOAuth(),
-    mutationFn: (provider: 'google' | 'apple') => signInGuardianOAuth(provider),
-    onError: (error) => showMutationError(ERRORS.auth.loginFailed, error),
+    mutationKey: guardianAuthKeys.signInNative(),
+    mutationFn: (provider: 'google' | 'apple') =>
+      signInGuardianNative(provider),
+    onError: (error) =>
+      showMutationError(ERRORS.auth.loginFailed, error, onAuthFailureDismiss),
   });
 }
 

@@ -1,6 +1,7 @@
 import { router, useIsFocused } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
+  Platform,
   Pressable,
   Text,
   View,
@@ -10,7 +11,7 @@ import { useAuth } from '@/providers/AuthProvider';
 import {
   useCreateFamilyMutation,
   useGuardianSignInDevMutation,
-  useGuardianSignInOAuthMutation,
+  useGuardianSignInNativeMutation,
   useSignOutMutation,
 } from '@/features/guardian-auth';
 import { ROUTES } from '@/shared/config/routes';
@@ -43,14 +44,29 @@ export function WelcomePage() {
   const [familyStep, setFamilyStep] = useState<FamilyFunnelStep>(0);
   const [showDevLogin, setShowDevLogin] = useState(false);
 
+  const recoverWelcomeAfterNativeAuthFailure = useCallback(() => {
+    setFamilyStep(0);
+    setPath('choose');
+    void (async () => {
+      try {
+        await refreshProfile();
+      } catch {
+        /* ignore */
+      }
+      router.replace(ROUTES.welcome);
+    })();
+  }, [refreshProfile]);
+
   const signInDev = useGuardianSignInDevMutation();
-  const signInOAuth = useGuardianSignInOAuthMutation();
+  const signInNative = useGuardianSignInNativeMutation(
+    recoverWelcomeAfterNativeAuthFailure,
+  );
   const createFamily = useCreateFamilyMutation(refreshProfile);
   const { mutateAsync: signOutAsync, isPending: signOutPending } =
     useSignOutMutation();
   const busy =
     signInDev.isPending ||
-    signInOAuth.isPending ||
+    signInNative.isPending ||
     createFamily.isPending ||
     signOutPending;
 
@@ -116,12 +132,21 @@ export function WelcomePage() {
     }
   };
 
-  const onOAuth = async (provider: 'google' | 'apple') => {
+  const onNativeSignIn = async (provider: 'google' | 'apple') => {
     try {
-      await signInOAuth.mutateAsync(provider);
-      await refreshProfile();
+      const result = await signInNative.mutateAsync(provider);
+      if (!result.cancelled) {
+        await refreshProfile();
+      }
     } catch {
-      /* mutation onError에서 처리 */
+      // 모달 확인 전에도 리더 화면/부분 세션에 안 남게 즉시 Welcome choose로
+      setFamilyStep(0);
+      setPath('choose');
+      try {
+        await refreshProfile();
+      } catch {
+        /* ignore */
+      }
     }
   };
 
@@ -251,7 +276,7 @@ export function WelcomePage() {
     );
   }
 
-  // leader: OAuth / 개발 로그인
+  // leader: 네이티브 로그인 / 개발 로그인
   return (
     <View
       className="flex-1 bg-canvas px-6"
@@ -282,14 +307,16 @@ export function WelcomePage() {
             label={COPY.welcome.continueGoogle}
             variant="oauth"
             disabled={busy}
-            onPress={() => void onOAuth('google')}
+            onPress={() => void onNativeSignIn('google')}
           />
-          <Button
-            label={COPY.welcome.continueApple}
-            variant="oauth"
-            disabled={busy}
-            onPress={() => void onOAuth('apple')}
-          />
+          {Platform.OS === 'ios' ? (
+            <Button
+              label={COPY.welcome.continueApple}
+              variant="oauth"
+              disabled={busy}
+              onPress={() => void onNativeSignIn('apple')}
+            />
+          ) : null}
 
           {__DEV__ ? (
             <>

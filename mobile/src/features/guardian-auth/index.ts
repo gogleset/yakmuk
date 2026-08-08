@@ -1,6 +1,7 @@
 export {
+  guardianAuthKeys,
   useGuardianSignInDevMutation,
-  useGuardianSignInOAuthMutation,
+  useGuardianSignInNativeMutation,
   useCreateFamilyMutation,
   useSignOutMutation,
   useWithdrawAccountMutation,

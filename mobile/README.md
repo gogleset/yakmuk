@@ -58,11 +58,33 @@ docker compose run --rm --service-ports yakmuk pnpm exec expo start --web --host
 
 ### 시나리오 (가족 2클라)
 
-1. **시뮬 A (보호자):** Welcome → 개발용 로그인 → 가족 탭에서 피보호자 닉네임 넣고 코드/QR 발급  
+1. **시뮬 A (보호자):** Welcome → Google 네이티브(또는 개발용 이메일) → 가족 탭에서 피보호자 닉네임 넣고 코드/QR 발급  
 2. **시뮬 B (피보호자):** Welcome → 초대코드로 참여 → 홈에서 약 추가·체크·컨디션  
 3. **시뮬 A:** 피드 탭에서 Realtime 갱신 확인  
 
-OAuth(Google/Apple)는 로컬 프로바이더 설정 후 버튼 사용. 미설정 시 개발용 이메일 로그인.
+#### 가족장 Google / Apple (네이티브)
+
+키는 **나중에** 넣어도 됨. 자리만 준비되어 있음.
+
+1. Google Cloud: **Web** + **Android**(`com.jinlabs.yakok` + **앱 debug SHA-1**) Client ID · Web Secret  
+   - SHA-1은 `~/.android/debug.keystore`가 아니라 **`mobile/android/app/debug.keystore`** 기준:
+     ```bash
+     keytool -list -v -keystore mobile/android/app/debug.keystore \
+       -alias androiddebugkey -storepass android -keypass android
+     ```
+     (현재: `5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25`)  
+2. `supabase/.env` (`.env.example` 참고):
+   ```
+   SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID=<web>,<android>
+   SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_SECRET=<web secret>
+   ```
+3. [`supabase/config.toml`](../supabase/config.toml) `[auth.external.google]` → `enabled = true`  
+4. `mobile/.env`: `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=<web client id만>`  
+5. `supabase stop && supabase start` · 네이티브 모듈 반영을 위해 `pnpm android` / `pnpm ios` 재빌드  
+6. Apple(iOS): Bundle ID `com.yakmuk.app` + Sign in with Apple · `SUPABASE_AUTH_EXTERNAL_APPLE_*` · `[auth.external.apple] enabled = true`  
+7. Android에서는 Apple 버튼이 숨겨짐 (네이티브 Apple 없음)
+
+미설정 시 Welcome의 **개발용 이메일 로그인**(`__DEV__`) 사용.
 
 ### Edge 푸시 · 로컬 알림
 

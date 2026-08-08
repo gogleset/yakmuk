@@ -5,3 +5,8 @@ jest.mock('react-native', () => ({
     addListener: jest.fn(() => ({ remove: jest.fn() })),
   },
 }));
+
+jest.mock('expo-constants', () => ({
+  __esModule: true,
+  default: { expoConfig: { scheme: 'yakmuk' } },
+}));

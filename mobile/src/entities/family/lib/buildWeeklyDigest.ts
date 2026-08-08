@@ -1,5 +1,6 @@
 import type { ConditionValue } from '@/entities/medication/model/types';
 import { COPY } from '@/shared/copy';
+import { formatWeekdayShort } from '@/shared/lib/format';
 import { addDaysKst, weekdayMon0FromKstDate } from '@/shared/lib/kst';
 
 export type DayDigestInput = {
@@ -24,6 +25,30 @@ export type WeeklyDigestView = {
 export function weekStartMondayKst(dateYmd: string): string {
   const mon0 = weekdayMon0FromKstDate(dateYmd);
   return addDaysKst(dateYmd, -mon0);
+}
+
+/**
+ * 특이일 → 한 줄 묶음.
+ * ex) `금, 토, 일 약이 조금 남았어요` · `월 컨디션이 안 좋았어요`
+ */
+export function formatWeeklyAnomalyLines(
+  anomalies: WeeklyAnomaly[],
+): string[] {
+  const missed = anomalies.filter((a) => a.kind === 'missed');
+  const bad = anomalies.filter((a) => a.kind === 'bad');
+  const lines: string[] = [];
+
+  if (missed.length > 0) {
+    const weekdays = missed
+      .map((a) => formatWeekdayShort(a.dateYmd))
+      .join(', ');
+    lines.push(COPY.family.weeklyMissedDays(weekdays));
+  }
+  if (bad.length > 0) {
+    const weekdays = bad.map((a) => formatWeekdayShort(a.dateYmd)).join(', ');
+    lines.push(COPY.family.weeklyBadDays(weekdays));
+  }
+  return lines;
 }
 
 /** 순수 집계 — 차트/분수 UI 모델 금지 */

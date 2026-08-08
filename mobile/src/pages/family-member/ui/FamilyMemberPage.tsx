@@ -23,7 +23,7 @@ import {
   ScreenScrollView,
   StackHeader,
 } from '@/shared/ui';
-import { GuardianMedManagePanel } from '@/widgets/guardian-med-manage-panel';
+import { GuardianMedManagePanel, MedManageListSkeleton } from '@/widgets/guardian-med-manage-panel';
 import { MedicationCalendarPanel } from '@/widgets/medication-calendar-panel';
 import { canManageMemberMeds } from '@/entities/user';
 
@@ -126,14 +126,18 @@ export function FamilyMemberPage() {
 
               {canManageMeds ? (
                 <FadeInView step={1}>
-                  <GuardianMedManagePanel
-                    meds={medsQuery.data ?? []}
-                    isError={medsQuery.isError}
-                    onEdit={(med) =>
-                      router.push(editMedicationRoute(med.id, userId))
-                    }
-                    onDelete={confirmDelete}
-                  />
+                  {medsQuery.isLoading && !medsQuery.data ? (
+                    <MedManageListSkeleton />
+                  ) : (
+                    <GuardianMedManagePanel
+                      meds={medsQuery.data ?? []}
+                      isError={medsQuery.isError}
+                      onEdit={(med) =>
+                        router.push(editMedicationRoute(med.id, userId))
+                      }
+                      onDelete={confirmDelete}
+                    />
+                  )}
                 </FadeInView>
               ) : null}
             </>

@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useMedicationAlarmQueries } from '@/entities/medication';
 import {
   type AlarmMedItem,
@@ -24,6 +24,7 @@ import {
   Screen,
   useScrollFadeEdges,
 } from '@/shared/ui';
+import { AlarmHeroSkeleton } from './AlarmHeroSkeleton';
 
 function firstParam(value: string | string[] | undefined): string {
   if (Array.isArray(value)) return value[0] ?? '';
@@ -353,6 +354,9 @@ export function MedicationAlarmPage() {
 
   return (
     <Screen className="bg-canvas">
+      {!queriesReady && !!userId ? (
+        <AlarmHeroSkeleton showList />
+      ) : (
       <View className="flex-1 justify-between px-6 py-8">
         <View className="items-center gap-3 pt-4">
           <Text className="text-xl font-bold text-brand">
@@ -366,11 +370,7 @@ export function MedicationAlarmPage() {
           <KokiIllustration variant="pill" size={showChecklist ? 168 : 220} />
         </View>
 
-        {!queriesReady && !!userId ? (
-          <View className="flex-1 items-center justify-center">
-            <ActivityIndicator color={COLORS.brand} />
-          </View>
-        ) : showChecklist ? (
+        {showChecklist ? (
           <View className="relative mt-2 flex-1">
             <ScrollView
               className="flex-1"
@@ -463,6 +463,7 @@ export function MedicationAlarmPage() {
           />
         </View>
       </View>
+      )}
     </Screen>
   );
 }

@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { RefreshControl } from 'react-native';
+import { RefreshControl, View } from 'react-native';
 import { useAuth } from '@/providers/AuthProvider';
 import {
   invalidateFamilyActivity,
@@ -21,6 +21,7 @@ import {
 } from '@/shared/ui';
 import {
   FamilyActivityFeedStack,
+  FeedListSkeleton,
   filterFamilyFeedLastDays,
   groupFamilyFeedByDate,
   type FamilyFeedSection,
@@ -44,6 +45,7 @@ export function FamilyFeedPage() {
 
   /** 한 섹션에 날짜 스택들을 넣어 헤더/아이템 분리 없이 렌더 */
   const listSections = useMemo(() => {
+    if (feedQuery.isError) return [{ data: [] as FamilyFeedSection[] }];
     const others = (feedQuery.data ?? []).filter(
       (item) => item.userId !== myUserId,
     );
@@ -53,7 +55,7 @@ export function FamilyFeedPage() {
       LIMITS.familyFeedWindowDays,
     );
     return [{ data: groupFamilyFeedByDate(week, today) }];
-  }, [feedQuery.data, myUserId, today]);
+  }, [feedQuery.data, feedQuery.isError, myUserId, today]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -104,11 +106,25 @@ export function FamilyFeedPage() {
           />
         }
         ListEmptyComponent={
-          <Fallback
-            image={<KokiIllustration variant="cheer" size={96} />}
-            message={COPY.family.emptyFeedMessage}
-            fill
-          />
+          feedQuery.isLoading && !feedQuery.data ? (
+            <View className="pt-2">
+              <FeedListSkeleton />
+            </View>
+          ) : feedQuery.isError ? (
+            <Fallback
+              image={<KokiIllustration variant="thinking" size={96} />}
+              message={COPY.family.loadFailedFeed}
+              ctaLabel={COPY.common.retry}
+              onCtaPress={() => void feedQuery.refetch()}
+              fill
+            />
+          ) : (
+            <Fallback
+              image={<KokiIllustration variant="cheer" size={96} />}
+              message={COPY.family.emptyFeedMessage}
+              fill
+            />
+          )
         }
         renderItem={renderItem}
       />

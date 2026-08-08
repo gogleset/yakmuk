@@ -1,5 +1,4 @@
 import {
-  ActivityIndicator,
   Alert,
   Pressable,
   Text,
@@ -15,6 +14,7 @@ import { joinDeepLink, ROUTES } from '@/shared/config/routes';
 import { COLORS, LAYOUT, LIMITS } from '@/shared/config/theme';
 import { ACTIONS, COPY, ERRORS } from '@/shared/copy';
 import { Card, Icons, Muted } from '@/shared/ui';
+import { InviteListSkeleton } from '@/features/family-invite/ui/InviteListSkeleton';
 
 const QR_SIZE = 88;
 
@@ -119,8 +119,8 @@ export function FamilyInvitePanel({ isLeader }: Props) {
         </Muted>
       </View>
 
-      {invitesQuery.isLoading ? (
-        <ActivityIndicator color={COLORS.brand} className="my-6" />
+      {invitesQuery.isLoading && !invitesQuery.data ? (
+        <InviteListSkeleton />
       ) : (
         <View className="gap-2.5">
           {rows.map((row, rowIndex) => (

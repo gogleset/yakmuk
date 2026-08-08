@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react';
 import { View, type ViewProps } from 'react-native';
 import { cn } from '@/shared/lib/cn';
+import { Button } from '@/shared/ui/primitives/Button';
 import { Body } from '@/shared/ui/primitives/Typography';
 
 type Props = ViewProps & {
-  /** 가운데 이미지·일러스트 (콕이, 아이콘 등) */
+  /** 가운데 이미지·일러스트 (콕이 등) */
   image: ReactNode;
   /** 이미지 아래 설명 */
   message: string;
@@ -16,10 +17,14 @@ type Props = ViewProps & {
    * BottomSheet·스크롤 안에서는 false(기본) — 콘텐츠 높이만.
    */
   fill?: boolean;
+  /** 로드 실패 재시도 등 — round CTA */
+  ctaLabel?: string;
+  onCtaPress?: () => void;
 };
 
 /**
- * 공통 fallback / empty / 예외 UI.
+ * 공통 fallback / empty / 로드 실패 UI.
+ * 형식: 로고(image) + 설명(message) + optional round CTA.
  * 시트·리스트: 기본 compact. 화면 남은 높이 채울 때만 `fill`.
  */
 export function Fallback({
@@ -28,6 +33,8 @@ export function Fallback({
   className,
   messageClassName,
   fill = false,
+  ctaLabel,
+  onCtaPress,
   style,
   ...rest
 }: Props) {
@@ -50,6 +57,14 @@ export function Fallback({
       >
         {message}
       </Body>
+      {ctaLabel && onCtaPress ? (
+        <Button
+          label={ctaLabel}
+          shape="round"
+          className="mt-1"
+          onPress={onCtaPress}
+        />
+      ) : null}
     </View>
   );
 }

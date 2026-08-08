@@ -1,8 +1,10 @@
 import { Pressable, Text, View } from 'react-native';
-import type { WeeklyDigestView } from '@/entities/family';
+import {
+  formatWeeklyAnomalyLines,
+  type WeeklyDigestView,
+} from '@/entities/family';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
-import { formatFriendlyDate } from '@/shared/lib/format';
 import { KokiIllustration } from '@/shared/ui';
 
 type Props = {
@@ -12,7 +14,8 @@ type Props = {
 
 /** 주간 안부 카드 — 통계판 아님 · soft (border 남발 금지) */
 export function FamilyWeeklyDigestCard({ digest, onAck }: Props) {
-  const hasAnomaly = digest.anomalyDays.length > 0;
+  const anomalyLines = formatWeeklyAnomalyLines(digest.anomalyDays);
+  const hasAnomaly = anomalyLines.length > 0;
 
   return (
     <View
@@ -32,22 +35,15 @@ export function FamilyWeeklyDigestCard({ digest, onAck }: Props) {
         </Text>
         {hasAnomaly ? (
           <View className="gap-0.5">
-            {digest.anomalyDays.slice(0, 3).map((a) => {
-              const when = formatFriendlyDate(a.dateYmd);
-              const line =
-                a.kind === 'bad'
-                  ? COPY.family.weeklyBadDay(when)
-                  : COPY.family.weeklyMissedDay(when);
-              return (
-                <Text
-                  key={`${a.dateYmd}-${a.kind}`}
-                  className="text-sm leading-5 text-brand-muted"
-                  numberOfLines={1}
-                >
-                  {line}
-                </Text>
-              );
-            })}
+            {anomalyLines.map((line) => (
+              <Text
+                key={line}
+                className="text-sm leading-5 text-brand-muted"
+                numberOfLines={2}
+              >
+                {line}
+              </Text>
+            ))}
           </View>
         ) : (
           <Text className="text-sm leading-5 text-brand-muted">

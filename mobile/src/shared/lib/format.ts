@@ -1,5 +1,13 @@
 import { addDaysKst, todayKstDateString } from '@/shared/lib/kst';
 
+/** YYYY-MM-DD → "금" (한 글자 요일) */
+export function formatWeekdayShort(dateYmd: string): string {
+  const [y, m, d] = dateYmd.split('-').map(Number);
+  if (!y || !m || !d) return dateYmd;
+  const utc = Date.UTC(y, m - 1, d, 12, 0, 0);
+  return ['일', '월', '화', '수', '목', '금', '토'][new Date(utc).getUTCDay()]!;
+}
+
 /** YYYY-MM-DD → "7월 16일 (목)" */
 export function formatFriendlyDate(dateYmd: string): string {
   const [y, m, d] = dateYmd.split('-').map(Number);

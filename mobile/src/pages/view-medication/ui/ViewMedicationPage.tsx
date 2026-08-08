@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { View } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/providers/AuthProvider';
 import { useHomeMedicationQueries } from '@/entities/medication/model/queries';
@@ -8,10 +8,10 @@ import type { Medication } from '@/entities/medication/model/types';
 import { refreshAfterMedicationChange } from '@/features/add-medication';
 import {
   MedicationSheet,
+  MedicationSheetSkeleton,
   type MedicationSheetMode,
 } from '@/features/medication-sheet';
 import { ROUTES } from '@/shared/config/routes';
-import { COLORS } from '@/shared/config/theme';
 import { todayKstDateString } from '@/shared/lib/kst';
 import { Body, Screen } from '@/shared/ui';
 
@@ -61,8 +61,8 @@ export function ViewMedicationPage() {
 
   if (meds.isLoading && sheetMeds.length === 0) {
     return (
-      <Screen className="items-center justify-center">
-        <ActivityIndicator color={COLORS.brand} />
+      <Screen className="bg-transparent">
+        <MedicationSheetSkeleton />
       </Screen>
     );
   }

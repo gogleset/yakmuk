@@ -16,6 +16,12 @@ export const ERRORS = {
     sessionExpired: '로그인이 만료됐어요. 다시 로그인해 주세요',
     profileNotFound: '프로필을 찾을 수 없어요. 다시 로그인해 주세요',
     profileLoadFailed: '프로필을 불러오지 못했어요',
+    appleIosOnly: 'Apple 로그인은 iPhone에서만 할 수 있어요',
+    googleWebClientMissing:
+      'Google 로그인을 아직 설정하지 않았어요. EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID를 넣어 주세요',
+    googleDeveloperError:
+      'Google 앱 설정이 맞지 않아요. Android Client SHA-1을 android/app/debug.keystore 기준으로 다시 등록해 주세요',
+    googlePlayServicesMissing: 'Google Play 서비스를 사용할 수 없어요',
   },
 
   family: {
@@ -31,6 +37,7 @@ export const ERRORS = {
     memberNotFound: '가족 구성원을 찾을 수 없어요',
     cannotRemoveSelf: '자기 자신은 내보낼 수 없어요',
     cannotRemoveLeader: '가족장은 내보낼 수 없어요',
+    ackFailed: '확인을 남기지 못했어요',
   },
 
   invite: {

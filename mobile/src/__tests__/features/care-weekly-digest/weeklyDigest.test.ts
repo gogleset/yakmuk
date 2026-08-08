@@ -1,5 +1,6 @@
 import {
   buildWeeklyDigest,
+  formatWeeklyAnomalyLines,
   weekStartMondayKst,
 } from '@/entities/family/lib/buildWeeklyDigest';
 import { COPY } from '@/shared/copy';
@@ -69,6 +70,28 @@ describe('buildWeeklyDigest', () => {
       '2026-08-03',
     );
     expect(view.approxLine).toBe(COPY.family.weeklyNoMeds);
+  });
+});
+
+describe('formatWeeklyAnomalyLines', () => {
+  it('같은 kind는 요일만 묶어 한 줄', () => {
+    // 2026-07-31=금 · 08-01=토 · 08-02=일
+    expect(
+      formatWeeklyAnomalyLines([
+        { dateYmd: '2026-07-31', kind: 'missed' },
+        { dateYmd: '2026-08-01', kind: 'missed' },
+        { dateYmd: '2026-08-02', kind: 'missed' },
+      ]),
+    ).toEqual(['금, 토, 일 약이 조금 남았어요']);
+  });
+
+  it('missed·bad는 종류별 줄', () => {
+    expect(
+      formatWeeklyAnomalyLines([
+        { dateYmd: '2026-08-03', kind: 'missed' },
+        { dateYmd: '2026-08-04', kind: 'bad' },
+      ]),
+    ).toEqual(['월 약이 조금 남았어요', '화 컨디션이 안 좋았어요']);
   });
 });
 

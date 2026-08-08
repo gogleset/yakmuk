@@ -30,6 +30,8 @@ export function useFamilyWeeklyDigestCard({
 }: Params): {
   digest: WeeklyDigestView | null;
   visible: boolean;
+  /** 자리 예약 — viewer·opt·미dismiss · 데이터 전 */
+  showSkeleton: boolean;
   onAck: () => void;
 } {
   const isViewer = isDigestViewerRole(role);
@@ -62,14 +64,18 @@ export function useFamilyWeeklyDigestCard({
   );
 
   const dismissed = isWeeklyDigestDismissed(weekStart, dismissedWeek);
+  const eligible = isViewer && optOn && ready && !dismissed;
   const digest = query.data ?? null;
-  const visible =
-    isViewer && optOn && ready && !dismissed && digest != null;
+  const visible = eligible && digest != null;
+  const showSkeleton =
+    eligible &&
+    digest == null &&
+    (query.isLoading || query.isPending || query.isFetching);
 
   const onAck = useCallback(() => {
     setDismissedWeek(weekStart);
     void dismissWeeklyDigestWeek(weekStart);
   }, [weekStart]);
 
-  return { digest, visible, onAck };
+  return { digest, visible, showSkeleton, onAck };
 }

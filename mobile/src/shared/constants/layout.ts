@@ -46,6 +46,8 @@ export const LAYOUT = {
   z: {
     fade: 15,
     fab: 20,
+    /** ExceptionModal/Toast — Sheet overlay(50) 위 */
+    exception: 100,
   },
   timePicker: {
     /** 시·분 숫자 박스 높이 */

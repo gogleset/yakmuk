@@ -18,6 +18,8 @@ export const MOTION = {
   press: {
     scale: 0.97,
   },
+  /** ExceptionToast 자동 닫힘 */
+  toastMs: 2500,
 } as const;
 
 export type MotionDuration = keyof typeof MOTION.duration;

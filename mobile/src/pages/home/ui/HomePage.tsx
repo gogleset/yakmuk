@@ -22,14 +22,18 @@ import { ACTIONS, COPY } from '@/shared/copy';
 import {
   Fab,
   FadeInView,
+  Fallback,
   KokiIllustration,
-  RichEmptyState,
   Screen,
   ScreenScrollView,
 } from '@/shared/ui';
 import { MedicationCalendarPanel } from '@/widgets/medication-calendar-panel';
 import { PastDayMedicationPanel } from '@/widgets/past-day-medication-panel';
-import { TodayMedicationPanel } from '@/widgets/today-medication-panel';
+import {
+  PastDayPanelSkeleton,
+  TodayMedicationPanel,
+  TodayPanelSkeleton,
+} from '@/widgets/today-medication-panel';
 
 /** 홈(기록) — 역할 무관 동일 UI (가족장·보호자·피보호자) */
 export function HomePage() {
@@ -173,6 +177,11 @@ export function HomePage() {
 
   const showFab = hasRegisteredMeds;
   const allDone = todayMeds.length > 0 && pendingIds.length === 0;
+  const medsLoading = medsQuery.isLoading && !medsQuery.data;
+  const pastDayLoading =
+    showPastDay &&
+    selectedDayEntries.length === 0 &&
+    (calendarMedsQuery.isLoading || logsQuery.isLoading || logsQuery.isFetching);
 
   return (
     <Screen
@@ -211,27 +220,27 @@ export function HomePage() {
             onMonthChange={onMonthChange}
           />
 
-          {!hasRegisteredMeds ? (
-            <RichEmptyState
-              layout="stack"
+          {medsLoading ? (
+            <TodayPanelSkeleton />
+          ) : !hasRegisteredMeds ? (
+            <Fallback
               fill
-              title={
+              image={<KokiIllustration variant="thinking" size={112} />}
+              message={
                 medsQuery.isError
                   ? COPY.med.loadFailed
                   : COPY.med.emptyRegistered
               }
-              message={
-                medsQuery.isError
-                  ? COPY.common.retryLater
-                  : COPY.med.emptyRegisteredHint
-              }
-              illustration={
-                <KokiIllustration variant="thinking" size={112} />
-              }
               ctaLabel={
-                medsQuery.isError ? undefined : COPY.med.emptyRegisteredCta
+                medsQuery.isError
+                  ? COPY.common.retry
+                  : COPY.med.emptyRegisteredCta
               }
-              onCtaPress={medsQuery.isError ? undefined : openAdd}
+              onCtaPress={
+                medsQuery.isError
+                  ? () => void medsQuery.refetch()
+                  : openAdd
+              }
             />
           ) : null}
 
@@ -242,6 +251,7 @@ export function HomePage() {
               condition={condition}
               message={message}
               isError={medsQuery.isError}
+              onRetry={() => void medsQuery.refetch()}
               emptyMessage={
                 todayMeds.length === 0 ? COPY.med.emptyToday : undefined
               }
@@ -264,14 +274,18 @@ export function HomePage() {
           ) : null}
 
           {showPastDay ? (
-            <PastDayMedicationPanel
-              entries={selectedDayEntries}
-              conditionLogs={selectedDayConditionLogs}
-              onOpenDetail={(id) => {
-                if (!profile?.id) return;
-                router.push(viewMedicationRoute(id, profile.id));
-              }}
-            />
+            pastDayLoading ? (
+              <PastDayPanelSkeleton />
+            ) : (
+              <PastDayMedicationPanel
+                entries={selectedDayEntries}
+                conditionLogs={selectedDayConditionLogs}
+                onOpenDetail={(id) => {
+                  if (!profile?.id) return;
+                  router.push(viewMedicationRoute(id, profile.id));
+                }}
+              />
+            )
           ) : null}
         </FadeInView>
       </ScreenScrollView>

@@ -3,11 +3,11 @@ import type { CareRecipientTodayStatus } from '@/entities/family/model/types';
 import { COLORS, LAYOUT, TONE_OUTLINE } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
 import {
+  Fallback,
   Icons,
   InitialAvatar,
   KokiIllustration,
   Muted,
-  RichEmptyState,
 } from '@/shared/ui';
 import { memberStatusLabel } from './lib/memberStatus';
 
@@ -20,6 +20,8 @@ type Props = {
   onInviteCtaPress?: () => void;
   /** leader만 전달 — 멤버 있을 때 「관리」노출 */
   onManagePress?: () => void;
+  isError?: boolean;
+  onRetry?: () => void;
 };
 
 type MemberCardProps = {
@@ -76,7 +78,7 @@ function FamilyMemberStatusCard({ member, onPress }: MemberCardProps) {
   );
 }
 
-/** 가족 2×2 그리드 (+ empty). 케어 알림은 FamilyCareAlertCarousel */
+/** 가족 2×2 그리드 (+ empty/로드실패). 케어 알림은 FamilyCareAlertCarousel */
 export function FamilyGuardianDashboard({
   members,
   sectionTitle,
@@ -84,17 +86,28 @@ export function FamilyGuardianDashboard({
   onPressMember,
   onInviteCtaPress,
   onManagePress,
+  isError = false,
+  onRetry,
 }: Props) {
+  if (isError) {
+    return (
+      <Fallback
+        image={<KokiIllustration variant="thinking" size={96} />}
+        message={COPY.family.loadFailed}
+        ctaLabel={onRetry ? COPY.common.retry : undefined}
+        onCtaPress={onRetry}
+      />
+    );
+  }
+
   // empty: 헤더 없이 CTA만 (관리는 멤버 있을 때만)
   if (members.length === 0) {
     return (
-      <RichEmptyState
-        title={COPY.family.emptyMembers}
-        message={COPY.family.emptyMembersMessage}
-        illustration={<KokiIllustration variant="family" size={120} />}
+      <Fallback
+        image={<KokiIllustration variant="family" size={120} />}
+        message={COPY.family.emptyMembers}
         ctaLabel={showInviteCta ? COPY.family.inviteCta : undefined}
         onCtaPress={showInviteCta ? onInviteCtaPress : undefined}
-        className="bg-transparent"
       />
     );
   }

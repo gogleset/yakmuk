@@ -4,3 +4,4 @@ export {
   FamilyTabHeader,
 } from './FamilyMemberCountRow';
 export { memberStatusLabel } from './lib/memberStatus';
+export { MemberGridSkeleton } from './MemberGridSkeleton';

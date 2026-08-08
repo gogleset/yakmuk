@@ -1,4 +1,4 @@
-import { memberStatusLabel } from '@/widgets/family-guardian-dashboard';
+import { memberStatusLabel } from '@/widgets/family-guardian-dashboard/lib/memberStatus';
 import { COPY } from '@/shared/copy';
 
 describe('memberStatusLabel', () => {

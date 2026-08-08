@@ -9,6 +9,7 @@ import {
   useFamilyScreenQueries,
 } from '@/entities/family';
 import { useAckFamilyAlertMutation } from '@/features/ack-family-alert';
+import { useFamilyWeeklyDigestCard } from '@/features/care-weekly-digest';
 import { useFamilyInfoQuery } from '@/features/family-ops';
 import { familyMemberRoute, ROUTES } from '@/shared/config/routes';
 import { formatFriendlyDate } from '@/shared/lib/format';
@@ -24,22 +25,27 @@ import {
 } from '@/shared/ui';
 import {
   FamilyActivityFeedStack,
+  FeedPreviewSkeleton,
   filterFamilyFeedLastDays,
   groupFamilyFeedByDate,
   sliceFamilyFeedSections,
 } from '@/widgets/family-activity-feed';
 import {
+  CareAlertSkeleton,
   FAMILY_ALERT_UI_MOCK,
   FamilyCareAlertCarousel,
   mapFamilyAlertsToSlides,
   MOCK_CARE_ALERTS,
 } from '@/widgets/family-care-alert';
-import { FamilyWeeklyDigestCard } from '@/widgets/family-weekly-digest';
-import { useFamilyWeeklyDigestCard } from '@/features/care-weekly-digest';
+import {
+  FamilyWeeklyDigestCard,
+  WeeklyDigestSkeleton,
+} from '@/widgets/family-weekly-digest';
 import {
   FamilyFeedSectionHeader,
   FamilyGuardianDashboard,
   FamilyTabHeader,
+  MemberGridSkeleton,
 } from '@/widgets/family-guardian-dashboard';
 
 /** UI 확인용 — true면 가족 그리드·최근 소식 empty 강제 */
@@ -88,12 +94,20 @@ export function FamilyPage() {
     }
   };
 
+  const statusLoading =
+    statusQuery.isLoading && !FAMILY_TAB_EMPTY_UI_PREVIEW && !statusQuery.data;
+  const alertsLoading =
+    alertsQuery.isLoading && !FAMILY_ALERT_UI_MOCK && !alertsQuery.data;
+  const feedLoading = feedQuery.isLoading && !feedQuery.data;
+
   const statusMembers = FAMILY_TAB_EMPTY_UI_PREVIEW
     ? []
-    : (statusQuery.data ?? []).filter((member) => member.userId !== myUserId);
-  const alerts = (alertsQuery.data ?? []).filter(
-    (alert) => alert.userId !== myUserId,
-  );
+    : statusQuery.isError
+      ? []
+      : (statusQuery.data ?? []).filter((member) => member.userId !== myUserId);
+  const alerts = alertsQuery.isError
+    ? []
+    : (alertsQuery.data ?? []).filter((alert) => alert.userId !== myUserId);
 
   const careSlides = useMemo(() => {
     if (FAMILY_ALERT_UI_MOCK) {
@@ -105,7 +119,7 @@ export function FamilyPage() {
   }, [alerts, dismissedMockIds]);
 
   const feedSections = useMemo(() => {
-    if (FAMILY_TAB_EMPTY_UI_PREVIEW) return [];
+    if (FAMILY_TAB_EMPTY_UI_PREVIEW || feedQuery.isError) return [];
     const others = (feedQuery.data ?? []).filter(
       (item) => item.userId !== myUserId,
     );
@@ -115,7 +129,7 @@ export function FamilyPage() {
       LIMITS.familyFeedWindowDays,
     );
     return groupFamilyFeedByDate(week, today);
-  }, [feedQuery.data, myUserId, today]);
+  }, [feedQuery.data, feedQuery.isError, myUserId, today]);
 
   const feedCount = feedSections.reduce((n, s) => n + s.data.length, 0);
   const feedPreviewSections = sliceFamilyFeedSections(
@@ -123,8 +137,12 @@ export function FamilyPage() {
     LIMITS.familyFeedPreviewCount,
   );
   const hasMembers = statusMembers.length > 0;
-  // 프리뷰: 멤버 empty여도 최근 소식 empty 같이 노출
-  const showFeedSection = hasMembers || FAMILY_TAB_EMPTY_UI_PREVIEW;
+  // 로딩 중에도 피드 자리 예약 (empty cheer 깜빡임 방지)
+  const showFeedSection =
+    statusLoading ||
+    hasMembers ||
+    FAMILY_TAB_EMPTY_UI_PREVIEW ||
+    feedQuery.isError;
 
   const sectionTitle =
     familyInfoQuery.data?.name?.trim() || COPY.family.todayStatusFallback;
@@ -174,49 +192,81 @@ export function FamilyPage() {
             onBellPress={() => router.push(ROUTES.settings)}
           />
 
-          <FamilyCareAlertCarousel
-            slides={careSlides}
-            onAck={onAckCareAlert}
-          />
+          {alertsQuery.isError && !FAMILY_ALERT_UI_MOCK ? (
+            <Fallback
+              image={<KokiIllustration variant="thinking" size={72} />}
+              message={COPY.family.loadFailedAlerts}
+              ctaLabel={COPY.common.retry}
+              onCtaPress={() => void alertsQuery.refetch()}
+            />
+          ) : alertsLoading ? (
+            <CareAlertSkeleton />
+          ) : (
+            <FamilyCareAlertCarousel
+              slides={careSlides}
+              onAck={onAckCareAlert}
+            />
+          )}
 
-          {weekly.visible && weekly.digest ? (
+          {weekly.showSkeleton ? (
+            <WeeklyDigestSkeleton />
+          ) : weekly.visible && weekly.digest ? (
             <FamilyWeeklyDigestCard
               digest={weekly.digest}
               onAck={weekly.onAck}
             />
           ) : null}
 
-          <FamilyGuardianDashboard
-            members={statusMembers}
-            sectionTitle={sectionTitle}
-            showInviteCta={isLeader}
-            onPressMember={openMember}
-            onInviteCtaPress={openFamilyManage}
-            onManagePress={isLeader ? openFamilyManage : undefined}
-          />
+          {statusLoading ? (
+            <MemberGridSkeleton />
+          ) : (
+            <FamilyGuardianDashboard
+              members={statusMembers}
+              sectionTitle={sectionTitle}
+              showInviteCta={isLeader}
+              onPressMember={openMember}
+              onInviteCtaPress={openFamilyManage}
+              onManagePress={isLeader ? openFamilyManage : undefined}
+              isError={statusQuery.isError && !FAMILY_TAB_EMPTY_UI_PREVIEW}
+              onRetry={() => void statusQuery.refetch()}
+            />
+          )}
 
           {showFeedSection ? (
             <View className="gap-2.5">
-              <FamilyFeedSectionHeader
-                feedCount={feedCount}
-                onPress={openFeed}
-              />
-              {feedCount === 0 ? (
-                <Fallback
-                  image={<KokiIllustration variant="cheer" size={96} />}
-                  message={COPY.family.emptyFeedMessage}
-                />
+              {feedLoading || statusLoading ? (
+                <FeedPreviewSkeleton />
               ) : (
-                <View className="gap-2.5">
-                  {feedPreviewSections.map((section) => (
-                    <FamilyActivityFeedStack
-                      key={section.dateYmd}
-                      title={section.title}
-                      items={section.data}
-                      onItemPress={openMember}
+                <>
+                  <FamilyFeedSectionHeader
+                    feedCount={feedCount}
+                    onPress={openFeed}
+                  />
+                  {feedQuery.isError ? (
+                    <Fallback
+                      image={<KokiIllustration variant="thinking" size={96} />}
+                      message={COPY.family.loadFailedFeed}
+                      ctaLabel={COPY.common.retry}
+                      onCtaPress={() => void feedQuery.refetch()}
                     />
-                  ))}
-                </View>
+                  ) : feedCount === 0 ? (
+                    <Fallback
+                      image={<KokiIllustration variant="cheer" size={96} />}
+                      message={COPY.family.emptyFeedMessage}
+                    />
+                  ) : (
+                    <View className="gap-2.5">
+                      {feedPreviewSections.map((section) => (
+                        <FamilyActivityFeedStack
+                          key={section.dateYmd}
+                          title={section.title}
+                          items={section.data}
+                          onItemPress={openMember}
+                        />
+                      ))}
+                    </View>
+                  )}
+                </>
               )}
             </View>
           ) : null}

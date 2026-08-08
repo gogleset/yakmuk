@@ -20,13 +20,13 @@ type InsetOptions = {
   platform?: typeof Platform.OS;
   /**
    * iOS는 KeyboardAvoidingView padding과 겹치므로 기본 false.
-   * Android만 ScrollView paddingBottom에 씀.
+   * Android만 시트 lift 계산에 씀.
    */
   applyOnIos?: boolean;
 };
 
 /**
- * ScrollView content paddingBottom용 키보드 inset.
+ * 플랫폼별 키보드 inset.
  * iOS + applyOnIos=false → 0 (KAV와 이중 적용 방지).
  */
 export function insetFromKeyboardEvent(
@@ -40,6 +40,47 @@ export function insetFromKeyboardEvent(
   if (platform === 'ios' && !applyOnIos) return 0;
 
   return Math.max(0, Math.round(metrics.height));
+}
+
+export type SheetKeyboardLayoutInput = {
+  keyboardHeight: number;
+  windowHeight: number;
+  screenHeight: number;
+};
+
+export type SheetKeyboardLayout = {
+  /** 시트 하단 margin — adjustResize가 안 먹을 때만 > 0 */
+  lift: number;
+  /** 시트가 쓸 수 있는 세로 공간 */
+  availableHeight: number;
+};
+
+/**
+ * overlay + adjustResize 불확실성 대응.
+ * window가 이미 키보드만큼 줄었으면 lift=0, 아니면 시트 전체를 키보드 높이만큼 올림.
+ */
+export function sheetKeyboardLayout(
+  input: SheetKeyboardLayoutInput,
+): SheetKeyboardLayout {
+  const { keyboardHeight, windowHeight, screenHeight } = input;
+  const safeWindow = Math.max(0, windowHeight);
+  const safeScreen = Math.max(safeWindow, screenHeight);
+
+  if (keyboardHeight <= 0) {
+    return { lift: 0, availableHeight: safeWindow || safeScreen };
+  }
+
+  // window가 키보드의 절반 이상 줄었으면 adjustResize 적용된 것으로 봄
+  const shrunkBy = safeScreen - safeWindow;
+  const resizeHandled = shrunkBy >= keyboardHeight * 0.5;
+  if (resizeHandled) {
+    return { lift: 0, availableHeight: safeWindow };
+  }
+
+  return {
+    lift: keyboardHeight,
+    availableHeight: Math.max(0, safeScreen - keyboardHeight),
+  };
 }
 
 /**

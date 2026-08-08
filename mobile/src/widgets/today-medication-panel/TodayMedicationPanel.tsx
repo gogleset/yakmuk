@@ -7,7 +7,7 @@ import type {
 import { groupMedsByScheduledTime } from '@/entities/medication/lib/timeSlots';
 import { TimeSlotMedAccordion } from '@/entities/medication';
 import { COPY } from '@/shared/copy';
-import { KokiIllustration, RichEmptyState } from '@/shared/ui';
+import { Fallback, KokiIllustration } from '@/shared/ui';
 import { ConditionLogSection } from './ConditionLogSection';
 import { TodayGreetingBanner } from './TodayGreetingBanner';
 
@@ -23,6 +23,7 @@ type Props = {
   onDelete: (medId: number, name: string) => void;
   onSubmitCondition: () => void;
   isError?: boolean;
+  onRetry?: () => void;
   emptyMessage?: string;
   emptyHint?: string;
   /** F6 — 오늘 전부 완료 */
@@ -45,6 +46,7 @@ export function TodayMedicationPanel({
   onDelete,
   onSubmitCondition,
   isError = false,
+  onRetry,
   emptyMessage,
   emptyHint,
   allDone = false,
@@ -79,10 +81,11 @@ export function TodayMedicationPanel({
 
   if (isError) {
     return (
-      <RichEmptyState
-        title={COPY.med.loadFailed}
-        message={COPY.common.retryLater}
-        illustration={<KokiIllustration variant="thinking" size={96} />}
+      <Fallback
+        image={<KokiIllustration variant="thinking" size={96} />}
+        message={COPY.med.loadFailed}
+        ctaLabel={onRetry ? COPY.common.retry : undefined}
+        onCtaPress={onRetry}
       />
     );
   }
@@ -98,11 +101,9 @@ export function TodayMedicationPanel({
             savedMessage={savedMessage}
           />
         ) : null}
-        <RichEmptyState
-          layout="card"
-          title={emptyMessage ?? COPY.med.emptyToday}
-          message={emptyHint ?? COPY.med.emptyTodayHint}
-          illustration={<KokiIllustration variant="thinking" size={88} />}
+        <Fallback
+          image={<KokiIllustration variant="thinking" size={88} />}
+          message={emptyMessage ?? emptyHint ?? COPY.med.emptyToday}
         />
         {conditionForm}
       </View>

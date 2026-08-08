@@ -4,6 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { MedicationNotificationSync } from '@/features/medication-notifications';
 import { CareGlanceSync } from '@/features/care-glance-notification';
 import { AuthProvider } from '@/providers/AuthProvider';
+import { ExceptionFeedbackProvider } from '@/providers/ExceptionFeedbackProvider';
 
 export function AppProviders({ children }: { children: ReactNode }) {
   const [client] = useState(
@@ -19,9 +20,11 @@ export function AppProviders({ children }: { children: ReactNode }) {
     <SafeAreaProvider>
       <QueryClientProvider client={client}>
         <AuthProvider>
-          <MedicationNotificationSync />
-          <CareGlanceSync />
-          {children}
+          <ExceptionFeedbackProvider>
+            <MedicationNotificationSync />
+            <CareGlanceSync />
+            {children}
+          </ExceptionFeedbackProvider>
         </AuthProvider>
       </QueryClientProvider>
     </SafeAreaProvider>

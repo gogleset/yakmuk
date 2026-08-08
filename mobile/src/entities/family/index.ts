@@ -17,7 +17,12 @@ export type { CarePushKind, CarePushInput } from './api/invoke-care-push';
 export { buildCarePushCopy } from './lib/carePushCopy';
 export { memberStatusLabel } from './lib/memberStatus';
 export {
+  familyAckErrorTitle,
+  familySectionFallbackMessage,
+} from './lib/familyExceptionCopy';
+export {
   buildWeeklyDigest,
+  formatWeeklyAnomalyLines,
   weekStartMondayKst,
 } from './lib/buildWeeklyDigest';
 export type {

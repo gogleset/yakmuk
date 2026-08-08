@@ -1,6 +1,7 @@
 import {
   insetFromKeyboardEvent,
   metricsFromKeyboardEvent,
+  sheetKeyboardLayout,
 } from '@/shared/lib/keyboardBottomInset';
 
 describe('metricsFromKeyboardEvent', () => {
@@ -31,9 +32,9 @@ describe('insetFromKeyboardEvent', () => {
   });
 
   it('iOS 기본은 0 (KAV와 이중 방지)', () => {
-    expect(
-      insetFromKeyboardEvent({ height: 300 }, { platform: 'ios' }),
-    ).toBe(0);
+    expect(insetFromKeyboardEvent({ height: 300 }, { platform: 'ios' })).toBe(
+      0,
+    );
   });
 
   it('iOS applyOnIos=true면 높이 사용', () => {
@@ -50,5 +51,37 @@ describe('insetFromKeyboardEvent', () => {
     expect(insetFromKeyboardEvent({ height: 0 }, { platform: 'android' })).toBe(
       0,
     );
+  });
+});
+
+describe('sheetKeyboardLayout', () => {
+  it('키보드 없으면 lift 0', () => {
+    expect(
+      sheetKeyboardLayout({
+        keyboardHeight: 0,
+        windowHeight: 800,
+        screenHeight: 800,
+      }),
+    ).toEqual({ lift: 0, availableHeight: 800 });
+  });
+
+  it('adjustResize로 window가 줄면 lift 0', () => {
+    expect(
+      sheetKeyboardLayout({
+        keyboardHeight: 300,
+        windowHeight: 500,
+        screenHeight: 800,
+      }),
+    ).toEqual({ lift: 0, availableHeight: 500 });
+  });
+
+  it('window가 안 줄면 시트를 키보드만큼 올림', () => {
+    expect(
+      sheetKeyboardLayout({
+        keyboardHeight: 300,
+        windowHeight: 780,
+        screenHeight: 800,
+      }),
+    ).toEqual({ lift: 300, availableHeight: 500 });
   });
 });

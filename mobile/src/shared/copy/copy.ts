@@ -91,6 +91,9 @@ export const COPY = {
     inviteCta: '가족 초대하기',
     emptyFeed: '아직 소식이 없어요',
     emptyFeedMessage: '가족이 약을 체크하면 여기에 보여요.',
+    loadFailed: '가족 정보를 불러오지 못했어요',
+    loadFailedFeed: '소식을 불러오지 못했어요',
+    loadFailedAlerts: '알림을 불러오지 못했어요',
     statusAnbu: '안부',
     statusAllTaken: '다 먹음',
     /** 오늘 아직 남은 약 있음 — 숫자 없이 진행 표현 */
@@ -124,8 +127,9 @@ export const COPY = {
     weeklyMostly: '이번 주 대체로 잘 챙겼어요',
     weeklyUneven: '이번 주 챙김이 들쑥날쑥했어요',
     weeklyNoMeds: '이번 주 등록된 약이 없어요',
-    weeklyMissedDay: (when: string) => `${when} 약이 조금 남았어요`,
-    weeklyBadDay: (when: string) => `${when} 컨디션이 안 좋았어요`,
+    /** 특이일 묶음 — `금, 토, 일 약이 조금 남았어요` */
+    weeklyMissedDays: (weekdays: string) => `${weekdays} 약이 조금 남았어요`,
+    weeklyBadDays: (weekdays: string) => `${weekdays} 컨디션이 안 좋았어요`,
     weeklyAck: '확인했어요',
     weeklyEmptyAnomaly: '특이했던 날은 없어요',
   },
@@ -288,5 +292,6 @@ export const COPY = {
 
   common: {
     retryLater: '잠시 후 다시 시도해 주세요',
+    retry: '다시 시도',
   },
 } as const;

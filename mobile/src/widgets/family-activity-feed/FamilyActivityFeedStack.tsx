@@ -205,9 +205,18 @@ export function FamilyActivityFeedStack({
       peekCount * LAYOUT.feedStack.peekOffset * peekReveal.value,
   }));
 
-  const peekLayerStyle = useAnimatedStyle(() => ({
-    opacity: peekReveal.value,
-  }));
+  /**
+   * absoluteFill이면 블라인드 펼침과 함께 높이가 늘어나고,
+   * Android elevation은 opacity 0이어도 긴 그림자로 남음 → 첫 카드 높이에 고정.
+   */
+  const peekLayerStyle = useAnimatedStyle(() => {
+    const base = firstHeight.value;
+    const peekExtra = peekCount * LAYOUT.feedStack.peekOffset;
+    return {
+      opacity: peekReveal.value,
+      height: base > 0 ? base + peekExtra : undefined,
+    };
+  });
 
   if (items.length === 0) return null;
 
@@ -241,12 +250,18 @@ export function FamilyActivityFeedStack({
 
       {/* 트리 유지 — 높이만 블라인드로 열고 닫음 */}
       <Animated.View style={peekMarginStyle}>
-        <Animated.View
-          pointerEvents="none"
-          style={[StyleSheet.absoluteFill, peekLayerStyle, { zIndex: 0 }]}
-        >
-          <StackPeeks count={peekCount} />
-        </Animated.View>
+        {/* 펼침 완료 후 unmount — Android elevation ghost 방지 */}
+        {clipBlind || !expanded ? (
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              peekLayerStyle,
+              { position: 'absolute', left: 0, right: 0, top: 0, zIndex: 0 },
+            ]}
+          >
+            <StackPeeks count={peekCount} />
+          </Animated.View>
+        ) : null}
 
         <Animated.View
           style={[

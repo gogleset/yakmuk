@@ -25,6 +25,7 @@ import {
   SectionHeader,
   StackHeader,
 } from '@/shared/ui';
+import { MemberListRowSkeleton } from '@/widgets/family-manage-skeleton';
 
 /** 가족 운영 — 초대·멤버·이름·삭제 (가족 탭 서브) */
 export function FamilyManagePage() {
@@ -137,7 +138,14 @@ export function FamilyManagePage() {
               <SectionHeader title="초대" />
               <FamilyInvitePanel isLeader={isLeader} />
 
-              {otherMembers.length > 0 ? (
+              {membersQuery.isLoading && !membersQuery.data ? (
+                <>
+                  <SectionHeader title="멤버" />
+                  <Card className="gap-2 p-4">
+                    <MemberListRowSkeleton rows={2} />
+                  </Card>
+                </>
+              ) : otherMembers.length > 0 ? (
                 <>
                   <SectionHeader title="멤버" />
                   <Card className="gap-2 p-4">

@@ -13,6 +13,8 @@
 | [decisions.md](decisions.md) | 잠긴 결정 · 하지 말 것 |
 | [med-purpose-tags.md](med-purpose-tags.md) | 약 목적 태그 later 스펙 (Gate 0 전 구현 금지) |
 | [gate0-trust-playbook.md](gate0-trust-playbook.md) | G0.1·G0.2 수동 재현 |
+| [skeleton-family.md](skeleton-family.md) | 로딩 스켈레톤 · 가족 1·2depth |
+| [skeleton-home.md](skeleton-home.md) | 로딩 스켈레톤 · 기록 1·2depth |
 
 > 파일명 `gates.md` = 단계 게이트 SoT.  
 > 브랜드도 같은 이름(`[docs/brand/gates.md](../brand/gates.md)`) — **폴더로 축 구분** (`product` vs `brand`).

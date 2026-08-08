@@ -29,10 +29,10 @@ F5 **beat**(가족 컷) ≠ 퍼널 **P1**(가족 입력).
 ## F2 — 기록 없음 (Empty)
 
 - **시트:** Thinking
-- **현재:** `RichEmptyState` layout=`stack` (세로: 콕이 → 타이틀 → hint → pill CTA) + 캘린더 아래
+- **현재:** `Fallback` (콕이 + 설명 + round CTA) + 캘린더 아래
 - **beat:** illustration=`thinking`, 카피 = `COPY.med.emptyRegistered*` (hint: 복용 기록해볼까요)
 - **대상:** 약 0개
-- **훅:** `HomePage` empty 분기 · `RichEmptyState.tsx`
+- **훅:** `HomePage` empty 분기 · `Fallback.tsx` · 액션 실패는 `ExceptionModal`
 - **목업:** `docs/brand/mocks/home-empty.png`
 
 ## F3 — (폐기) 개별 복용 성공

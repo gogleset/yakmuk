@@ -66,10 +66,11 @@ PRD 요약의 “보호자/피보호자” 이분법 → 코드는 **3역할**. 
 |---|------|---------|-------------|-------------|------|
 | 1 | 탭 진입 | FamilyPage | 가족 탭 탭 | 오늘 KST 기준 status·alerts·feed·members 쿼리 | implemented |
 | 2 | 헤더 | 날짜 + `가족 안부` (+ `우리 가족 N명` 이니셜 스택) | — | N = 다른 멤버 수(본인 제외). 탭 크롬(뒤로/종) 없음 | implemented |
-| 3 | 알림 배너 | stuck_escalate 카드 / BAD 컨디션 AlertBanner | (다음 F2) | 본인 alert 제외 필터 | implemented |
-| 4 | 멤버 카드 | 섹션 제목=`{가족명}` · (leader)「관리」· 이니셜·닉·상태 | 타인 카드 → F4 / 관리 → F6 | 알림·BAD만 warningBg | implemented |
-| 5 | empty | RichEmptyState + koki family | leader만 `가족 초대하기` → `/family-manage` (헤더「관리」없음) | 멤버 0(본인만). **피드 섹션 숨김** | implemented |
-| 6 | pull-to-refresh | RefreshControl | 당겨 새로고침 | profile + `invalidateFamilyActivity` | implemented |
+| 3 | 알림 | stuck_escalate / BAD 케어 알림 캐러셀 | ack → F2 | 본인 alert 제외. 로드실패 시 칸 Fallback+재시도 | implemented |
+| 4 | 가족 그리드 | 섹션 제목=`{가족명}` · (leader)「관리」· 이니셜·닉·상태 | 타인 카드 → F4 / 관리 → F6 | 알림·BAD만 warning. 로드실패 시 칸 Fallback | implemented |
+| 5 | empty | Fallback + koki family | leader만 `가족 초대하기` → `/family-manage` | 멤버 0(본인만). **피드 섹션 숨김** | implemented |
+| 6 | 최근 소식 | 프리뷰 / 로드실패 Fallback / empty Fallback | 더보기 → 피드 | 섹션별 isError ≠ empty | implemented |
+| 7 | pull-to-refresh | RefreshControl | 당겨 새로고침 | profile + `invalidateFamilyActivity` | implemented |
 
 **분기**
 
@@ -103,11 +104,12 @@ flowchart TD
 | # | 스텝 | 화면/UI | 사용자 행동 | 시스템 반응 | 상태 |
 |---|------|---------|-------------|-------------|------|
 | 1 | stuck | 콕이 worried + “약 안부가 궁금해요” | “확인했어요” | ack mutation → 알림 사라짐 | implemented |
-| 2 | BAD | AlertBanner “컨디션이 걱정돼요” | ack | 동일 | implemented |
+| 2 | BAD | 케어 알림 슬라이드 “컨디션이 걱정돼요” | ack | 동일 | implemented |
 
 **분기**
 
-- mutation 실패 → `showMutationError` (ERRORS)
+- mutation 실패 → `showExceptionToast` (가벼운 실패 · ExceptionToast)
+- 섹션 로드 실패 → 해당 칸만 `Fallback` + 재시도 (empty 카피와 분리)
 
 **Mermaid**
 
@@ -115,7 +117,7 @@ flowchart TD
 flowchart TD
   A[알림 노출] --> B[확인했어요 / ack]
   B -->|ok| C[목록에서 제거]
-  B -->|fail| D[에러 Alert]
+  B -->|fail| D[ExceptionToast]
 ```
 
 ---

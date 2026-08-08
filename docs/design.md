@@ -54,7 +54,7 @@
 | ID  | Beat       | Variant                  | 트리거                                                    |
 | --- | ---------- | ------------------------ | --------------------------------------------------------- |
 | F1  | 첫 만남    | welcome                  | Welcome 진입                                              |
-| F2  | 기록 없음  | thinking                 | 기록 탭 empty — 세로 스택 (`RichEmptyState` layout=stack) |
+| F2  | 기록 없음  | thinking                 | 기록 탭 empty — `Fallback` (콕이 + 설명 + round CTA) |
 | F3  | (폐기)     | —                        | 개별 체크 — 쓰지 않음. 성공은 F6                          |
 | F4  | 연속       | streak                   | 연속 all-done ≥3일 (KST) — **캘린더 영역**                |
 | F5  | 가족       | family                   | 가족 empty / 초대                                         |
@@ -174,7 +174,7 @@ Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타�
 | 허용 | 규칙 |
 |------|------|
 | **Focus only** | 키보드/포커스 가능 컨트롤(Input 등)이 **focused일 때만** `brand` 보더. unfocused = border 없음(투명) |
-| **Tone outline** | status/care만 — BAD·stuck·AlertBanner 등. thin 1px (`TONE_OUTLINE.warning` / `.destructive`). fill(`warningBg`)로 카드·배너를 칠하지 않음 |
+| **Tone outline** | status/care만 — BAD·stuck·케어 알림 등. thin 1px (`TONE_OUTLINE.warning` / `.destructive`). fill(`warningBg`)로 카드·배너를 칠하지 않음 |
 
 계층용 `border-line`·상시 카드 윤곽은 fill로. 케어 톤은 위 Tone outline만.
 

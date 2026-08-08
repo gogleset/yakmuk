@@ -8,7 +8,7 @@
 | 스토어 | local `supabase start` | 멀티 클라 공유 |
 | 아키텍처 | FSD + Atomic `shared/ui` | PRD |
 | 상태관리 | TanStack Query | Optimistic + Realtime |
-| **Auth 가족장** | **OAuth** (Google · Apple, Supabase Auth) | 가족 생성·관리 계정 |
+| **Auth 가족장** | **네이티브 ID 토큰** (Google: Android+iOS · Apple: iOS만) → Supabase `signInWithIdToken` · 로컬 `supabase/.env` + config enable | 가족 생성·관리 계정 · Android Apple 버튼 숨김 |
 | **Auth 보호자·피보호자** | **초대코드 6자리 + QR** (anon) · 닉네임 선택 | Low Friction · 호칭은 리더가 사전 지정 |
 | 역할 | `users.role` = `family_leader` \| `guardian` \| `care_recipient` | 3역할 |
 | 가족·초대 | 가족장 OAuth → 가족 생성 → **호칭(`invited_as`)+target_role 슬롯** → 코드·QR | 리더만 초대 |

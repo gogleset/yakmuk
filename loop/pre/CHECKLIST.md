@@ -13,7 +13,7 @@
 
 - [x] `supabase init` + 마이그레이션 SQL (`supabase/migrations/…`)
 - [x] `supabase start` (Docker Desktop 필요) + anon key → `mobile/.env`
-- [ ] OAuth 프로바이더 로컬 설정 (Google/Apple) — 개발용 이메일 로그인으로 대체 가능
+- [ ] OAuth 프로바이더 로컬 설정 (Google/Apple) — `supabase/.env` 키 채운 뒤 config `enabled = true` · 앱 `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` · 미설정 시 개발용 이메일 로그인
 - [x] 로컬 env 예시 (`mobile/.env.example`)
 - [x] 퍼블릭 배포를 완료 조건으로 쓰지 않음
 - [x] `family_alerts` 마이그레이션 적용 (`supabase db reset` 또는 migration up)

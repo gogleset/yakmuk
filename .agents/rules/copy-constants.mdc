@@ -24,7 +24,8 @@ alwaysApply: false
 
 ## ERRORS
 
-- mutation `showMutationError(ERRORS.…, error)`
+- 주요 액션 실패: `showMutationError(ERRORS.…, error)` → `ExceptionModal`
+- 가벼운 실패: `showExceptionToast(error, title?)` → `ExceptionToast`
 - client `throw new Error(ERRORS.…)` / `throwIfError(error, ERRORS.…)`
 - 백엔드 키 매핑은 `shared/copy/errors.ts`의 `BACKEND_ERROR_MESSAGES`
 

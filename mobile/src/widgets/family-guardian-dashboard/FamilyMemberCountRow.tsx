@@ -1,7 +1,7 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
-import { Body, Icons, Caption, SectionTitle } from '@/shared/ui';
+import { Body, Icons, Caption, LabelSm, SectionTitle } from '@/shared/ui';
 
 type FeedHeaderProps = {
   feedCount: number;
@@ -15,9 +15,9 @@ export function FamilyFeedSectionHeader({
 }: FeedHeaderProps) {
   return (
     <View className="mt-1 flex-row items-center justify-between gap-2">
-      <Text className="text-sm font-bold text-text">
+      <LabelSm tone="text" className="font-bold">
         {COPY.family.recentFeed}
-      </Text>
+      </LabelSm>
       {feedCount > 0 ? (
         <Pressable
           accessibilityRole="button"

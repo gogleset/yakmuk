@@ -71,6 +71,18 @@ describe('textRoleVariants', () => {
     expect(cls).toContain('font-semibold');
   });
 
+  it('labelMdMedium — text-base font-medium', () => {
+    const cls = textRoleVariants({ role: 'labelMdMedium' });
+    expect(cls).toContain('text-base');
+    expect(cls).toContain('font-medium');
+  });
+
+  it('labelXsMedium — text-xs font-medium', () => {
+    const cls = textRoleVariants({ role: 'labelXsMedium' });
+    expect(cls).toContain('text-xs');
+    expect(cls).toContain('font-medium');
+  });
+
   it('code — text-2xl font-semibold tracking-widest', () => {
     const cls = textRoleVariants({ role: 'code' });
     expect(cls).toContain('text-2xl');

@@ -38,7 +38,7 @@ type Props = VariantProps<typeof badgeVariants> & {
 function badgeLabelTone(variant: BadgeVariant): TextTone | false {
   if (variant === 'default') return 'ink';
   if (variant === 'outline') return 'muted';
-  if (variant === 'warning') return false;
+  if (variant === 'warning') return 'warning';
   return 'brand';
 }
 
@@ -57,11 +57,7 @@ export function Badge({
       className={cn(badgeVariants({ variant: resolved }), className)}
       style={isWarning ? { backgroundColor: COLORS.warningBg } : undefined}
     >
-      <LabelSm
-        tone={badgeLabelTone(resolved)}
-        className={labelClassName}
-        style={isWarning ? { color: COLORS.warning } : undefined}
-      >
+      <LabelSm tone={badgeLabelTone(resolved)} className={labelClassName}>
         {label}
       </LabelSm>
     </View>

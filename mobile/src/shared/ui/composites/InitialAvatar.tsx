@@ -1,7 +1,12 @@
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { COLORS } from '@/shared/config/theme';
 import { nicknameInitial } from '@/shared/lib/format';
 import { cn } from '@/shared/lib/cn';
+import {
+  LabelMd,
+  LabelSm,
+  LabelXs,
+} from '@/shared/ui/primitives/Typography';
 
 type Size = 'sm' | 'md' | 'lg';
 
@@ -11,11 +16,11 @@ const SIZE_PX: Record<Size, number> = {
   lg: 44,
 };
 
-const TEXT_CLASS: Record<Size, string> = {
-  sm: 'text-xs',
-  md: 'text-sm',
-  lg: 'text-base',
-};
+const LabelBySize = {
+  sm: LabelXs,
+  md: LabelSm,
+  lg: LabelMd,
+} as const;
 
 type Props = {
   nickname: string | null | undefined;
@@ -33,6 +38,7 @@ export function InitialAvatar({
   ring = false,
 }: Props) {
   const px = SIZE_PX[size];
+  const Label = LabelBySize[size];
   return (
     <View
       className={cn(
@@ -46,12 +52,13 @@ export function InitialAvatar({
         borderColor: COLORS.surface,
       }}
     >
-      <Text
-        className={cn('font-bold text-text', TEXT_CLASS[size])}
+      <Label
+        tone="text"
+        className="font-bold"
         accessibilityLabel={nickname ?? undefined}
       >
         {nicknameInitial(nickname)}
-      </Text>
+      </Label>
     </View>
   );
 }

@@ -3,7 +3,7 @@ import {
   formatWeeklyAnomalyLines,
   type WeeklyDigestView,
 } from '@/entities/family';
-import { COLORS, LAYOUT } from '@/shared/config/theme';
+import { LAYOUT } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
 import { Body, KokiIllustration, LabelSm, LabelXs, SectionTitle } from '@/shared/ui';
 
@@ -46,9 +46,7 @@ export function FamilyWeeklyDigestCard({ digest, onAck }: Props) {
           onPress={onAck}
           className="mt-1 self-end rounded-full bg-surface-soft px-3.5 py-2"
         >
-          <LabelSm style={{ color: COLORS.brand }}>
-            {COPY.family.weeklyAck}
-          </LabelSm>
+          <LabelSm>{COPY.family.weeklyAck}</LabelSm>
         </Pressable>
       </View>
     </View>

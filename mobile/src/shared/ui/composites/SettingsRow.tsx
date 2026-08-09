@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react';
-import { Switch, Text, View } from 'react-native';
+import { Switch, View } from 'react-native';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { cn } from '@/shared/lib/cn';
 import { Card } from '@/shared/ui/primitives/Card';
 import { Icons, type IconComponent } from '@/shared/ui/primitives/Icon';
 import { PressableScale } from '@/shared/ui/composites/PressableScale';
+import { Body, LabelMdMedium } from '@/shared/ui/primitives/Typography';
 
 type SettingsGroupProps = {
   children: ReactNode;
@@ -47,7 +48,6 @@ export function SettingsRow({
   disabled = false,
   onPress,
 }: SettingsRowProps) {
-  const labelColor = destructive ? COLORS.destructive : COLORS.text;
   const interactive = !!onPress && !disabled;
 
   const content = (
@@ -63,18 +63,17 @@ export function SettingsRow({
           color={destructive ? COLORS.destructive : COLORS.brand}
         />
       ) : null}
-      <Text
-        // typography: medium + dynamic color — outside role scale
-        className="flex-1 text-base font-medium"
-        style={{ color: labelColor }}
+      <LabelMdMedium
+        tone={destructive ? 'destructive' : 'text'}
+        className="flex-1"
         numberOfLines={1}
       >
         {label}
-      </Text>
+      </LabelMdMedium>
       {value ? (
-        <Text className="text-sm text-brand-muted" numberOfLines={1}>
+        <Body className="text-sm" numberOfLines={1}>
           {value}
-        </Text>
+        </Body>
       ) : null}
       {showChevron && interactive ? (
         <Icons.ChevronRight size={LAYOUT.icon.sm} color={COLORS.muted} />
@@ -129,12 +128,9 @@ export function SettingsSwitchRow({
       {Icon ? (
         <Icon size={LAYOUT.icon.md} color={COLORS.brand} />
       ) : null}
-      <Text
-        className="flex-1 text-base font-medium text-text"
-        numberOfLines={1}
-      >
+      <LabelMdMedium tone="text" className="flex-1" numberOfLines={1}>
         {label}
-      </Text>
+      </LabelMdMedium>
       <Switch
         value={value}
         onValueChange={onValueChange}

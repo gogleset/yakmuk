@@ -1,7 +1,6 @@
 import {
   Alert,
   Pressable,
-  Text,
   View,
 } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
@@ -13,7 +12,7 @@ import { useFamilyInviteMutations } from '@/features/family-invite/model/useFami
 import { joinDeepLink, ROUTES } from '@/shared/config/routes';
 import { COLORS, LAYOUT, LIMITS } from '@/shared/config/theme';
 import { ACTIONS, COPY, ERRORS } from '@/shared/copy';
-import { Card, Icons, Caption, Code, SectionTitle } from '@/shared/ui';
+import { Card, Icons, Caption, Code, LabelSm, SectionTitle } from '@/shared/ui';
 import { InviteListSkeleton } from '@/features/family-invite/ui/InviteListSkeleton';
 
 const QR_SIZE = 88;
@@ -166,9 +165,9 @@ function InviteSlot({ invite, onMenu, menuDisabled }: InviteSlotProps) {
     <View className="items-center gap-1.5 rounded-xl bg-brand-soft p-2.5">
       <View className="w-full flex-row items-start justify-between gap-1">
         <View className="min-w-0 flex-1">
-          <Text className="text-sm font-bold text-brand" numberOfLines={1}>
+          <LabelSm className="font-bold" numberOfLines={1}>
             {invite.invitedAs}
-          </Text>
+          </LabelSm>
           <Caption>{ROLE_LABEL[invite.targetRole]}</Caption>
         </View>
         <Pressable

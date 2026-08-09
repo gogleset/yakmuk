@@ -1,9 +1,9 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { COLORS, LAYOUT, LIMITS } from '@/shared/config/theme';
 import { TimePicker } from '@/entities/medication/ui/TimePicker';
 import type { ControlTone } from '@/entities/medication/ui/ScheduleModeToggle';
 import { COPY } from '@/shared/copy';
-import { LabelMd, LabelSm, LabelXs } from '@/shared/ui';
+import { LabelMd, LabelSm, LabelXs, LabelXsMedium } from '@/shared/ui';
 import { Button } from '@/shared/ui/primitives/Button';
 import { Icons } from '@/shared/ui/primitives/Icon';
 
@@ -127,9 +127,7 @@ export function TimeSlotList({
                     {notifOn ? (
                       <LabelXs>{COPY.notif.slotOn}</LabelXs>
                     ) : (
-                      <Text className="text-xs font-medium text-muted">
-                        {COPY.notif.slotOff}
-                      </Text>
+                      <LabelXsMedium>{COPY.notif.slotOff}</LabelXsMedium>
                     )}
                   </Pressable>
                 ) : null}

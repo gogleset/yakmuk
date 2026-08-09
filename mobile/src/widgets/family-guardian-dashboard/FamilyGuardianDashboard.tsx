@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import type { CareRecipientTodayStatus } from '@/entities/family/model/types';
 import { COLORS, LAYOUT, TONE_OUTLINE } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
@@ -8,6 +8,7 @@ import {
   InitialAvatar,
   KokiIllustration,
   Caption,
+  LabelSm,
 } from '@/shared/ui';
 import { memberStatusLabel } from './lib/memberStatus';
 
@@ -28,14 +29,6 @@ type MemberCardProps = {
   member: CareRecipientTodayStatus;
   onPress: () => void;
 };
-
-/** 상태 라벨 색 — 위험(알림·BAD)만 warning. 진행 중은 muted */
-function statusLabelColor(member: CareRecipientTodayStatus): string {
-  if (member.hasUnackedAlert || member.condition === 'BAD') {
-    return COLORS.warning;
-  }
-  return COLORS.muted;
-}
 
 /** 가족 그리드 카드 — 중앙 아바타 · 이름 · 상태 한 줄 */
 function FamilyMemberStatusCard({ member, onPress }: MemberCardProps) {
@@ -60,19 +53,20 @@ function FamilyMemberStatusCard({ member, onPress }: MemberCardProps) {
         style={showWarn ? TONE_OUTLINE.warning : undefined}
       >
         <InitialAvatar nickname={member.nickname} size="md" />
-        <Text
-          className="text-center text-sm font-bold text-text"
+        <LabelSm
+          tone="text"
+          className="text-center font-bold"
           numberOfLines={1}
         >
           {nameLabel}
-        </Text>
-        <Text
-          className="text-center text-xs"
+        </LabelSm>
+        <Caption
+          tone={showWarn ? 'warning' : 'muted'}
+          className="text-center"
           numberOfLines={1}
-          style={{ color: statusLabelColor(member) }}
         >
           {status}
-        </Text>
+        </Caption>
       </View>
     </Pressable>
   );
@@ -115,12 +109,13 @@ export function FamilyGuardianDashboard({
   return (
     <View className="gap-2.5">
       <View className="flex-row items-center justify-between gap-2">
-        <Text
-          className="min-w-0 flex-1 text-sm font-bold text-text"
+        <LabelSm
+          tone="text"
+          className="min-w-0 flex-1 font-bold"
           numberOfLines={1}
         >
           {sectionTitle}
-        </Text>
+        </LabelSm>
         {onManagePress ? (
           <Pressable
             accessibilityRole="button"

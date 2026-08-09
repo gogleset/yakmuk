@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   Pressable,
-  Text,
   TextInput,
   View,
   type TextInput as TextInputRef,
@@ -20,7 +19,7 @@ import type { ControlTone } from '@/entities/medication/ui/ScheduleModeToggle';
 import { COLORS, LAYOUT, LIMITS } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
 import { cn } from '@/shared/lib/cn';
-import { LabelSm } from '@/shared/ui';
+import { LabelSm, Text } from '@/shared/ui';
 
 type Props = {
   value: string; // HH:MM
@@ -198,7 +197,8 @@ export function TimePicker({ value, onChange, tone = 'default' }: Props) {
       </View>
 
       <Text
-        className="text-3xl font-bold text-text"
+        role="hero"
+        tone="text"
         accessibilityElementsHidden
         importantForAccessibility="no"
       >

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, Pressable, Text, View } from 'react-native';
+import { Alert, Pressable, View } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import type { InviteTargetRole } from '@/entities/user/model/types';
 import { ROLE_LABEL } from '@/entities/user';
@@ -8,7 +8,7 @@ import { joinDeepLink } from '@/shared/config/routes';
 import { LIMITS } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
 import { cn } from '@/shared/lib/cn';
-import { FunnelShell, Input, Body, Code } from '@/shared/ui';
+import { FunnelShell, Input, Body, Code, LabelSm } from '@/shared/ui';
 
 type Step = 0 | 1 | 2;
 
@@ -76,14 +76,9 @@ export function InviteCreateFunnel({ onClose }: Props) {
                   selected ? 'bg-brand' : 'bg-surface-soft',
                 )}
               >
-                <Text
-                  className={cn(
-                    'text-sm font-semibold',
-                    selected ? 'text-ink' : 'text-brand',
-                  )}
-                >
+                <LabelSm tone={selected ? 'ink' : 'brand'}>
                   {ROLE_LABEL[opt.role]}
-                </Text>
+                </LabelSm>
               </Pressable>
             );
           })}

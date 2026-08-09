@@ -1,7 +1,8 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { WEEKDAY_LABELS } from '@/entities/medication/lib/daysMask';
 import type { ControlTone } from '@/entities/medication/ui/ScheduleModeToggle';
 import { cn } from '@/shared/lib/cn';
+import { LabelSm } from '@/shared/ui';
 
 type Props = {
   /** 월=0 … 일=6 선택된 요일 */
@@ -46,14 +47,12 @@ export function WeekdayPicker({
                 on ? 'bg-brand' : offBg,
               )}
             >
-              <Text
-                className={cn(
-                  'text-sm font-bold',
-                  on ? 'text-ink' : 'text-brand',
-                )}
+              <LabelSm
+                tone={on ? 'ink' : 'brand'}
+                className="font-bold"
               >
                 {name}
-              </Text>
+              </LabelSm>
             </Pressable>
           );
         })}

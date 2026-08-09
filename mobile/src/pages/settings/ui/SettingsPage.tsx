@@ -8,7 +8,6 @@ import {
   Linking,
   Platform,
   Pressable,
-  Text,
   View,
 } from "react-native";
 import { useAuth } from "@/providers/AuthProvider";
@@ -64,11 +63,13 @@ import {
   InitialAvatar,
   Input,
   Caption,
+  LabelMd,
   TitleXl,
   PressableScale,
   Screen,
   ScreenScrollView,
   SectionHeader,
+  SectionTitle,
   SettingsGroup,
   SettingsRow,
   SettingsSwitchRow,
@@ -427,12 +428,9 @@ export function SettingsPage() {
                   ) : null}
                 </View>
                 <View className="min-w-0 flex-1 gap-0.5">
-                  <Text
-                    className="text-base font-bold text-text"
-                    numberOfLines={1}
-                  >
+                  <SectionTitle tone="text" numberOfLines={1}>
                     {profile?.nickname ?? "이름 없음"}
-                  </Text>
+                  </SectionTitle>
                   <Caption numberOfLines={1}>{familyLine}</Caption>
                 </View>
                 <View className="h-8 w-8 items-center justify-center rounded-full bg-surface-soft">
@@ -610,13 +608,9 @@ export function SettingsPage() {
                   size={LAYOUT.icon.lg}
                   color={selected ? COLORS.brand : COLORS.muted}
                 />
-                <Text
-                  className={`text-base font-semibold ${
-                    selected ? "text-brand" : "text-text"
-                  }`}
-                >
+                <LabelMd tone={selected ? "brand" : "text"}>
                   {option.label}
-                </Text>
+                </LabelMd>
                 {selected ? (
                   <Icons.Check
                     size={LAYOUT.icon.sm}

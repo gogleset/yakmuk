@@ -18,6 +18,8 @@ export const textRoleVariants = cva('', {
       labelMd: 'text-base font-semibold',
       labelLg: 'text-lg font-semibold',
       labelTight: 'text-[15px] font-semibold',
+      labelMdMedium: 'text-base font-medium',
+      labelXsMedium: 'text-xs font-medium',
       code: 'text-2xl font-semibold tracking-widest',
       display: 'text-6xl font-bold tracking-tight',
       body: 'text-base leading-5',
@@ -62,6 +64,8 @@ const DEFAULT_TONE: Record<TextRole, TextTone> = {
   labelMd: 'brand',
   labelLg: 'brand',
   labelTight: 'brand',
+  labelMdMedium: 'text',
+  labelXsMedium: 'muted',
   code: 'text',
   display: 'text',
   body: 'muted',
@@ -145,6 +149,14 @@ export function LabelLg(props: AliasProps) {
 
 export function LabelTight(props: AliasProps) {
   return <Text role="labelTight" {...props} />;
+}
+
+export function LabelMdMedium(props: AliasProps) {
+  return <Text role="labelMdMedium" {...props} />;
+}
+
+export function LabelXsMedium(props: AliasProps) {
+  return <Text role="labelXsMedium" {...props} />;
 }
 
 export function Code(props: AliasProps) {

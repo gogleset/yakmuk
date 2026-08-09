@@ -1,7 +1,7 @@
-import { Pressable, Text, View } from 'react-native';
-import { COLORS, LAYOUT, TONE_OUTLINE } from '@/shared/config/theme';
+import { Pressable, View } from 'react-native';
+import { LAYOUT, TONE_OUTLINE } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
-import { KokiIllustration, LabelSm } from '@/shared/ui';
+import { Body, KokiIllustration, LabelSm, SectionTitle } from '@/shared/ui';
 import type { CareAlertSlide } from './model/types';
 
 type Props = {
@@ -15,7 +15,6 @@ export function FamilyCareAlertCard({ slide, onAck, width }: Props) {
   const isStuck = slide.tone === 'stuck';
   // stuck도 soft 안부 — destructive(빨간) 잔소리 톤 금지
   const outline = TONE_OUTLINE.warning;
-  const ctaColor = isStuck ? COLORS.brand : COLORS.warning;
 
   return (
     <View style={width ? { width } : undefined} className="px-0">
@@ -26,18 +25,12 @@ export function FamilyCareAlertCard({ slide, onAck, width }: Props) {
         <KokiIllustration variant="worried" size={112} />
         <View className="min-w-0 flex-1 gap-3">
           <View className="gap-1.5">
-            <Text
-              className="text-base font-bold leading-6 text-text"
-              numberOfLines={2}
-            >
+            <SectionTitle tone="text" className="leading-6" numberOfLines={2}>
               {slide.title}
-            </Text>
-            <Text
-              className="text-sm leading-5 text-brand-muted"
-              numberOfLines={2}
-            >
+            </SectionTitle>
+            <Body className="text-sm leading-5" numberOfLines={2}>
               {slide.body}
-            </Text>
+            </Body>
           </View>
           <Pressable
             accessibilityRole="button"
@@ -47,7 +40,9 @@ export function FamilyCareAlertCard({ slide, onAck, width }: Props) {
             className="self-end rounded-full border bg-surface px-3.5 py-2"
             style={{ borderColor: outline.borderColor }}
           >
-            <LabelSm style={{ color: ctaColor }}>{COPY.family.careAck}</LabelSm>
+            <LabelSm tone={isStuck ? 'brand' : 'warning'}>
+              {COPY.family.careAck}
+            </LabelSm>
           </Pressable>
         </View>
       </View>

@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, Text } from 'react-native';
+import { Pressable } from 'react-native';
 import { useAuth } from '@/providers/AuthProvider';
 import {
   FamilyPeekCard,
@@ -89,7 +89,9 @@ export function JoinPage() {
         <Body className="text-sm">{COPY.join.codeHint}</Body>
         {peekLoading ? <Body>{COPY.join.peekLoading}</Body> : null}
         {peekError ? (
-          <Text className="text-sm text-destructive">{peekError}</Text>
+          <Body tone="destructive" className="text-sm">
+            {peekError}
+          </Body>
         ) : null}
         {peek && !peekError ? <FamilyPeekCard peek={peek} /> : null}
       </FunnelShell>

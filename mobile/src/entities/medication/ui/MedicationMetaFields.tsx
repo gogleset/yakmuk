@@ -1,10 +1,9 @@
-import { Pressable, View, type TextStyle } from 'react-native';
+import { Pressable, View } from 'react-native';
 import {
   MED_DOSE_UNITS,
   type MedDoseUnitId,
 } from '@/shared/constants/medDoseUnits';
 import { LIMITS } from '@/shared/constants/limits';
-import { COLORS } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
 import { cn } from '@/shared/lib/cn';
 import { Caption, LabelMd, LabelSm } from '@/shared/ui';
@@ -52,12 +51,8 @@ function FieldHeader({
       <LabelSm>{label}</LabelSm>
       {showCount ? (
         <Caption
+          tone={nearLimit ? 'warning' : 'muted'}
           className={cn(nearLimit && 'font-semibold')}
-          style={
-            {
-              color: nearLimit ? COLORS.warning : COLORS.muted,
-            } satisfies TextStyle
-          }
         >
           {length}/{max}
         </Caption>

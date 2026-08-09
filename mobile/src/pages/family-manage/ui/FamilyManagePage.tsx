@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, Text, View } from 'react-native';
+import { Alert, Pressable, View } from 'react-native';
 import { useAuth } from '@/providers/AuthProvider';
 import { useFamilyMembersQuery } from '@/entities/family/model/queries';
 import { relationSubtitle, ROLE_LABEL } from '@/entities/user';
@@ -171,9 +171,7 @@ export function FamilyManagePage() {
                                 onKick(member.userId, member.nickname)
                               }
                             >
-                              <Text className="text-xs text-destructive">
-                                내보내기
-                              </Text>
+                              <Caption tone="destructive">내보내기</Caption>
                             </Pressable>
                           </View>
                         </View>

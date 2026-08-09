@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Text, View } from 'react-native';
+import { Animated, Easing, View } from 'react-native';
 import { cn } from '@/shared/lib/cn';
 import {
+  TitleLg,
   textRoleVariants,
   textToneVariants,
 } from '@/shared/ui/primitives/Typography';
@@ -65,17 +66,13 @@ export function MarqueeTitle({
       onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}
     >
       {/* 너비 측정용 (화면 밖) */}
-      <Text
-        className={cn(
-          textRoleVariants({ role: 'titleLg' }),
-          textToneVariants({ tone: 'brand' }),
-          'absolute opacity-0',
-          className,
-        )}
+      <TitleLg
+        className={cn('absolute opacity-0', className)}
         onLayout={(e) => setTextWidth(e.nativeEvent.layout.width)}
       >
         {text}
-      </Text>
+      </TitleLg>
+      {/* typography: Animated.Text must stay RN */}
       <Animated.Text
         numberOfLines={1}
         className={cn(

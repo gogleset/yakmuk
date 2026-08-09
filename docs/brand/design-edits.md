@@ -67,6 +67,7 @@
 
 - 변경 최소. Brand hero 존재감 = 콕이 이미지
 - 추가: `캐릭터 옆 카피는 Caption/짧은 Body 한 줄 초과 금지`
+- 앱 type scale SoT: `docs/design.md` §7 · `mobile/src/shared/ui/primitives/Typography.tsx`
 
 ## §6.2 Copy
 

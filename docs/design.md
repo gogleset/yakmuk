@@ -146,11 +146,12 @@ Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타�
 | Display (알람 시각)  | `text-6xl` · bold · tracking-tight | `text`                      |
 | Body                 | leading 여유 · regular | `text` → muted 계층은 `muted`       |
 | Caption              | `text-xs`              | `muted`                             |
-| Invite code          | wide tracking          | `text`                              |
+| Invite code (`Code`) | `text-2xl` · semibold · tracking-widest | `text` (또는 `brand`)        |
 
 코드 SoT: `mobile/src/shared/ui/primitives/Typography.tsx` (`textRoleVariants` · `textToneVariants`).  
-Button=`LabelMd` · Badge=`LabelSm`. 칩 토글·invite code tracking은 Typography 밖.  
-전 레이어: role scale 일치면 Typography · tracking·칩 토글만 raw.  
+Button=`LabelMd` · Badge=`LabelSm` · 칩 토글=`LabelMd`/`LabelSm` · invite=`Code`.  
+상태 tone: `sky` / `warning` / `destructive` (캘린더 범례 등 §6.2).  
+전 레이어: role scale 일치면 Typography.  
 `Muted` alias 제거 — 흐린 계층은 `Caption` / `Body`(기본 tone muted).
 
 ## 8. Surface & radius

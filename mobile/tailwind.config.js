@@ -38,6 +38,9 @@ module.exports = {
           DEFAULT: "#C46B5A",
           foreground: "#FFFFFF",
         },
+        /** design.md §6.2 — 캘린더 범례 · 상태 텍스트 */
+        sky: "#3B9AD9",
+        warning: "#C49A3C",
         border: "#D5DED9",
         success: "#4D8679",
       },

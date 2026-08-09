@@ -71,6 +71,13 @@ describe('textRoleVariants', () => {
     expect(cls).toContain('font-semibold');
   });
 
+  it('code — text-2xl font-semibold tracking-widest', () => {
+    const cls = textRoleVariants({ role: 'code' });
+    expect(cls).toContain('text-2xl');
+    expect(cls).toContain('font-semibold');
+    expect(cls).toContain('tracking-widest');
+  });
+
   it('display — text-6xl font-bold tracking-tight', () => {
     const cls = textRoleVariants({ role: 'display' });
     expect(cls).toContain('text-6xl');
@@ -110,5 +117,19 @@ describe('textToneVariants', () => {
 
   it('ink → text-ink', () => {
     expect(textToneVariants({ tone: 'ink' })).toContain('text-ink');
+  });
+
+  it('sky → text-sky', () => {
+    expect(textToneVariants({ tone: 'sky' })).toContain('text-sky');
+  });
+
+  it('warning → text-warning', () => {
+    expect(textToneVariants({ tone: 'warning' })).toContain('text-warning');
+  });
+
+  it('destructive → text-destructive', () => {
+    expect(textToneVariants({ tone: 'destructive' })).toContain(
+      'text-destructive',
+    );
   });
 });

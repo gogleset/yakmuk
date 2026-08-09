@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 import { useMedicationAlarmQueries } from '@/entities/medication';
 import {
   type AlarmMedItem,
@@ -22,7 +22,10 @@ import {
   FadeEdges,
   Icons,
   KokiIllustration,
+  PageTitle,
   Screen,
+  Text,
+  TitleLg,
   TitleXl,
   useScrollFadeEdges,
 } from '@/shared/ui';
@@ -56,19 +59,13 @@ function MedDoseMeta({
   if (!dose && !method) return null;
 
   const label = [dose, method].filter(Boolean).join(' · ');
-  const textCls =
-    size === 'hero'
-      ? 'text-2xl font-bold text-brand'
-      : 'text-lg font-bold text-brand';
   const alignCls = align === 'center' ? 'text-center' : 'text-left';
+  const MetaText = size === 'hero' ? PageTitle : TitleLg;
 
   return (
-    <Text
-      className={`${textCls} ${alignCls}`}
-      numberOfLines={size === 'hero' ? 3 : 2}
-    >
+    <MetaText className={alignCls} numberOfLines={size === 'hero' ? 3 : 2}>
       {label}
-    </Text>
+    </MetaText>
   );
 }
 
@@ -424,7 +421,7 @@ export function MedicationAlarmPage() {
           <View className="flex-1 items-center justify-center gap-3 px-2">
             {slotItems[0] ? (
               <>
-                <Text className="text-center text-3xl font-bold text-text">
+                <Text role="hero" tone="text" className="text-center">
                   {slotItems[0].name}
                 </Text>
                 <MedDoseMeta item={slotItems[0]} size="hero" align="center" />

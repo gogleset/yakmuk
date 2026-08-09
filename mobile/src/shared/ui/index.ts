@@ -7,6 +7,7 @@ export { Input } from "./primitives/Input";
 export {
   Body,
   Caption,
+  Code,
   Display,
   LabelLg,
   LabelMd,

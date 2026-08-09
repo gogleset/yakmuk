@@ -1,11 +1,11 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import {
   formatWeeklyAnomalyLines,
   type WeeklyDigestView,
 } from '@/entities/family';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
-import { Body, KokiIllustration, LabelSm, LabelXs } from '@/shared/ui';
+import { Body, KokiIllustration, LabelSm, LabelXs, SectionTitle } from '@/shared/ui';
 
 type Props = {
   digest: WeeklyDigestView;
@@ -25,12 +25,9 @@ export function FamilyWeeklyDigestCard({ digest, onAck }: Props) {
       <KokiIllustration variant="cheer" size={96} />
       <View className="min-w-0 flex-1 gap-2">
         <LabelXs tone="muted">{COPY.family.weeklyTitle}</LabelXs>
-        <Text
-          className="text-base font-bold leading-6 text-text"
-          numberOfLines={2}
-        >
+        <SectionTitle tone="text" className="leading-6" numberOfLines={2}>
           {digest.approxLine}
-        </Text>
+        </SectionTitle>
         {hasAnomaly ? (
           <View className="gap-0.5">
             {anomalyLines.map((line) => (

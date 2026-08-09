@@ -1,7 +1,8 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { NAV } from '@/shared/constants';
+import { Body, LabelSm } from '@/shared/ui/primitives/Typography';
 
 type Props = {
   visible: boolean;
@@ -36,10 +37,11 @@ export function ExceptionToast({
         className="mx-5 rounded-2xl bg-surface px-4 py-3"
       >
         {title ? (
-          // typography: dense text-sm off-scale
-          <Text className="mb-0.5 text-sm font-bold text-text">{title}</Text>
+          <LabelSm tone="text" className="mb-0.5 font-bold">
+            {title}
+          </LabelSm>
         ) : null}
-        <Text className="text-sm text-brand-muted">{message}</Text>
+        <Body className="text-sm">{message}</Body>
       </Pressable>
     </View>
   );

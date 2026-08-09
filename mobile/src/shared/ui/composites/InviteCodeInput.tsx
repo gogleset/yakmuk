@@ -1,13 +1,13 @@
 import { useRef } from 'react';
 import {
   Pressable,
-  Text,
   TextInput,
   View,
   type TextInputProps,
 } from 'react-native';
 import { COLORS, LIMITS } from '@/shared/config/theme';
 import { cn } from '@/shared/lib/cn';
+import { Code } from '@/shared/ui/primitives/Typography';
 
 type Props = {
   value: string;
@@ -56,9 +56,7 @@ export function InviteCodeInput({
                 borderColor: isActive ? COLORS.brand : COLORS.line,
               }}
             >
-              <Text className="text-2xl font-semibold text-text">
-                {chars[i] ?? ''}
-              </Text>
+              <Code>{chars[i] ?? ''}</Code>
               {!filled && isActive ? (
                 <View className="absolute bottom-3 h-0.5 w-4 rounded-full bg-brand" />
               ) : null}

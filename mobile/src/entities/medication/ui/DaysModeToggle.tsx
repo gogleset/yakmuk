@@ -1,7 +1,8 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import type { DaysMode } from '@/entities/medication/lib/daysMask';
 import type { ControlTone } from '@/entities/medication/ui/ScheduleModeToggle';
 import { cn } from '@/shared/lib/cn';
+import { LabelMd } from '@/shared/ui';
 
 type Props = {
   value: DaysMode;
@@ -44,14 +45,7 @@ export function DaysModeToggle({
                 on ? 'bg-brand' : offBg,
               )}
             >
-              <Text
-                className={cn(
-                  'text-base font-semibold',
-                  on ? 'text-ink' : 'text-brand',
-                )}
-              >
-                {opt.label}
-              </Text>
+              <LabelMd tone={on ? 'ink' : 'brand'}>{opt.label}</LabelMd>
             </Pressable>
           );
         })}

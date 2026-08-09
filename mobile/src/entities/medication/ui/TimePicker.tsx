@@ -20,6 +20,7 @@ import type { ControlTone } from '@/entities/medication/ui/ScheduleModeToggle';
 import { COLORS, LAYOUT, LIMITS } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
 import { cn } from '@/shared/lib/cn';
+import { LabelSm } from '@/shared/ui';
 
 type Props = {
   value: string; // HH:MM
@@ -264,14 +265,7 @@ export function TimePicker({ value, onChange, tone = 'default' }: Props) {
                 index === 0 && 'border-b border-line',
               )}
             >
-              <Text
-                className={cn(
-                  'text-sm font-semibold',
-                  on ? 'text-brand' : 'text-muted',
-                )}
-              >
-                {opt.label}
-              </Text>
+              <LabelSm tone={on ? 'brand' : 'muted'}>{opt.label}</LabelSm>
             </Pressable>
           );
         })}

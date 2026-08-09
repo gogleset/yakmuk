@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import type {
   ConditionValue,
   DailyLog,
@@ -7,7 +7,7 @@ import { isDayCompleteFeedLog } from "@/entities/medication";
 import { formatRelativeTime } from "@/shared/lib/format";
 import { LAYOUT, TONE_OUTLINE } from "@/shared/config/theme";
 import { COPY } from "@/shared/copy";
-import { Card, InitialAvatar, Caption, TitleMd } from "@/shared/ui";
+import { Card, InitialAvatar, Body, Caption, TitleMd } from "@/shared/ui";
 
 /** 컨디션 피드용 — "~이에요" 자연스럽게 */
 const CONDITION_FEED_LABEL: Record<ConditionValue, string> = {
@@ -64,12 +64,9 @@ export function FamilyActivityFeedItem({ item, onPress }: Props) {
               {feedTitle(item)}
             </TitleMd>
             <View className="flex-row items-center gap-2">
-              <Text
-                className="min-w-0 flex-1 text-sm text-brand-muted"
-                numberOfLines={1}
-              >
+              <Body className="min-w-0 flex-1 text-sm" numberOfLines={1}>
                 {subtitle}
-              </Text>
+              </Body>
               {relative ? (
                 <Caption className="shrink-0">{relative}</Caption>
               ) : null}

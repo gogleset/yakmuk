@@ -1,8 +1,8 @@
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import type { CalendarMark } from '@/entities/medication/lib/calendar';
-import { COLORS, LAYOUT } from '@/shared/config/theme';
+import { LAYOUT } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
-import { KokiIllustration, LabelSm } from '@/shared/ui';
+import { Caption, KokiIllustration, LabelSm } from '@/shared/ui';
 import { MedCalendar } from './MedCalendar';
 import { MonthHeader } from './MonthHeader';
 
@@ -67,18 +67,10 @@ export function MedicationCalendarPanel({
       </View>
 
       <View className="flex-row items-center justify-evenly">
-        <Text className="text-xs" style={{ color: COLORS.muted }}>
-          ● {COPY.calendar.legendScheduled}
-        </Text>
-        <Text className="text-xs" style={{ color: COLORS.sky }}>
-          ● {COPY.calendar.legendDone}
-        </Text>
-        <Text className="text-xs" style={{ color: COLORS.warning }}>
-          ● {COPY.calendar.legendPartial}
-        </Text>
-        <Text className="text-xs" style={{ color: COLORS.destructive }}>
-          ● {COPY.calendar.legendMissed}
-        </Text>
+        <Caption tone="muted">● {COPY.calendar.legendScheduled}</Caption>
+        <Caption tone="sky">● {COPY.calendar.legendDone}</Caption>
+        <Caption tone="warning">● {COPY.calendar.legendPartial}</Caption>
+        <Caption tone="destructive">● {COPY.calendar.legendMissed}</Caption>
       </View>
     </View>
   );

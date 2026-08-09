@@ -1,5 +1,6 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { cn } from '@/shared/lib/cn';
+import { LabelSm } from '@/shared/ui';
 
 export type ScheduleMode = 'same' | 'perWeekday';
 
@@ -48,14 +49,7 @@ export function ScheduleModeToggle({
                 on ? 'bg-brand' : offBg,
               )}
             >
-              <Text
-                className={cn(
-                  'text-sm font-semibold',
-                  on ? 'text-ink' : 'text-brand',
-                )}
-              >
-                {opt.label}
-              </Text>
+              <LabelSm tone={on ? 'ink' : 'brand'}>{opt.label}</LabelSm>
             </Pressable>
           );
         })}

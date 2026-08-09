@@ -13,7 +13,7 @@ import { useFamilyInviteMutations } from '@/features/family-invite/model/useFami
 import { joinDeepLink, ROUTES } from '@/shared/config/routes';
 import { COLORS, LAYOUT, LIMITS } from '@/shared/config/theme';
 import { ACTIONS, COPY, ERRORS } from '@/shared/copy';
-import { Card, Icons, Caption, SectionTitle } from '@/shared/ui';
+import { Card, Icons, Caption, Code, SectionTitle } from '@/shared/ui';
 import { InviteListSkeleton } from '@/features/family-invite/ui/InviteListSkeleton';
 
 const QR_SIZE = 88;
@@ -183,9 +183,7 @@ function InviteSlot({ invite, onMenu, menuDisabled }: InviteSlotProps) {
         </Pressable>
       </View>
 
-      <Text className="text-base font-bold tracking-widest text-brand">
-        {invite.inviteCode}
-      </Text>
+      <Code tone="brand">{invite.inviteCode}</Code>
       <QRCode value={joinDeepLink(invite.inviteCode)} size={QR_SIZE} />
       <Caption>{statusLabel}</Caption>
     </View>

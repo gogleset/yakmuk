@@ -18,6 +18,7 @@ export const textRoleVariants = cva('', {
       labelMd: 'text-base font-semibold',
       labelLg: 'text-lg font-semibold',
       labelTight: 'text-[15px] font-semibold',
+      code: 'text-2xl font-semibold tracking-widest',
       display: 'text-6xl font-bold tracking-tight',
       body: 'text-base leading-5',
       caption: 'text-xs',
@@ -34,6 +35,10 @@ export const textToneVariants = cva('', {
       muted: 'text-brand-muted',
       faint: 'text-brand-faint',
       ink: 'text-ink',
+      /** 상태 · 캘린더 범례 */
+      sky: 'text-sky',
+      warning: 'text-warning',
+      destructive: 'text-destructive',
     },
   },
 });
@@ -57,6 +62,7 @@ const DEFAULT_TONE: Record<TextRole, TextTone> = {
   labelMd: 'brand',
   labelLg: 'brand',
   labelTight: 'brand',
+  code: 'text',
   display: 'text',
   body: 'muted',
   caption: 'muted',
@@ -139,6 +145,10 @@ export function LabelLg(props: AliasProps) {
 
 export function LabelTight(props: AliasProps) {
   return <Text role="labelTight" {...props} />;
+}
+
+export function Code(props: AliasProps) {
+  return <Text role="code" {...props} />;
 }
 
 export function Display(props: AliasProps) {

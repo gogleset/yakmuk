@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { cn } from '@/shared/lib/cn';
 import type { IconComponent } from '@/shared/ui/primitives/Icon';
-import { Body } from '@/shared/ui/primitives/Typography';
+import { Body, SectionTitle } from '@/shared/ui/primitives/Typography';
 
 type Props = {
   title: string;
@@ -40,9 +40,9 @@ export function ChoiceCard({
           </View>
         ) : null}
         <View className="flex-1 gap-0.5">
-          <Text className="text-base font-bold text-brand">{title}</Text>
+          <SectionTitle>{title}</SectionTitle>
           {description ? (
-            <Body className="text-sm text-brand-muted">{description}</Body>
+            <Body className="text-sm">{description}</Body>
           ) : null}
           {children}
         </View>

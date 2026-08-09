@@ -1,51 +1,102 @@
+import { cva, type VariantProps } from 'class-variance-authority';
 import type { ReactNode } from 'react';
-import { Text, type TextProps } from 'react-native';
+import { Text as RNText, type TextProps } from 'react-native';
 import { cn } from '@/shared/lib/cn';
 
-type Props = TextProps & {
+/** design.md §7 — size/weight/leading only */
+export const textRoleVariants = cva('', {
+  variants: {
+    role: {
+      hero: 'text-3xl font-bold leading-snug',
+      pageTitle: 'text-2xl font-bold',
+      sectionTitle: 'text-base font-bold',
+      body: 'text-base leading-5',
+      caption: 'text-xs',
+    },
+  },
+});
+
+/** design.md §7 — color only */
+export const textToneVariants = cva('', {
+  variants: {
+    tone: {
+      text: 'text-text',
+      brand: 'text-brand',
+      muted: 'text-brand-muted',
+      faint: 'text-brand-faint',
+      ink: 'text-ink',
+    },
+  },
+});
+
+export type TextRole = NonNullable<
+  VariantProps<typeof textRoleVariants>['role']
+>;
+export type TextTone = NonNullable<
+  VariantProps<typeof textToneVariants>['tone']
+>;
+
+const DEFAULT_TONE: Record<TextRole, TextTone> = {
+  hero: 'text',
+  pageTitle: 'brand',
+  sectionTitle: 'brand',
+  body: 'muted',
+  caption: 'muted',
+};
+
+type BaseProps = Omit<TextProps, 'role'> & {
   className?: string;
   children: ReactNode;
 };
 
-export function PageTitle({ className, children, ...rest }: Props) {
-  return (
-    <Text className={cn('text-2xl font-bold text-brand', className)} {...rest}>
-      {children}
-    </Text>
-  );
-}
+type AliasProps = BaseProps & {
+  tone?: TextTone;
+};
 
-export function SectionTitle({ className, children, ...rest }: Props) {
+type TextComponentProps = BaseProps & {
+  /** Typography role (design.md §7). a11y는 accessibilityRole 사용. */
+  role: TextRole;
+  tone?: TextTone;
+};
+
+export function Text({
+  role,
+  tone,
+  className,
+  children,
+  ...rest
+}: TextComponentProps) {
   return (
-    <Text
-      className={cn('text-base font-bold text-brand', className)}
+    <RNText
+      className={cn(
+        textRoleVariants({ role }),
+        textToneVariants({ tone: tone ?? DEFAULT_TONE[role] }),
+        className,
+      )}
       {...rest}
     >
       {children}
-    </Text>
+    </RNText>
   );
 }
 
-export function Body({ className, children, ...rest }: Props) {
-  return (
-    <Text className={cn('leading-5 text-brand-muted', className)} {...rest}>
-      {children}
-    </Text>
-  );
+export function PageTitle(props: AliasProps) {
+  return <Text role="pageTitle" {...props} />;
 }
 
-export function Muted({ className, children, ...rest }: Props) {
-  return (
-    <Text className={cn('text-brand-faint', className)} {...rest}>
-      {children}
-    </Text>
-  );
+export function SectionTitle(props: AliasProps) {
+  return <Text role="sectionTitle" {...props} />;
 }
 
-export function Caption({ className, children, ...rest }: Props) {
-  return (
-    <Text className={cn('text-xs text-brand-faint', className)} {...rest}>
-      {children}
-    </Text>
-  );
+export function Body(props: AliasProps) {
+  return <Text role="body" {...props} />;
+}
+
+export function Caption(props: AliasProps) {
+  return <Text role="caption" {...props} />;
+}
+
+/** @deprecated Prefer Caption or Text role="body" tone="faint" */
+export function Muted(props: AliasProps) {
+  return <Text role="body" tone="faint" {...props} />;
 }

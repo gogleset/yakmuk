@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { View, type ViewProps } from 'react-native';
 import { cn } from '@/shared/lib/cn';
 import { Button } from '@/shared/ui/primitives/Button';
-import { Body } from '@/shared/ui/primitives/Typography';
+import { SectionTitle } from '@/shared/ui/primitives/Typography';
 
 type Props = ViewProps & {
   /** 가운데 이미지·일러스트 (콕이 등) */
@@ -49,14 +49,12 @@ export function Fallback({
       {...rest}
     >
       <View className="items-center justify-center">{image}</View>
-      <Body
-        className={cn(
-          'text-center text-base font-bold leading-6 text-text',
-          messageClassName,
-        )}
+      <SectionTitle
+        tone="text"
+        className={cn('text-center leading-6', messageClassName)}
       >
         {message}
-      </Body>
+      </SectionTitle>
       {ctaLabel && onCtaPress ? (
         <Button
           label={ctaLabel}

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
-import { Text, View, type ViewProps } from 'react-native';
+import { View, type ViewProps } from 'react-native';
 import { cn } from '@/shared/lib/cn';
+import { Body, SectionTitle } from '@/shared/ui/primitives/Typography';
 
 type Props = ViewProps & {
   className?: string;
@@ -23,11 +24,7 @@ export function CardTitle({
   className?: string;
   children: ReactNode;
 }) {
-  return (
-    <Text className={cn('text-base font-bold text-brand', className)}>
-      {children}
-    </Text>
-  );
+  return <SectionTitle className={className}>{children}</SectionTitle>;
 }
 
 export function CardDescription({
@@ -37,7 +34,5 @@ export function CardDescription({
   className?: string;
   children: ReactNode;
 }) {
-  return (
-    <Text className={cn('mt-1 text-brand-muted', className)}>{children}</Text>
-  );
+  return <Body className={cn('mt-1', className)}>{children}</Body>;
 }

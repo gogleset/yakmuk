@@ -408,6 +408,7 @@ export function PageSheet({
         <View className="mb-1 flex-row items-center justify-between px-5">
           <View className="flex-row items-center gap-2">
             {headerIcon}
+            {/* typography: text-xl off-scale */}
             <Text className="text-xl font-bold text-brand">{title}</Text>
           </View>
           <Pressable

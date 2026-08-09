@@ -10,6 +10,11 @@ export {
   Muted,
   PageTitle,
   SectionTitle,
+  Text,
+  textRoleVariants,
+  textToneVariants,
+  type TextRole,
+  type TextTone,
 } from "./primitives/Typography";
 
 /** composites */

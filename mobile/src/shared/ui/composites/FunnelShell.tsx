@@ -5,13 +5,13 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  Text,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { Button } from '@/shared/ui/primitives/Button';
 import { Icons } from '@/shared/ui/primitives/Icon';
+import { Text } from '@/shared/ui/primitives/Typography';
 import { FadeInView } from '@/shared/ui/composites/FadeInView';
 import {
   KokiIllustration,
@@ -171,7 +171,7 @@ export function FunnelShell({
               </FadeInView>
             ) : null}
             <FadeInView step={titleStep}>
-              <Text className="text-2xl font-bold leading-snug text-text">
+              <Text role="pageTitle" tone="text" className="leading-snug">
                 {title}
               </Text>
             </FadeInView>

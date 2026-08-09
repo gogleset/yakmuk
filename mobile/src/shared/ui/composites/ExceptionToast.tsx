@@ -36,6 +36,7 @@ export function ExceptionToast({
         className="mx-5 rounded-2xl bg-surface px-4 py-3"
       >
         {title ? (
+          // typography: dense text-sm off-scale
           <Text className="mb-0.5 text-sm font-bold text-text">{title}</Text>
         ) : null}
         <Text className="text-sm text-brand-muted">{message}</Text>

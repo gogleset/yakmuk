@@ -64,6 +64,7 @@ export function SettingsRow({
         />
       ) : null}
       <Text
+        // typography: medium + dynamic color — outside role scale
         className="flex-1 text-base font-medium"
         style={{ color: labelColor }}
         numberOfLines={1}

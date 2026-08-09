@@ -40,9 +40,10 @@ export function ExceptionModal({
         className="items-center gap-3 rounded-3xl bg-surface px-5 py-6"
       >
         <KokiIllustration variant="thinking" size={96} />
+        {/* typography: text-lg off-scale */}
         <Text className="text-center text-lg font-bold text-text">{title}</Text>
         {message ? (
-          <Body className="text-center text-brand-muted">{message}</Body>
+          <Body className="text-center">{message}</Body>
         ) : null}
         <Button
           label={confirmLabel}

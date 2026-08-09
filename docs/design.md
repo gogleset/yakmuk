@@ -148,6 +148,7 @@ Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타�
 
 코드 SoT: `mobile/src/shared/ui/primitives/Typography.tsx` (`textRoleVariants` · `textToneVariants`). Button 라벨·invite code tracking은 Typography role 밖.  
 shared/ui: role scale과 일치할 때만 Typography · `text-sm`/`text-lg`/`text-xl`·Button/Badge/Invite/Avatar/Marquee/Settings 라벨은 raw.  
+pages · widgets · features도 동일 규칙 (entities `ui/*`는 후속).  
 `Muted` alias 제거 — 흐린 계층은 `Caption` / `Body`(기본 tone muted).
 
 ## 8. Surface & radius

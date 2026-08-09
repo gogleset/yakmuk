@@ -146,6 +146,9 @@ Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타�
 | Caption              | `text-xs`              | `muted`                             |
 | Invite code          | wide tracking          | `text`                              |
 
+코드 SoT: `mobile/src/shared/ui/primitives/Typography.tsx` (`textRoleVariants` · `textToneVariants`). Button 라벨·invite code tracking은 Typography role 밖.  
+shared/ui: role scale과 일치할 때만 Typography · `text-sm`/`text-lg`/`text-xl`·Button/Badge/Invite/Avatar/Marquee/Settings 라벨은 raw.
+
 ## 8. Surface & radius
 
 | 요소                       | 규칙                                                                                                                   |

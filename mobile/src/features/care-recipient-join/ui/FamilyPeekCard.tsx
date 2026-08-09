@@ -2,7 +2,7 @@ import { Text, View } from 'react-native';
 import type { InvitePeek } from '@/entities/user/api/peek-invite';
 import { ROLE_LABEL } from '@/entities/user';
 import { COPY } from '@/shared/copy';
-import { KokiIllustration, Muted } from '@/shared/ui';
+import { Body, Caption, KokiIllustration } from '@/shared/ui';
 
 type Props = {
   peek: InvitePeek;
@@ -26,12 +26,12 @@ export function FamilyPeekCard({ peek }: Props) {
           {title}
         </Text>
         {members ? (
-          <Muted className="text-sm" numberOfLines={2}>
+          <Body className="text-sm" numberOfLines={2}>
             {members}
-          </Muted>
+          </Body>
         ) : null}
         {peek.kind === 'recovery' ? (
-          <Muted className="text-xs">{COPY.join.recoveryHint}</Muted>
+          <Caption>{COPY.join.recoveryHint}</Caption>
         ) : null}
       </View>
     </View>

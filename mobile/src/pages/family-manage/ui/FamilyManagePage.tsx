@@ -19,10 +19,11 @@ import {
   Card,
   FadeInView,
   Input,
-  Muted,
+  Caption,
   Screen,
   ScreenScrollView,
   SectionHeader,
+  SectionTitle,
   StackHeader,
 } from '@/shared/ui';
 import { MemberListRowSkeleton } from '@/widgets/family-manage-skeleton';
@@ -127,9 +128,9 @@ export function FamilyManagePage() {
             </Card>
           ) : (
             <Card className="gap-1.5 p-4">
-              <Text className="text-base font-bold text-brand">
+              <SectionTitle>
                 {familyQuery.data?.name ?? '이름 없음'}
-              </Text>
+              </SectionTitle>
             </Card>
           )}
 
@@ -158,13 +159,11 @@ export function FamilyManagePage() {
                         <View key={member.userId} className="gap-1 py-2">
                           <View className="flex-row items-center justify-between gap-2">
                             <View className="flex-1">
-                              <Text className="font-bold text-brand">
-                                {member.nickname}
-                              </Text>
-                              <Muted className="text-xs">
+                              <SectionTitle>{member.nickname}</SectionTitle>
+                              <Caption>
                                 {ROLE_LABEL[member.role]}
                                 {sub ? ` · ${sub}` : ''}
-                              </Muted>
+                              </Caption>
                             </View>
                             <Pressable
                               accessibilityRole="button"

@@ -95,8 +95,3 @@ export function Body(props: AliasProps) {
 export function Caption(props: AliasProps) {
   return <Text role="caption" {...props} />;
 }
-
-/** @deprecated Prefer Caption or Text role="body" tone="faint" */
-export function Muted(props: AliasProps) {
-  return <Text role="body" tone="faint" {...props} />;
-}

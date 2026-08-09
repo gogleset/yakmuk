@@ -1,7 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
-import { Icons, Muted } from '@/shared/ui';
+import { Icons, Caption } from '@/shared/ui';
 
 type FeedHeaderProps = {
   feedCount: number;
@@ -26,7 +26,7 @@ export function FamilyFeedSectionHeader({
           onPress={onPress}
           className="flex-row items-center gap-0.5"
         >
-          <Muted className="text-xs">{COPY.family.seeMoreFeed}</Muted>
+          <Caption>{COPY.family.seeMoreFeed}</Caption>
           <Icons.ChevronRight size={LAYOUT.icon.sm} color={COLORS.muted} />
         </Pressable>
       ) : null}

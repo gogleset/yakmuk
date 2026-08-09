@@ -13,7 +13,7 @@ import { useFamilyInviteMutations } from '@/features/family-invite/model/useFami
 import { joinDeepLink, ROUTES } from '@/shared/config/routes';
 import { COLORS, LAYOUT, LIMITS } from '@/shared/config/theme';
 import { ACTIONS, COPY, ERRORS } from '@/shared/copy';
-import { Card, Icons, Muted } from '@/shared/ui';
+import { Card, Icons, Caption } from '@/shared/ui';
 import { InviteListSkeleton } from '@/features/family-invite/ui/InviteListSkeleton';
 
 const QR_SIZE = 88;
@@ -114,9 +114,9 @@ export function FamilyInvitePanel({ isLeader }: Props) {
       <View className="flex-row items-center gap-2">
         <Icons.QrCode size={LAYOUT.icon.md} color={COLORS.brand} />
         <Text className="text-base font-bold text-brand">가족 초대</Text>
-        <Muted className="text-xs">
+        <Caption>
           {invites.length}/{LIMITS.maxFamilyInvites}
-        </Muted>
+        </Caption>
       </View>
 
       {invitesQuery.isLoading && !invitesQuery.data ? (
@@ -169,7 +169,7 @@ function InviteSlot({ invite, onMenu, menuDisabled }: InviteSlotProps) {
           <Text className="text-sm font-bold text-brand" numberOfLines={1}>
             {invite.invitedAs}
           </Text>
-          <Muted className="text-xs">{ROLE_LABEL[invite.targetRole]}</Muted>
+          <Caption>{ROLE_LABEL[invite.targetRole]}</Caption>
         </View>
         <Pressable
           accessibilityRole="button"
@@ -187,7 +187,7 @@ function InviteSlot({ invite, onMenu, menuDisabled }: InviteSlotProps) {
         {invite.inviteCode}
       </Text>
       <QRCode value={joinDeepLink(invite.inviteCode)} size={QR_SIZE} />
-      <Muted className="text-xs">{statusLabel}</Muted>
+      <Caption>{statusLabel}</Caption>
     </View>
   );
 }
@@ -201,7 +201,7 @@ function EmptySlot({ onPress }: { onPress: () => void }) {
       className="min-h-[168px] items-center justify-center gap-2 rounded-xl bg-brand-soft p-2.5"
     >
       <Icons.Plus size={LAYOUT.icon.xl} color={COLORS.muted} />
-      <Muted className="text-xs">초대 추가</Muted>
+      <Caption>초대 추가</Caption>
     </Pressable>
   );
 }

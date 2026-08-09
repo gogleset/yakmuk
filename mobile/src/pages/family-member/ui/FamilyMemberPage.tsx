@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Alert, Text } from 'react-native';
+import { Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useAuth } from '@/providers/AuthProvider';
 import {
@@ -17,6 +17,7 @@ import { todayKstDateString } from '@/shared/lib/kst';
 import { LAYOUT } from '@/shared/config/theme';
 import { ACTIONS, COPY } from '@/shared/copy';
 import {
+  Body,
   Fab,
   FadeInView,
   Screen,
@@ -109,7 +110,7 @@ export function FamilyMemberPage() {
       >
         <FadeInView className="gap-2.5">
           {!userId ? (
-            <Text className="text-brand-muted">멤버를 찾을 수 없어요.</Text>
+            <Body>멤버를 찾을 수 없어요.</Body>
           ) : (
             <>
               <FadeInView step={0}>

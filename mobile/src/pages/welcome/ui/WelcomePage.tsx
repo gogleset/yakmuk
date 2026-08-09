@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   Platform,
   Pressable,
-  Text,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -24,7 +23,9 @@ import {
   Icons,
   Input,
   KokiIllustration,
-  Muted,
+  Caption,
+  Text,
+  Body,
 } from '@/shared/ui';
 
 type Path = 'choose' | 'leader';
@@ -200,9 +201,9 @@ export function WelcomePage() {
             maxLength={LIMITS.familyNameMaxLength}
             autoFocus
           />
-          <Muted className="self-end text-xs">
+          <Caption className="self-end">
             {familyName.length}/{LIMITS.familyNameMaxLength}
-          </Muted>
+          </Caption>
         </FunnelShell>
       );
     }
@@ -228,9 +229,9 @@ export function WelcomePage() {
           maxLength={LIMITS.nicknameMaxLength}
           autoFocus
         />
-        <Muted className="self-end text-xs">
+        <Caption className="self-end">
           {nickname.length}/{LIMITS.nicknameMaxLength}
-        </Muted>
+        </Caption>
       </FunnelShell>
     );
   }
@@ -247,12 +248,8 @@ export function WelcomePage() {
       >
         <View className="gap-8">
           <FadeInView step={0} className="gap-2.5">
-            <Text className="text-3xl font-bold leading-snug text-text">
-              {COPY.welcome.title}
-            </Text>
-            <Muted className="text-base leading-relaxed">
-              {COPY.welcome.subtitle}
-            </Muted>
+            <Text role="hero">{COPY.welcome.title}</Text>
+            <Body className="leading-relaxed">{COPY.welcome.subtitle}</Body>
           </FadeInView>
 
           <FadeInView step={1} className="items-center">
@@ -297,7 +294,11 @@ export function WelcomePage() {
 
       <View className="flex-1 justify-center gap-8">
         <FadeInView step={0}>
-          <Text className="text-center text-2xl font-bold leading-snug text-text">
+          <Text
+            role="pageTitle"
+            tone="text"
+            className="text-center leading-snug"
+          >
             {COPY.welcome.loginTitle}
           </Text>
         </FadeInView>
@@ -325,9 +326,9 @@ export function WelcomePage() {
                 onPress={() => setShowDevLogin((v) => !v)}
                 className="mt-1"
               >
-                <Muted className="text-center text-xs underline">
+                <Caption className="text-center underline">
                   {showDevLogin ? '개발 로그인 접기' : '개발용 이메일 로그인'}
-                </Muted>
+                </Caption>
               </Pressable>
               {showDevLogin ? (
                 <View className="gap-2.5">

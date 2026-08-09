@@ -7,7 +7,7 @@ import {
   Icons,
   InitialAvatar,
   KokiIllustration,
-  Muted,
+  Caption,
 } from '@/shared/ui';
 import { memberStatusLabel } from './lib/memberStatus';
 
@@ -129,7 +129,7 @@ export function FamilyGuardianDashboard({
             onPress={onManagePress}
             className="flex-row items-center gap-0.5"
           >
-            <Muted className="text-xs">{COPY.family.manage}</Muted>
+            <Caption>{COPY.family.manage}</Caption>
             <Icons.ChevronRight size={LAYOUT.icon.sm} color={COLORS.muted} />
           </Pressable>
         ) : null}

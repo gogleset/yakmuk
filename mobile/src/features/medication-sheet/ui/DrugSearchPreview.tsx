@@ -3,7 +3,7 @@ import { Image, Text, View } from 'react-native';
 import type { DrugSearchItem } from '@/entities/medication/model/types';
 import { COLORS } from '@/shared/config/theme';
 import { cn } from '@/shared/lib/cn';
-import { Body, Caption, Muted } from '@/shared/ui';
+import { Body, Caption } from '@/shared/ui';
 import { Icons } from '@/shared/ui/primitives/Icon';
 
 type Variant = 'compact' | 'detail';
@@ -72,7 +72,7 @@ export function DrugSearchPreview({
           <Text className="text-center text-lg font-semibold text-brand">
             {item.itemName}
           </Text>
-          <Muted className="text-center">{item.entpName}</Muted>
+          <Body className="text-center">{item.entpName}</Body>
         </View>
         <DrugDetailFields item={item} />
       </View>
@@ -84,7 +84,7 @@ export function DrugSearchPreview({
       <DrugThumbnail imageUrl={item.itemImage} size={56} />
       <View className="min-w-0 flex-1 gap-1">
         <Text className="font-semibold text-brand">{item.itemName}</Text>
-        <Muted>{item.entpName}</Muted>
+        <Body>{item.entpName}</Body>
         {item.efficacy ? (
           <Body numberOfLines={2} className="mt-0.5 text-sm">
             {item.efficacy}
@@ -110,7 +110,7 @@ function DrugDetailFields({ item }: { item: DrugSearchItem }) {
 
   const visibleFields = fields.filter((field) => field.value);
   if (visibleFields.length === 0) {
-    return <Muted className="text-center">상세 정보가 없어요.</Muted>;
+    return <Body className="text-center">상세 정보가 없어요.</Body>;
   }
 
   return (

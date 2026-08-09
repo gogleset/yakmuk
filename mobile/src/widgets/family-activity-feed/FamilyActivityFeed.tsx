@@ -7,7 +7,7 @@ import { isDayCompleteFeedLog } from "@/entities/medication";
 import { formatRelativeTime } from "@/shared/lib/format";
 import { LAYOUT, TONE_OUTLINE } from "@/shared/config/theme";
 import { COPY } from "@/shared/copy";
-import { Card, InitialAvatar, Muted } from "@/shared/ui";
+import { Card, InitialAvatar, Caption } from "@/shared/ui";
 
 /** 컨디션 피드용 — "~이에요" 자연스럽게 */
 const CONDITION_FEED_LABEL: Record<ConditionValue, string> = {
@@ -71,7 +71,7 @@ export function FamilyActivityFeedItem({ item, onPress }: Props) {
                 {subtitle}
               </Text>
               {relative ? (
-                <Muted className="shrink-0 text-xs">{relative}</Muted>
+                <Caption className="shrink-0">{relative}</Caption>
               ) : null}
             </View>
           </>
@@ -84,7 +84,7 @@ export function FamilyActivityFeedItem({ item, onPress }: Props) {
               {feedTitle(item)}
             </Text>
             {relative ? (
-              <Muted className="shrink-0 text-xs">{relative}</Muted>
+              <Caption className="shrink-0">{relative}</Caption>
             ) : null}
           </View>
         )}

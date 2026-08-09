@@ -63,7 +63,7 @@ import {
   Icons,
   InitialAvatar,
   Input,
-  Muted,
+  Caption,
   PageTitle,
   PressableScale,
   Screen,
@@ -433,9 +433,7 @@ export function SettingsPage() {
                   >
                     {profile?.nickname ?? "이름 없음"}
                   </Text>
-                  <Muted className="text-xs" numberOfLines={1}>
-                    {familyLine}
-                  </Muted>
+                  <Caption numberOfLines={1}>{familyLine}</Caption>
                 </View>
                 <View className="h-8 w-8 items-center justify-center rounded-full bg-surface-soft">
                   <Icons.ChevronRight

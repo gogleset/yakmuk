@@ -8,7 +8,7 @@ import { joinDeepLink } from '@/shared/config/routes';
 import { LIMITS } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
 import { cn } from '@/shared/lib/cn';
-import { FunnelShell, Input, Muted } from '@/shared/ui';
+import { FunnelShell, Input, Body } from '@/shared/ui';
 
 type Step = 0 | 1 | 2;
 
@@ -134,9 +134,9 @@ export function InviteCreateFunnel({ onClose }: Props) {
             {inviteCode}
           </Text>
           <QRCode value={joinDeepLink(inviteCode)} size={QR_SIZE} />
-          <Muted className="text-center text-sm">
+          <Body className="text-center text-sm">
             {invitedAs} · {ROLE_LABEL[targetRole]}
-          </Muted>
+          </Body>
         </View>
       ) : null}
     </FunnelShell>

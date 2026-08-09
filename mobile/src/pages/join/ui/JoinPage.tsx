@@ -11,10 +11,11 @@ import { ROUTES } from '@/shared/config/routes';
 import { LIMITS } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
 import {
+  Body,
+  Caption,
   FunnelShell,
   Input,
   InviteCodeInput,
-  Muted,
 } from '@/shared/ui';
 
 type JoinStep = 0 | 1;
@@ -84,8 +85,8 @@ export function JoinPage() {
         onCtaPress={() => setStep(1)}
       >
         <InviteCodeInput value={code} onChangeText={setCode} autoFocus />
-        <Muted className="text-sm">{COPY.join.codeHint}</Muted>
-        {peekLoading ? <Muted>{COPY.join.peekLoading}</Muted> : null}
+        <Body className="text-sm">{COPY.join.codeHint}</Body>
+        {peekLoading ? <Body>{COPY.join.peekLoading}</Body> : null}
         {peekError ? (
           <Text className="text-sm text-destructive">{peekError}</Text>
         ) : null}
@@ -121,9 +122,9 @@ export function JoinPage() {
         autoCorrect={false}
         autoFocus
       />
-      <Muted className="self-end text-xs">
+      <Caption className="self-end">
         {nickname.length}/{LIMITS.nicknameMaxLength}
-      </Muted>
+      </Caption>
       <Pressable
         accessibilityRole="button"
         disabled={join.isPending}

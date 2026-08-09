@@ -1,7 +1,11 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { COLORS } from '@/shared/config/theme';
 import { cn } from '@/shared/lib/cn';
+import {
+  LabelSm,
+  type TextTone,
+} from '@/shared/ui/primitives/Typography';
 
 const badgeVariants = cva(
   'flex-row items-center gap-1 self-start rounded-xl px-3 py-1.5',
@@ -16,25 +20,12 @@ const badgeVariants = cva(
       },
     },
     defaultVariants: {
-      variant: 'default',
+      variant: 'secondary',
     },
   },
 );
 
-const badgeLabelVariants = cva('text-sm font-semibold', {
-  variants: {
-    variant: {
-      default: 'text-ink',
-      secondary: 'text-brand',
-      soft: 'text-brand',
-      outline: 'text-brand-muted',
-      warning: '',
-    },
-  },
-  defaultVariants: {
-    variant: 'default',
-  },
-});
+type BadgeVariant = NonNullable<VariantProps<typeof badgeVariants>['variant']>;
 
 type Props = VariantProps<typeof badgeVariants> & {
   label: string;
@@ -44,6 +35,13 @@ type Props = VariantProps<typeof badgeVariants> & {
   selected?: boolean;
 };
 
+function badgeLabelTone(variant: BadgeVariant): TextTone | false {
+  if (variant === 'default') return 'ink';
+  if (variant === 'outline') return 'muted';
+  if (variant === 'warning') return false;
+  return 'brand';
+}
+
 export function Badge({
   label,
   variant = 'secondary',
@@ -51,7 +49,7 @@ export function Badge({
   className,
   labelClassName,
 }: Props) {
-  const resolved = selected ? 'default' : variant;
+  const resolved = (selected ? 'default' : variant) as BadgeVariant;
   const isWarning = resolved === 'warning';
 
   return (
@@ -59,12 +57,13 @@ export function Badge({
       className={cn(badgeVariants({ variant: resolved }), className)}
       style={isWarning ? { backgroundColor: COLORS.warningBg } : undefined}
     >
-      <Text
-        className={cn(badgeLabelVariants({ variant: resolved }), labelClassName)}
+      <LabelSm
+        tone={badgeLabelTone(resolved)}
+        className={labelClassName}
         style={isWarning ? { color: COLORS.warning } : undefined}
       >
         {label}
-      </Text>
+      </LabelSm>
     </View>
   );
 }

@@ -7,7 +7,7 @@ import { isDayCompleteFeedLog } from "@/entities/medication";
 import { formatRelativeTime } from "@/shared/lib/format";
 import { LAYOUT, TONE_OUTLINE } from "@/shared/config/theme";
 import { COPY } from "@/shared/copy";
-import { Card, InitialAvatar, Caption } from "@/shared/ui";
+import { Card, InitialAvatar, Caption, TitleMd } from "@/shared/ui";
 
 /** 컨디션 피드용 — "~이에요" 자연스럽게 */
 const CONDITION_FEED_LABEL: Record<ConditionValue, string> = {
@@ -60,9 +60,9 @@ export function FamilyActivityFeedItem({ item, onPress }: Props) {
         {/* 약 없으면 제목+시간 한 줄 → 아바타와 세로 가운데 */}
         {subtitle ? (
           <>
-            <Text className="text-[15px] font-bold text-text" numberOfLines={2}>
+            <TitleMd tone="text" numberOfLines={2}>
               {feedTitle(item)}
-            </Text>
+            </TitleMd>
             <View className="flex-row items-center gap-2">
               <Text
                 className="min-w-0 flex-1 text-sm text-brand-muted"
@@ -77,12 +77,9 @@ export function FamilyActivityFeedItem({ item, onPress }: Props) {
           </>
         ) : (
           <View className="flex-row items-center gap-2">
-            <Text
-              className="min-w-0 flex-1 text-[15px] font-bold text-text"
-              numberOfLines={2}
-            >
+            <TitleMd tone="text" className="min-w-0 flex-1" numberOfLines={2}>
               {feedTitle(item)}
-            </Text>
+            </TitleMd>
             {relative ? (
               <Caption className="shrink-0">{relative}</Caption>
             ) : null}

@@ -1,8 +1,8 @@
-import { Pressable, Text } from 'react-native';
+import { Pressable } from 'react-native';
 import type { FamilyMember } from '@/entities/family/model/types';
 import { ROLE_LABEL } from '@/entities/user';
 import { COPY } from '@/shared/copy';
-import { Body, Card, Fallback, KokiIllustration } from '@/shared/ui';
+import { Body, Card, Fallback, KokiIllustration, TitleLg } from '@/shared/ui';
 
 type Props = {
   members: FamilyMember[];
@@ -29,9 +29,7 @@ export function FamilyMemberList({ members, onPressMember }: Props) {
           onPress={() => onPressMember(member.userId, member.nickname)}
         >
           <Card>
-            <Text className="text-lg font-bold text-brand">
-              {member.nickname}
-            </Text>
+            <TitleLg>{member.nickname}</TitleLg>
             <Body className="mt-1">{ROLE_LABEL[member.role]}</Body>
           </Card>
         </Pressable>

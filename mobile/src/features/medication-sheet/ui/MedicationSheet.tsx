@@ -3,7 +3,6 @@ import {
   ActivityIndicator,
   Alert,
   Pressable,
-  Text,
   View,
 } from 'react-native';
 import { searchDrugsByName } from '@/entities/medication/api/search-drugs';
@@ -52,6 +51,8 @@ import {
   Fallback,
   Input,
   KokiIllustration,
+  LabelMd,
+  LabelSm,
   MarqueeTitle,
 } from '@/shared/ui';
 
@@ -589,9 +590,7 @@ export function MedicationSheet({
                       onPress={() => setDetailItem(item)}
                       className="self-end rounded-xl bg-brand-soft px-3 py-1.5 active:opacity-70"
                     >
-                      <Text className="text-sm font-semibold text-brand">
-                        {COPY.med.detailView}
-                      </Text>
+                      <LabelSm>{COPY.med.detailView}</LabelSm>
                     </Pressable>
                   </Card>
                 ))}
@@ -601,21 +600,16 @@ export function MedicationSheet({
         ) : isCreate && formStep === 'meta' ? (
           <View className="gap-4">
             <View className="flex-row items-center justify-between gap-2">
-              <Text
-                className="flex-1 text-base font-semibold text-brand"
-                numberOfLines={2}
-              >
+              <LabelMd className="flex-1" numberOfLines={2}>
                 {medName}
-              </Text>
+              </LabelMd>
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="약 이름 다시 선택"
                 onPress={clearName}
                 className="rounded-xl bg-surface-soft px-3 py-2 active:opacity-70"
               >
-                <Text className="text-sm font-semibold text-brand">
-                  {COPY.med.changeName}
-                </Text>
+                <LabelSm>{COPY.med.changeName}</LabelSm>
               </Pressable>
             </View>
             <FadeInView duration="fast">

@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import type { ConditionValue } from '@/entities/medication/model/types';
 import { CONDITION_LABEL } from '@/entities/medication/lib/display';
 import { COLORS } from '@/shared/config/theme';
@@ -8,6 +8,7 @@ import {
   Button,
   Input,
   KokiIllustration,
+  LabelSm,
   type KokiVariant,
 } from '@/shared/ui';
 
@@ -41,9 +42,7 @@ export function ConditionLogSection({
 }: Props) {
   return (
     <View className="mt-4 gap-5">
-      <Text className="mb-1 text-center text-sm font-semibold text-brand">
-        {COPY.condition.prompt}
-      </Text>
+      <LabelSm className="mb-1 text-center">{COPY.condition.prompt}</LabelSm>
       <View className="flex-row justify-around gap-2 px-1 pt-1">
         {CONDITIONS.map((c) => {
           const selected = condition === c.value;
@@ -73,14 +72,7 @@ export function ConditionLogSection({
                   accessibilityLabel={c.label}
                 />
               </View>
-              <Text
-                className={cn(
-                  'text-sm font-semibold',
-                  selected ? 'text-brand' : 'text-brand-muted',
-                )}
-              >
-                {c.label}
-              </Text>
+              <LabelSm tone={selected ? 'brand' : 'muted'}>{c.label}</LabelSm>
             </Pressable>
           );
         })}

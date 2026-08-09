@@ -1,6 +1,6 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
-import { Icons } from '@/shared/ui';
+import { Icons, TitleLg } from '@/shared/ui';
 
 type Props = {
   /** YYYY-MM */
@@ -33,7 +33,7 @@ export function MonthHeader({
       >
         <Icons.ChevronLeft size={LAYOUT.icon.lg} color={COLORS.text} />
       </Pressable>
-      <Text className="text-lg font-bold text-text">{title}</Text>
+      <TitleLg tone="text">{title}</TitleLg>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="다음 달"

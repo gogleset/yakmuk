@@ -16,6 +16,7 @@ import {
   FunnelShell,
   Input,
   InviteCodeInput,
+  LabelSm,
 } from '@/shared/ui';
 
 type JoinStep = 0 | 1;
@@ -131,9 +132,7 @@ export function JoinPage() {
         onPress={() => void onJoin(true)}
         className="items-center py-1"
       >
-        <Text className="text-sm font-semibold text-brand">
-          {COPY.join.later}
-        </Text>
+        <LabelSm>{COPY.join.later}</LabelSm>
       </Pressable>
     </FunnelShell>
   );

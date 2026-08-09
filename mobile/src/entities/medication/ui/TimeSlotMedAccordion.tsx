@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import {
   timeOfDaySlot,
   type TimeOfDaySlot,
@@ -8,7 +8,14 @@ import {
 import { formatMedDose } from '@/shared/constants/medDoseUnits';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
-import { Icons, MedFormIcon } from '@/shared/ui';
+import {
+  Body,
+  Caption,
+  Icons,
+  LabelMd,
+  LabelTight,
+  MedFormIcon,
+} from '@/shared/ui';
 
 type Group = {
   scheduledTime: string;
@@ -119,19 +126,19 @@ export function TimeSlotMedAccordion({
                     size={LAYOUT.icon.md}
                     color={isDaySlot ? COLORS.warning : COLORS.muted}
                   />
-                  <Text className="text-[15px] font-semibold text-brand">
+                  <LabelTight>
                     {slotName} {group.scheduledTime}
-                  </Text>
+                  </LabelTight>
                 </View>
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-sm text-brand-muted">
+                  <Body className="text-sm">
                     {variant === 'check'
                       ? COPY.med.progressFraction(
                           takenCount,
                           group.entries.length,
                         )
                       : `${group.entries.length}`}
-                  </Text>
+                  </Body>
                   <Chevron size={LAYOUT.icon.sm} color={COLORS.muted} />
                 </View>
               </Pressable>
@@ -145,14 +152,13 @@ export function TimeSlotMedAccordion({
                           color={entry.color}
                         />
                         <View className="min-w-0 flex-1 gap-0.5">
-                          <Text
-                            className={`text-base font-semibold leading-5 ${
-                              entry.taken ? 'text-brand' : 'text-text'
-                            }`}
+                          <LabelMd
+                            tone={entry.taken ? 'brand' : 'text'}
+                            className="leading-5"
                             numberOfLines={2}
                           >
                             {entry.name}
-                          </Text>
+                          </LabelMd>
                           {(() => {
                             const dose = formatMedDose(
                               entry.doseAmount ?? null,
@@ -162,9 +168,7 @@ export function TimeSlotMedAccordion({
                               .filter(Boolean)
                               .join(' · ');
                             return caption ? (
-                              <Text className="text-xs text-brand-muted">
-                                {caption}
-                              </Text>
+                              <Caption>{caption}</Caption>
                             ) : null;
                           })()}
                         </View>

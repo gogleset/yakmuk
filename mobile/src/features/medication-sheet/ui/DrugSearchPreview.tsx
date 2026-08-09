@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Image, Text, View } from 'react-native';
+import { Image, View } from 'react-native';
 import type { DrugSearchItem } from '@/entities/medication/model/types';
 import { COLORS } from '@/shared/config/theme';
 import { cn } from '@/shared/lib/cn';
-import { Body, Caption } from '@/shared/ui';
+import { Body, Caption, LabelLg, LabelMd } from '@/shared/ui';
 import { Icons } from '@/shared/ui/primitives/Icon';
 
 type Variant = 'compact' | 'detail';
@@ -69,9 +69,7 @@ export function DrugSearchPreview({
           <DrugThumbnail imageUrl={item.itemImage} size={128} />
         </View>
         <View className="gap-1">
-          <Text className="text-center text-lg font-semibold text-brand">
-            {item.itemName}
-          </Text>
+          <LabelLg className="text-center">{item.itemName}</LabelLg>
           <Body className="text-center">{item.entpName}</Body>
         </View>
         <DrugDetailFields item={item} />
@@ -83,7 +81,7 @@ export function DrugSearchPreview({
     <View className={cn('flex-row gap-3', className)}>
       <DrugThumbnail imageUrl={item.itemImage} size={56} />
       <View className="min-w-0 flex-1 gap-1">
-        <Text className="font-semibold text-brand">{item.itemName}</Text>
+        <LabelMd>{item.itemName}</LabelMd>
         <Body>{item.entpName}</Body>
         {item.efficacy ? (
           <Body numberOfLines={2} className="mt-0.5 text-sm">

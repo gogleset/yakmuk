@@ -1,7 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
 import { COLORS, LAYOUT, TONE_OUTLINE } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
-import { KokiIllustration } from '@/shared/ui';
+import { KokiIllustration, LabelSm } from '@/shared/ui';
 import type { CareAlertSlide } from './model/types';
 
 type Props = {
@@ -47,9 +47,7 @@ export function FamilyCareAlertCard({ slide, onAck, width }: Props) {
             className="self-end rounded-full border bg-surface px-3.5 py-2"
             style={{ borderColor: outline.borderColor }}
           >
-            <Text className="text-sm font-semibold" style={{ color: ctaColor }}>
-              {COPY.family.careAck}
-            </Text>
+            <LabelSm style={{ color: ctaColor }}>{COPY.family.careAck}</LabelSm>
           </Pressable>
         </View>
       </View>

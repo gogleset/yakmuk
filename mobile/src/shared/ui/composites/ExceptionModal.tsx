@@ -1,8 +1,8 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { ACTIONS } from '@/shared/copy';
 import { COLORS, LAYOUT, OVERLAY } from '@/shared/config/theme';
 import { Button } from '@/shared/ui/primitives/Button';
-import { Body } from '@/shared/ui/primitives/Typography';
+import { Body, TitleLg } from '@/shared/ui/primitives/Typography';
 import { KokiIllustration } from '@/shared/ui/composites/KokiIllustration';
 
 type Props = {
@@ -40,8 +40,9 @@ export function ExceptionModal({
         className="items-center gap-3 rounded-3xl bg-surface px-5 py-6"
       >
         <KokiIllustration variant="thinking" size={96} />
-        {/* typography: text-lg off-scale */}
-        <Text className="text-center text-lg font-bold text-text">{title}</Text>
+        <TitleLg tone="text" className="text-center">
+          {title}
+        </TitleLg>
         {message ? (
           <Body className="text-center">{message}</Body>
         ) : null}

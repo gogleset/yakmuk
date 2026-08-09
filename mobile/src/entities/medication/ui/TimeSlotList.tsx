@@ -3,6 +3,7 @@ import { COLORS, LAYOUT, LIMITS } from '@/shared/config/theme';
 import { TimePicker } from '@/entities/medication/ui/TimePicker';
 import type { ControlTone } from '@/entities/medication/ui/ScheduleModeToggle';
 import { COPY } from '@/shared/copy';
+import { LabelMd, LabelSm, LabelXs } from '@/shared/ui';
 import { Button } from '@/shared/ui/primitives/Button';
 import { Icons } from '@/shared/ui/primitives/Icon';
 
@@ -105,9 +106,7 @@ export function TimeSlotList({
         return (
           <View key={`slot-${index}`} className="gap-1.5">
             <View className="flex-row items-center justify-between">
-              <Text className="text-sm font-semibold text-brand">
-                {index + 1}회
-              </Text>
+              <LabelSm>{index + 1}회</LabelSm>
               <View className="flex-row items-center gap-3">
                 {showNotificationToggle ? (
                   <Pressable
@@ -125,15 +124,13 @@ export function TimeSlotList({
                       size={LAYOUT.icon.sm}
                       color={notifOn ? COLORS.brand : COLORS.muted}
                     />
-                    <Text
-                      className={
-                        notifOn
-                          ? 'text-xs font-semibold text-brand'
-                          : 'text-xs font-medium text-muted'
-                      }
-                    >
-                      {notifOn ? COPY.notif.slotOn : COPY.notif.slotOff}
-                    </Text>
+                    {notifOn ? (
+                      <LabelXs>{COPY.notif.slotOn}</LabelXs>
+                    ) : (
+                      <Text className="text-xs font-medium text-muted">
+                        {COPY.notif.slotOff}
+                      </Text>
+                    )}
                   </Pressable>
                 ) : null}
                 {!readOnly && times.length > minSlots ? (
@@ -150,7 +147,7 @@ export function TimeSlotList({
             </View>
             {readOnly ? (
               <View className="rounded-xl bg-brand-soft px-3.5 py-3.5">
-                <Text className="text-base font-semibold text-brand">{time}</Text>
+                <LabelMd>{time}</LabelMd>
               </View>
             ) : (
               <TimePicker

@@ -18,10 +18,12 @@ import { ACTIONS, COPY } from '@/shared/copy';
 import { todayKstDateString } from '@/shared/lib/kst';
 import {
   Button,
+  Display,
   FadeEdges,
   Icons,
   KokiIllustration,
   Screen,
+  TitleXl,
   useScrollFadeEdges,
 } from '@/shared/ui';
 import { AlarmHeroSkeleton } from './AlarmHeroSkeleton';
@@ -359,14 +361,8 @@ export function MedicationAlarmPage() {
       ) : (
       <View className="flex-1 justify-between px-6 py-8">
         <View className="items-center gap-3 pt-4">
-          <Text className="text-xl font-bold text-brand">
-            {COPY.notif.alarmHeadline}
-          </Text>
-          {displayTime ? (
-            <Text className="text-6xl font-bold text-text tracking-tight">
-              {displayTime}
-            </Text>
-          ) : null}
+          <TitleXl>{COPY.notif.alarmHeadline}</TitleXl>
+          {displayTime ? <Display>{displayTime}</Display> : null}
           <KokiIllustration variant="pill" size={showChecklist ? 168 : 220} />
         </View>
 
@@ -400,9 +396,7 @@ export function MedicationAlarmPage() {
                     }`}
                   >
                     <View className="flex-1 gap-1.5">
-                      <Text className="text-xl font-bold text-text">
-                        {item.name}
-                      </Text>
+                      <TitleXl tone="text">{item.name}</TitleXl>
                       <MedDoseMeta item={item} size="row" align="left" />
                     </View>
                     {taken ? (

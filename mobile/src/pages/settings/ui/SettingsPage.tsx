@@ -64,7 +64,7 @@ import {
   InitialAvatar,
   Input,
   Caption,
-  PageTitle,
+  TitleXl,
   PressableScale,
   Screen,
   ScreenScrollView,
@@ -400,7 +400,7 @@ export function SettingsPage() {
         contentContainerClassName="gap-3 px-5 pb-10 pt-4"
       >
         <FadeInView className="gap-3">
-          <PageTitle className="text-xl">설정</PageTitle>
+          <TitleXl>설정</TitleXl>
 
           {/* 프로필 — 아바타 · 닉·역할 · 가족명 · 닉네임 변경 */}
           <PressableScale

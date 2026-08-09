@@ -2,7 +2,7 @@ import { Text, View } from 'react-native';
 import type { CalendarMark } from '@/entities/medication/lib/calendar';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
-import { KokiIllustration } from '@/shared/ui';
+import { KokiIllustration, LabelSm } from '@/shared/ui';
 import { MedCalendar } from './MedCalendar';
 import { MonthHeader } from './MonthHeader';
 
@@ -42,9 +42,7 @@ export function MedicationCalendarPanel({
         <View className="items-center gap-1 py-1">
           <KokiIllustration variant="streak" size={88} />
           {streakDays != null ? (
-            <Text className="text-sm font-semibold text-brand">
-              {COPY.med.streakDays(streakDays)}
-            </Text>
+            <LabelSm>{COPY.med.streakDays(streakDays)}</LabelSm>
           ) : null}
         </View>
       ) : null}

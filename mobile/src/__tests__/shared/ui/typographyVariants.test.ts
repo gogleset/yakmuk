@@ -23,6 +23,61 @@ describe('textRoleVariants', () => {
     expect(cls).toContain('font-bold');
   });
 
+  it('titleMd — text-[15px] font-bold', () => {
+    const cls = textRoleVariants({ role: 'titleMd' });
+    expect(cls).toContain('text-[15px]');
+    expect(cls).toContain('font-bold');
+  });
+
+  it('titleLg — text-lg font-bold', () => {
+    const cls = textRoleVariants({ role: 'titleLg' });
+    expect(cls).toContain('text-lg');
+    expect(cls).toContain('font-bold');
+  });
+
+  it('titleXl — text-xl font-bold', () => {
+    const cls = textRoleVariants({ role: 'titleXl' });
+    expect(cls).toContain('text-xl');
+    expect(cls).toContain('font-bold');
+  });
+
+  it('labelXs — text-xs font-semibold', () => {
+    const cls = textRoleVariants({ role: 'labelXs' });
+    expect(cls).toContain('text-xs');
+    expect(cls).toContain('font-semibold');
+  });
+
+  it('labelSm — text-sm font-semibold', () => {
+    const cls = textRoleVariants({ role: 'labelSm' });
+    expect(cls).toContain('text-sm');
+    expect(cls).toContain('font-semibold');
+  });
+
+  it('labelMd — text-base font-semibold', () => {
+    const cls = textRoleVariants({ role: 'labelMd' });
+    expect(cls).toContain('text-base');
+    expect(cls).toContain('font-semibold');
+  });
+
+  it('labelLg — text-lg font-semibold', () => {
+    const cls = textRoleVariants({ role: 'labelLg' });
+    expect(cls).toContain('text-lg');
+    expect(cls).toContain('font-semibold');
+  });
+
+  it('labelTight — text-[15px] font-semibold', () => {
+    const cls = textRoleVariants({ role: 'labelTight' });
+    expect(cls).toContain('text-[15px]');
+    expect(cls).toContain('font-semibold');
+  });
+
+  it('display — text-6xl font-bold tracking-tight', () => {
+    const cls = textRoleVariants({ role: 'display' });
+    expect(cls).toContain('text-6xl');
+    expect(cls).toContain('font-bold');
+    expect(cls).toContain('tracking-tight');
+  });
+
   it('body — text-base leading-5', () => {
     const cls = textRoleVariants({ role: 'body' });
     expect(cls).toContain('text-base');

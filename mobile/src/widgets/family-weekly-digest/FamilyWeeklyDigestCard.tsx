@@ -5,7 +5,7 @@ import {
 } from '@/entities/family';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
-import { Body, Caption, KokiIllustration } from '@/shared/ui';
+import { Body, KokiIllustration, LabelSm, LabelXs } from '@/shared/ui';
 
 type Props = {
   digest: WeeklyDigestView;
@@ -24,7 +24,7 @@ export function FamilyWeeklyDigestCard({ digest, onAck }: Props) {
     >
       <KokiIllustration variant="cheer" size={96} />
       <View className="min-w-0 flex-1 gap-2">
-        <Caption className="font-semibold">{COPY.family.weeklyTitle}</Caption>
+        <LabelXs tone="muted">{COPY.family.weeklyTitle}</LabelXs>
         <Text
           className="text-base font-bold leading-6 text-text"
           numberOfLines={2}
@@ -49,12 +49,9 @@ export function FamilyWeeklyDigestCard({ digest, onAck }: Props) {
           onPress={onAck}
           className="mt-1 self-end rounded-full bg-surface-soft px-3.5 py-2"
         >
-          <Text
-            className="text-sm font-semibold"
-            style={{ color: COLORS.brand }}
-          >
+          <LabelSm style={{ color: COLORS.brand }}>
             {COPY.family.weeklyAck}
-          </Text>
+          </LabelSm>
         </Pressable>
       </View>
     </View>

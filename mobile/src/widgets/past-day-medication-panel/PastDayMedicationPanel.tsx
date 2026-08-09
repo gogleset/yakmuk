@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import type { DayMedicationEntry } from '@/entities/medication/lib/calendar';
 import { groupTimedEntriesByScheduledTime } from '@/entities/medication/lib/timeSlots';
 import { CONDITION_LABEL } from '@/entities/medication/lib/display';
 import type { DailyLog } from '@/entities/medication/model/types';
 import { TimeSlotMedAccordion } from '@/entities/medication';
 import { COPY } from '@/shared/copy';
-import { Body, Fallback, KokiIllustration } from '@/shared/ui';
+import { Body, Fallback, KokiIllustration, LabelMd } from '@/shared/ui';
 
 type Props = {
   entries: DayMedicationEntry[];
@@ -55,9 +55,9 @@ export function PastDayMedicationPanel({
       ) : null}
       {conditionLogs.map((log) => (
         <View key={`c-${log.id}`} className="rounded-xl bg-surface-soft p-3.5">
-          <Text className="font-semibold text-brand">
+          <LabelMd>
             컨디션 {CONDITION_LABEL[log.condition!]}
-          </Text>
+          </LabelMd>
           {log.message ? <Body className="mt-1">{log.message}</Body> : null}
         </View>
       ))}

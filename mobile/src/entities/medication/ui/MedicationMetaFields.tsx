@@ -1,4 +1,4 @@
-import { Pressable, Text, View, type TextStyle } from 'react-native';
+import { Pressable, View, type TextStyle } from 'react-native';
 import {
   MED_DOSE_UNITS,
   type MedDoseUnitId,
@@ -7,6 +7,7 @@ import { LIMITS } from '@/shared/constants/limits';
 import { COLORS } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
 import { cn } from '@/shared/lib/cn';
+import { Caption, LabelMd, LabelSm } from '@/shared/ui';
 import { Input } from '@/shared/ui/primitives/Input';
 import { MedColorSwatch } from '@/entities/medication/ui/MedColorSwatch';
 import type { MedColorId } from '@/shared/constants/medColors';
@@ -48,10 +49,10 @@ function FieldHeader({
   const nearLimit = length >= max * 0.9;
   return (
     <View className="mb-1.5 flex-row items-center justify-between gap-2">
-      <Text className="text-sm font-semibold text-brand">{label}</Text>
+      <LabelSm>{label}</LabelSm>
       {showCount ? (
-        <Text
-          className={cn('text-xs', nearLimit && 'font-semibold')}
+        <Caption
+          className={cn(nearLimit && 'font-semibold')}
           style={
             {
               color: nearLimit ? COLORS.warning : COLORS.muted,
@@ -59,7 +60,7 @@ function FieldHeader({
           }
         >
           {length}/{max}
-        </Text>
+        </Caption>
       ) : null}
     </View>
   );
@@ -89,9 +90,7 @@ export function MedicationMetaFields({
   return (
     <View className="gap-3">
       <View>
-        <Text className="mb-1.5 text-sm font-semibold text-brand">
-          {COPY.med.colorLabel}
-        </Text>
+        <LabelSm className="mb-1.5">{COPY.med.colorLabel}</LabelSm>
         <MedColorSwatch
           value={value.color}
           onChange={(color: MedColorId) => patch({ color })}
@@ -169,9 +168,7 @@ export function MedicationMetaFields({
       </View>
 
       <View>
-        <Text className="mb-1.5 text-sm font-semibold text-brand">
-          {COPY.med.doseLabel}
-        </Text>
+        <LabelSm className="mb-1.5">{COPY.med.doseLabel}</LabelSm>
         <View className="flex-row gap-2">
           <View className="min-w-0 flex-1">
             <Input
@@ -197,11 +194,11 @@ export function MedicationMetaFields({
             }
             className="min-w-[88px] items-center justify-center rounded-xl bg-brand-soft px-3"
           >
-            <Text className="text-base font-semibold text-brand">
+            <LabelMd>
               {value.doseUnit
                 ? MED_DOSE_UNITS.find((u) => u.id === value.doseUnit)?.label
                 : COPY.med.doseUnitPlaceholder}
-            </Text>
+            </LabelMd>
           </Pressable>
         </View>
       </View>
@@ -224,9 +221,7 @@ export function MedicationMetaFields({
                   selected ? 'bg-brand-soft' : 'bg-surface-soft',
                 )}
               >
-                <Text className="text-sm font-semibold text-brand">
-                  {unit.label}
-                </Text>
+                <LabelSm>{unit.label}</LabelSm>
               </Pressable>
             );
           })}
@@ -237,9 +232,7 @@ export function MedicationMetaFields({
               }
               className="rounded-xl bg-surface-soft px-3 py-2"
             >
-              <Text className="text-sm font-semibold text-brand-muted">
-                지우기
-              </Text>
+              <LabelSm tone="muted">지우기</LabelSm>
             </Pressable>
           ) : null}
         </View>

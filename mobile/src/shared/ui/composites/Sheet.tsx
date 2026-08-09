@@ -9,7 +9,6 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   useWindowDimensions,
   View,
@@ -23,6 +22,7 @@ import {
 } from '@/shared/lib/keyboardBottomInset';
 import { scrollYToRevealField } from '@/shared/lib/scrollToRevealField';
 import { Icons } from '@/shared/ui/primitives/Icon';
+import { TitleLg, TitleXl } from '@/shared/ui/primitives/Typography';
 
 type SheetProps = {
   visible: boolean;
@@ -257,12 +257,9 @@ export function BottomSheet({
         >
           <View className="mb-1 flex-row items-center justify-between gap-2">
             {typeof title === 'string' ? (
-              <Text
-                className="min-w-0 flex-1 text-lg font-bold text-brand"
-                numberOfLines={1}
-              >
+              <TitleLg className="min-w-0 flex-1" numberOfLines={1}>
                 {title}
-              </Text>
+              </TitleLg>
             ) : (
               title
             )}
@@ -408,8 +405,7 @@ export function PageSheet({
         <View className="mb-1 flex-row items-center justify-between px-5">
           <View className="flex-row items-center gap-2">
             {headerIcon}
-            {/* typography: text-xl off-scale */}
-            <Text className="text-xl font-bold text-brand">{title}</Text>
+            <TitleXl>{title}</TitleXl>
           </View>
           <Pressable
             accessibilityRole="button"

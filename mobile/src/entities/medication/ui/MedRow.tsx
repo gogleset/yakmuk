@@ -1,9 +1,10 @@
-import { Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { formatDaysMaskLabel } from '@/entities/medication/lib/daysMask';
 import { formatMedDose } from '@/shared/constants/medDoseUnits';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
 import { cn } from '@/shared/lib/cn';
+import { Caption, LabelMd } from '@/shared/ui';
 import { PressableScale } from '@/shared/ui/composites/PressableScale';
 import { Icons } from '@/shared/ui/primitives/Icon';
 
@@ -53,20 +54,17 @@ export function MedRow({
           <Icons.Circle size={LAYOUT.icon.lg} color={COLORS.muted} />
         )}
         <View className="min-w-0 flex-1">
-          <Text
-            className="text-base font-semibold text-brand"
-            numberOfLines={1}
-          >
-            {name}
-          </Text>
+          <LabelMd numberOfLines={1}>{name}</LabelMd>
           {scheduleLabel || doseLabel ? (
-            <Text className="mt-0.5 text-xs text-brand-faint" numberOfLines={1}>
+            <Caption tone="faint" className="mt-0.5" numberOfLines={1}>
               {[doseLabel, scheduleLabel].filter(Boolean).join(' · ')}
-            </Text>
+            </Caption>
           ) : null}
         </View>
       </View>
-      <Text className="ml-2 text-brand-faint">{scheduledTime}</Text>
+      <Caption tone="faint" className="ml-2">
+        {scheduledTime}
+      </Caption>
     </PressableScale>
   );
 }

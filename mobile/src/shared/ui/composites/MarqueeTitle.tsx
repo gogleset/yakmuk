@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Text, View } from 'react-native';
 import { cn } from '@/shared/lib/cn';
+import {
+  textRoleVariants,
+  textToneVariants,
+} from '@/shared/ui/primitives/Typography';
 
 type Props = {
   text: string;
@@ -62,14 +66,23 @@ export function MarqueeTitle({
     >
       {/* 너비 측정용 (화면 밖) */}
       <Text
-        className={cn('absolute text-lg font-bold opacity-0', className)}
+        className={cn(
+          textRoleVariants({ role: 'titleLg' }),
+          textToneVariants({ tone: 'brand' }),
+          'absolute opacity-0',
+          className,
+        )}
         onLayout={(e) => setTextWidth(e.nativeEvent.layout.width)}
       >
         {text}
       </Text>
       <Animated.Text
         numberOfLines={1}
-        className={cn('text-lg font-bold text-brand', className)}
+        className={cn(
+          textRoleVariants({ role: 'titleLg' }),
+          textToneVariants({ tone: 'brand' }),
+          className,
+        )}
         style={
           overflow
             ? { transform: [{ translateX: offset }], width: textWidth }

@@ -1,9 +1,13 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import type { ReactNode } from "react";
-import { Pressable, Text, type PressableProps } from "react-native";
+import { Pressable, type PressableProps } from "react-native";
 import { COLORS, LAYOUT } from "@/shared/config/theme";
 import { cn } from "@/shared/lib/cn";
 import type { IconComponent } from "@/shared/ui/primitives/Icon";
+import {
+  LabelMd,
+  type TextTone,
+} from "@/shared/ui/primitives/Typography";
 
 /** 테스트·스토리용 — shape 클래스 계약 */
 export const buttonVariants = cva(
@@ -39,22 +43,6 @@ export const buttonVariants = cva(
   },
 );
 
-const buttonLabelVariants = cva("text-base font-semibold", {
-  variants: {
-    variant: {
-      default: "text-ink",
-      secondary: "text-brand",
-      outline: "text-brand",
-      oauth: "text-text",
-      ghost: "text-brand",
-      destructive: "text-white",
-    },
-  },
-  defaultVariants: {
-    variant: "default",
-  },
-});
-
 type ButtonVariant = NonNullable<
   VariantProps<typeof buttonVariants>["variant"]
 >;
@@ -72,6 +60,13 @@ function iconColor(variant: ButtonVariant): string {
   if (variant === "destructive") return COLORS.white;
   if (variant === "oauth") return COLORS.text;
   return COLORS.brand;
+}
+
+function buttonLabelTone(variant: ButtonVariant): TextTone | false {
+  if (variant === "default") return "ink";
+  if (variant === "oauth") return "text";
+  if (variant === "destructive") return false;
+  return "brand";
 }
 
 export function Button({
@@ -105,9 +100,14 @@ export function Button({
         <Icon size={LAYOUT.icon.md} color={iconColor(resolvedVariant)} />
       ) : null}
       {label ? (
-        <Text className={cn(buttonLabelVariants({ variant: resolvedVariant }))}>
+        <LabelMd
+          tone={buttonLabelTone(resolvedVariant)}
+          className={
+            resolvedVariant === "destructive" ? "text-white" : undefined
+          }
+        >
           {label}
-        </Text>
+        </LabelMd>
       ) : null}
       {children}
     </Pressable>

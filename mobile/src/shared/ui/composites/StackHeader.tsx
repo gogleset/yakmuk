@@ -1,8 +1,9 @@
 import { router } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { cn } from '@/shared/lib/cn';
 import { Icons } from '@/shared/ui/primitives/Icon';
+import { TitleLg } from '@/shared/ui/primitives/Typography';
 
 type Props = {
   title: string;
@@ -36,16 +37,13 @@ export function StackHeader({
       >
         <Icons.ChevronLeft size={LAYOUT.icon.lg} color={color} />
       </Pressable>
-      <Text
-        // typography: text-lg off-scale (below PageTitle)
-        className={cn(
-          'flex-1 text-lg font-bold',
-          tone === 'brand' ? 'text-brand' : 'text-text',
-        )}
+      <TitleLg
+        tone={tone}
+        className="flex-1"
         numberOfLines={1}
       >
         {title}
-      </Text>
+      </TitleLg>
     </View>
   );
 }

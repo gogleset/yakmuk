@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { WEEKDAY_LABELS } from '@/entities/medication/lib/daysMask';
 import type { MedicationScheduleDraft } from '@/entities/medication/lib/scheduleDraft';
 import {
@@ -13,7 +13,7 @@ import {
   type FormSurfaceMode,
 } from '@/features/medication-schedule-form/lib/formVisibility';
 import { COLORS, LAYOUT, LIMITS } from '@/shared/config/theme';
-import { FadeInView, Icons, SectionTitle } from '@/shared/ui';
+import { FadeInView, Icons, LabelXs, SectionTitle } from '@/shared/ui';
 import { cn } from '@/shared/lib/cn';
 
 const DEFAULT_TIMES = [LIMITS.defaultDoseTime];
@@ -150,9 +150,7 @@ export function MedicationScheduleFields({
                                 key={`${day}-${timeIndex}-${time}`}
                                 className="rounded-md bg-surface-soft px-2 py-0.5"
                               >
-                                <Text className="text-xs font-semibold text-brand">
-                                  {time}
-                                </Text>
+                                <LabelXs>{time}</LabelXs>
                               </View>
                             ))}
                           </View>

@@ -10,7 +10,7 @@
 | 2   | F6 오늘 다 먹음     | **B** — 약 리스트 **유지** + 위에 `done` 컷 (오늘 체크 **인사 배너**)                                                                           |
 | 3   | F4 Streak           | **N=3** (KST 기준 연속 all-done 3일). 2차에 **최소 로직 구현** (스킵 안 함). 상시 노출 금지 — 연속≥3일일 때 **캘린더 영역**에 `streak` 1회 |
 | 4   | F7 Worried          | **A** — 경고/빨간 배너 **대신** Worried + 안부 카피                                                                                             |
-| 5   | 다필드 입력 표면    | **B** — FunnelShell = 온보딩·초대 등 **스텝형만 full page** (PageSheet 안 씀). **약 추가·수정 = BottomSheet progressive disclosure** (`design.md` §9) |
+| 5   | 다필드 입력 표면    | **B** — FunnelShell = 온보딩·초대 등 **스텝형만 full page** (PageSheet 안 씀). **약 추가·수정 = BottomSheet progressive disclosure** ([design/input](../design/input.md)) |
 | 6   | rename 범위         | **B** — UI 카피 + AGENTS / TRACK / design / PRD (`app.json` display name·스플래시 문구는 이번 제외, `yakmuk` 식별자 유지)                       |
 | 7   | Welcome 카피        | **C** — 콕이 1인칭 인사 타이틀(`안녕하세요. 저는 콕이에요`) + 안부 서브 + 하단 CTA. 브랜드명 `약콕` Welcome 비표시                               |
 | 8   | sage 색             | **soft 틸 확정** — light `brand #4D8679` · canvas `#FFFFFF` · surfaceSoft `#F0F5F3` (목업 `home-empty` 기준). 진한 쿨 틸(`#0F6B5C`) 폐기 |

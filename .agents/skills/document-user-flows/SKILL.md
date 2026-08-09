@@ -31,7 +31,7 @@ description: >-
 | `mobile/src/pages/**` | 화면 조립 |
 | `mobile/src/features/**` | use-case(행동) |
 | `mobile/src/widgets/**` | 블록 UI |
-| [docs/design.md](../../../docs/design.md) §6 | 톤·카피 (이미지 스타일 힌트) |
+| [docs/design/color.md](../../../docs/design/color.md) | 톤·카피 (이미지 스타일 힌트) |
 
 선택: `loop/pre/CONTRACT.md`, `loop/pre/DECISIONS.md`, `docs/brand/`.
 
@@ -68,5 +68,5 @@ description: >-
 
 - PRD: [docs/prd/SUMMARY.md](../../../docs/prd/SUMMARY.md)
 - 제품 목표: [docs/product/](../../../docs/product/)
-- 디자인: [docs/design.md](../../../docs/design.md)
+- 디자인: [docs/design/](../../../docs/design/README.md)
 - 진입: [AGENTS.md](../../../AGENTS.md)

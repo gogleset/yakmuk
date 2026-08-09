@@ -11,7 +11,7 @@
 | [gap.md](gap.md) | 갭 분석 · 에셋 인벤토리 · 팔레트 · placeholder 파일명 |
 | [flows.md](flows.md) | 브랜드 beat **F1–F8** · 코드 훅 |
 | [funnels.md](funnels.md) | 토스형 입력 퍼널 **ID P1–P6** |
-| [design-edits.md](design-edits.md) | [docs/design.md](../design.md) 섹션별 수정안 |
+| [design-edits.md](design-edits.md) | [docs/design/](../design/README.md) 섹션별 수정안(히스토리) |
 | [impl.md](impl.md) | 투두 체크리스트 · 하지 말 것 |
 | [decisions.md](decisions.md) | 기획 질문으로 **잠근 결정** |
 | [deferred.md](deferred.md) | 플랜 닫힘 후 **보류·후속** 백로그 |
@@ -65,7 +65,7 @@
 | | |
 |--|--|
 | 읽기 | [design-edits.md](design-edits.md) |
-| 하기 | `docs/design.md`에 수정안 반영 (약콕, sage, Character, Brand flows, Funnel) |
+| 하기 | `docs/design/`에 수정안 반영 (약콕, sage, Character, Brand flows, Funnel) |
 | 끝 | [gates.md](gates.md) §1 — design.md SoT. theme hex는 방향만 |
 
 ### 2. 에셋 슬롯 (+ 테마는 나중)

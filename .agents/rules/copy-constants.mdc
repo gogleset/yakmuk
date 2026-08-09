@@ -13,9 +13,9 @@ alwaysApply: false
 | 숫자 한도·레이아웃·모션 | `mobile/src/shared/constants/` (`LIMITS` `LAYOUT` `MOTION` `NAV` `OVERLAY`) |
 | 사용자 문구 | `mobile/src/shared/copy/` (`ACTIONS` `ERRORS` `COPY`) |
 | 역할·컨디션 라벨 | entities `display.ts` / `daysMask` (`ROLE_LABEL` `CONDITION_LABEL`) |
-| 테마 색·톤 outline | `shared/config/theme.ts` (`COLORS` · `TONE_OUTLINE`) + design.md §6·§8.1 |
+| 테마 색·톤 outline | `shared/config/theme.ts` (`COLORS` · `TONE_OUTLINE`) + [design/color](../../docs/design/color.md) · [surface §8.1](../../docs/design/surface.md) |
 
-## 톤 (design.md §6.2)
+## 톤 ([design/color](../../docs/design/color.md) semantic)
 
 - 안부·해요체·짧은 Alert
 - 필드명 제목 금지 (`약 이름` → `약 이름을 알려 주세요`)

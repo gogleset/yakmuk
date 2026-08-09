@@ -11,7 +11,7 @@ stage: **pre** · store: **local-supabase** · app: Expo RN 57.
 yakmuk/
 ├── AGENTS.md                 # 이 파일
 ├── TRACK.md                  # 트랙·스테이지
-├── docs/design.md            # 시각·톤·카피 원칙
+├── docs/design/              # 시각·톤·카피 원칙 (섹션별)
 ├── docs/product/             # 제품 목표 · 안심 구독 (신뢰→glance→주간요약)
 ├── docs/brand/               # 약콕·콕이 브랜드 플랜 (갭·beat·토스형 퍼널·design 수정안)
 ├── docs/prd/                 # PRD 요약
@@ -77,7 +77,7 @@ Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 ## Design & copy
 
 - 구현 토큰 먼저: [`theme.ts`](mobile/src/shared/config/theme.ts) (`COLORS` · `TONE_OUTLINE`) · [`shared/constants/`](mobile/src/shared/constants/) · tailwind
-- 원칙: [docs/design.md](docs/design.md) (§6 색 · §8.1 Tone outline · §8.2 카피)
+- 원칙: [docs/design/](docs/design/README.md) ([color](docs/design/color.md) · [surface](docs/design/surface.md) Tone outline·카피)
 - UI 작업 규칙: [`.agents/rules/design.mdc`](.agents/rules/design.mdc)
 - 상수/문구: [`.agents/rules/copy-constants.mdc`](.agents/rules/copy-constants.mdc)
 - TDD·테스트 위치: [`.agents/rules/tdd.mdc`](.agents/rules/tdd.mdc)
@@ -129,7 +129,7 @@ Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 
 - `features/medication/` 같은 domain slice
 - pages에서 entity api 직접 / features에서 supabase client 직접
-- border 남발 · 설명 카피 남발 (design.md §8 — Tone outline·focus만)
+- border 남발 · 설명 카피 남발 ([surface](docs/design/surface.md) — Tone outline·focus만)
 - 마이그레이션 in-place 수정 · 시크릿 커밋
 - 소스 옆에 `*.test.ts` 흩뿌리기
 

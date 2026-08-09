@@ -1,6 +1,6 @@
 # design.md 수정안
 
-← [README](README.md) · 대상 파일 [docs/design.md](../design.md)
+← [README](README.md) · 대상 [docs/design/](../design/README.md) (히스토리 수정안)
 
 실행 시 **이 문서 그대로** `design.md`에 반영한다.
 
@@ -67,7 +67,7 @@
 
 - 변경 최소. Brand hero 존재감 = 콕이 이미지
 - 추가: `캐릭터 옆 카피는 Caption/짧은 Body 한 줄 초과 금지`
-- 앱 type scale SoT: `docs/design.md` §7 · `mobile/src/shared/ui/primitives/Typography.tsx`
+- 앱 type scale SoT: `docs/design/typography.md` · `mobile/src/shared/ui/primitives/Typography.tsx`
 
 ## §6.2 Copy
 

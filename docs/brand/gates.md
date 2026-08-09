@@ -55,7 +55,7 @@
 
 ## 1. 디자인 소스 갱신
 
-**목표:** `docs/design.md`가 약콕·세이지 방향·Character·Brand flows·Funnel의 **단일 진실(SoT)** 이다.
+**목표:** `docs/design/`가 약콕·세이지 방향·Character·Brand flows·Funnel의 **단일 진실(SoT)** 이다.
 
 | 게이트 | PASS 조건 |
 |--------|-----------|

@@ -17,7 +17,7 @@ description: >-
 
 1. [AGENTS.md](../../../AGENTS.md) · [fsd-architecture.mdc](../../rules/fsd-architecture.mdc) · [tdd.mdc](../../rules/tdd.mdc) 확인
 2. 도메인 slice(`features/medication/`)가 아닌지 확인 → **use-case 이름**만
-3. UI/카피면 [docs/design.md](../../../docs/design.md) · [copy-constants.mdc](../../rules/copy-constants.mdc)
+3. UI/카피면 [docs/design/](../../../docs/design/README.md) · [copy-constants.mdc](../../rules/copy-constants.mdc)
 4. **Red 먼저** — `mobile/src/__tests__/…`에 실패 테스트 경로 잡기 (소스 옆 금지)
 5. empty/예외 UI → [fsd-architecture.mdc](../../rules/fsd-architecture.mdc) Empty 절 (`Fallback`)
 

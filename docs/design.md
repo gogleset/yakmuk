@@ -140,15 +140,17 @@ Brand hero 존재감 = 콕이 이미지. Welcome 카피는 좌상단 인사(타�
 | -------------------- | ---------------------- | ----------------------------------- |
 | Brand hero (Welcome) | 콕이 컷 + `text-3xl` 인사 · bold | `text` (타이틀) / `muted` (서브) |
 | Page title           | `text-2xl` · bold      | `brand` (또는 `text`)               |
+| Title Xl / Lg / Md   | `text-xl` / `lg` / `[15px]` · bold | `brand` / `text`              |
 | Section / card title | `text-base` · bold     | `brand` / `text`                    |
-| Button               | `text-base` · semibold | `ink` on brand · `brand` on outline |
+| Label (Button=`LabelMd`, Badge=`LabelSm`) | `text-base`/`sm`/… · semibold | variant tone (`ink`/`brand`/…) |
+| Display (알람 시각)  | `text-6xl` · bold · tracking-tight | `text`                      |
 | Body                 | leading 여유 · regular | `text` → muted 계층은 `muted`       |
 | Caption              | `text-xs`              | `muted`                             |
 | Invite code          | wide tracking          | `text`                              |
 
-코드 SoT: `mobile/src/shared/ui/primitives/Typography.tsx` (`textRoleVariants` · `textToneVariants`). Button 라벨·invite code tracking은 Typography role 밖.  
-shared/ui: role scale과 일치할 때만 Typography · `text-sm`/`text-lg`/`text-xl`·Button/Badge/Invite/Avatar/Marquee/Settings 라벨은 raw.  
-pages · widgets · features도 동일 규칙 (entities `ui/*`는 후속).  
+코드 SoT: `mobile/src/shared/ui/primitives/Typography.tsx` (`textRoleVariants` · `textToneVariants`).  
+Button=`LabelMd` · Badge=`LabelSm`. 칩 토글·invite code tracking은 Typography 밖.  
+전 레이어: role scale 일치면 Typography · tracking·칩 토글만 raw.  
 `Muted` alias 제거 — 흐린 계층은 `Caption` / `Body`(기본 tone muted).
 
 ## 8. Surface & radius

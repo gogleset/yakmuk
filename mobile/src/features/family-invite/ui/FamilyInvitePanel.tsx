@@ -13,7 +13,7 @@ import { useFamilyInviteMutations } from '@/features/family-invite/model/useFami
 import { joinDeepLink, ROUTES } from '@/shared/config/routes';
 import { COLORS, LAYOUT, LIMITS } from '@/shared/config/theme';
 import { ACTIONS, COPY, ERRORS } from '@/shared/copy';
-import { Card, Icons, Caption } from '@/shared/ui';
+import { Card, Icons, Caption, SectionTitle } from '@/shared/ui';
 import { InviteListSkeleton } from '@/features/family-invite/ui/InviteListSkeleton';
 
 const QR_SIZE = 88;
@@ -113,7 +113,7 @@ export function FamilyInvitePanel({ isLeader }: Props) {
     <Card className="gap-3 p-4">
       <View className="flex-row items-center gap-2">
         <Icons.QrCode size={LAYOUT.icon.md} color={COLORS.brand} />
-        <Text className="text-base font-bold text-brand">가족 초대</Text>
+        <SectionTitle>가족 초대</SectionTitle>
         <Caption>
           {invites.length}/{LIMITS.maxFamilyInvites}
         </Caption>

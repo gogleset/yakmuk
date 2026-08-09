@@ -2,7 +2,7 @@ import { Pressable, Text } from 'react-native';
 import type { FamilyMember } from '@/entities/family/model/types';
 import { ROLE_LABEL } from '@/entities/user';
 import { COPY } from '@/shared/copy';
-import { Card, Fallback, KokiIllustration } from '@/shared/ui';
+import { Body, Card, Fallback, KokiIllustration } from '@/shared/ui';
 
 type Props = {
   members: FamilyMember[];
@@ -32,9 +32,7 @@ export function FamilyMemberList({ members, onPressMember }: Props) {
             <Text className="text-lg font-bold text-brand">
               {member.nickname}
             </Text>
-            <Text className="mt-1 text-brand-muted">
-              {ROLE_LABEL[member.role]}
-            </Text>
+            <Body className="mt-1">{ROLE_LABEL[member.role]}</Body>
           </Card>
         </Pressable>
       ))}

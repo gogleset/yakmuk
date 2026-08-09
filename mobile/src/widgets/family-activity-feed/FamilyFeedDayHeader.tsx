@@ -1,4 +1,4 @@
-import { Text } from 'react-native';
+import { Caption } from '@/shared/ui';
 
 type Props = {
   title: string;
@@ -7,8 +7,6 @@ type Props = {
 /** 피드 날짜 그룹 헤더 — 오늘 / 어제 / 날짜 */
 export function FamilyFeedDayHeader({ title }: Props) {
   return (
-    <Text className="pb-1 pt-1.5 text-xs font-bold text-brand-muted">
-      {title}
-    </Text>
+    <Caption className="pb-1 pt-1.5 font-bold">{title}</Caption>
   );
 }

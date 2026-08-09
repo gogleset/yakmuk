@@ -3,7 +3,6 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
-  Text,
   View,
 } from 'react-native';
 import type { ConditionValue } from '@/entities/medication/model/types';
@@ -11,7 +10,12 @@ import { CONDITION_LABEL } from '@/entities/medication/lib/display';
 import { COLORS, LIMITS } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
 import { cn } from '@/shared/lib/cn';
-import { KokiIllustration, type KokiVariant } from '@/shared/ui';
+import {
+  Caption,
+  KokiIllustration,
+  SectionTitle,
+  type KokiVariant,
+} from '@/shared/ui';
 
 function kokiForCondition(value: ConditionValue): KokiVariant {
   if (value === 'GOOD') return 'happy';
@@ -72,9 +76,9 @@ export function TodayGreetingBanner({
   const greeting = (
     <View className="flex-row items-center gap-2.5 px-3.5 py-2.5">
       <View className="min-w-0 flex-1 gap-0.5">
-        <Text className="text-base font-bold leading-5 text-brand">
+        <SectionTitle className="leading-5">
           {allDone ? COPY.med.checkPromptDone : COPY.med.checkPromptTitle}
-        </Text>
+        </SectionTitle>
       </View>
       <KokiIllustration variant={allDone ? 'done' : 'cheer'} size={64} />
     </View>
@@ -92,13 +96,11 @@ export function TodayGreetingBanner({
   const conditionSlide = (
     <View className="flex-row items-center gap-2.5 px-3.5 py-2.5">
       <View className="min-w-0 flex-1 gap-0.5">
-        <Text className="text-base font-bold leading-5 text-brand">
+        <SectionTitle className="leading-5">
           {COPY.condition.savedPrompt(label)}
-        </Text>
+        </SectionTitle>
         {savedMessage?.trim() ? (
-          <Text className="text-xs text-brand-muted" numberOfLines={2}>
-            {savedMessage.trim()}
-          </Text>
+          <Caption numberOfLines={2}>{savedMessage.trim()}</Caption>
         ) : null}
       </View>
       <KokiIllustration

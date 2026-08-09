@@ -1,7 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
-import { Icons, Caption } from '@/shared/ui';
+import { Body, Icons, Caption, SectionTitle } from '@/shared/ui';
 
 type FeedHeaderProps = {
   feedCount: number;
@@ -43,12 +43,10 @@ type PageHeaderProps = {
 export function FamilyTabHeader({ dateLabel, onBellPress }: PageHeaderProps) {
   return (
     <View className="relative items-center justify-center px-10 py-1">
-      <Text className="text-center text-base font-bold text-text">
+      <SectionTitle tone="text" className="text-center">
         {dateLabel}
-      </Text>
-      <Text className="mt-0.5 text-center text-sm text-brand-muted">
-        {COPY.family.title}
-      </Text>
+      </SectionTitle>
+      <Body className="mt-0.5 text-center text-sm">{COPY.family.title}</Body>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="알림"

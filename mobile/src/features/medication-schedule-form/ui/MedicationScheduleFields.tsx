@@ -13,7 +13,7 @@ import {
   type FormSurfaceMode,
 } from '@/features/medication-schedule-form/lib/formVisibility';
 import { COLORS, LAYOUT, LIMITS } from '@/shared/config/theme';
-import { FadeInView, Icons } from '@/shared/ui';
+import { FadeInView, Icons, SectionTitle } from '@/shared/ui';
 import { cn } from '@/shared/lib/cn';
 
 const DEFAULT_TIMES = [LIMITS.defaultDoseTime];
@@ -142,9 +142,7 @@ export function MedicationScheduleFields({
                       )}
                     >
                       <View className="min-w-0 flex-1 flex-row items-center gap-2">
-                        <Text className="text-base font-bold text-brand">
-                          {label}
-                        </Text>
+                        <SectionTitle>{label}</SectionTitle>
                         {collapsed ? (
                           <View className="min-w-0 flex-1 flex-row flex-wrap gap-1.5">
                             {times.map((time, timeIndex) => (

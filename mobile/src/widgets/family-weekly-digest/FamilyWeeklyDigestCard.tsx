@@ -5,7 +5,7 @@ import {
 } from '@/entities/family';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
-import { KokiIllustration } from '@/shared/ui';
+import { Body, Caption, KokiIllustration } from '@/shared/ui';
 
 type Props = {
   digest: WeeklyDigestView;
@@ -24,9 +24,7 @@ export function FamilyWeeklyDigestCard({ digest, onAck }: Props) {
     >
       <KokiIllustration variant="cheer" size={96} />
       <View className="min-w-0 flex-1 gap-2">
-        <Text className="text-xs font-semibold text-brand-muted">
-          {COPY.family.weeklyTitle}
-        </Text>
+        <Caption className="font-semibold">{COPY.family.weeklyTitle}</Caption>
         <Text
           className="text-base font-bold leading-6 text-text"
           numberOfLines={2}
@@ -36,19 +34,13 @@ export function FamilyWeeklyDigestCard({ digest, onAck }: Props) {
         {hasAnomaly ? (
           <View className="gap-0.5">
             {anomalyLines.map((line) => (
-              <Text
-                key={line}
-                className="text-sm leading-5 text-brand-muted"
-                numberOfLines={2}
-              >
+              <Body key={line} className="text-sm" numberOfLines={2}>
                 {line}
-              </Text>
+              </Body>
             ))}
           </View>
         ) : (
-          <Text className="text-sm leading-5 text-brand-muted">
-            {COPY.family.weeklyEmptyAnomaly}
-          </Text>
+          <Body className="text-sm">{COPY.family.weeklyEmptyAnomaly}</Body>
         )}
         <Pressable
           accessibilityRole="button"

@@ -3,7 +3,6 @@ import {
   AccessibilityInfo,
   Pressable,
   StyleSheet,
-  Text,
   View,
   type LayoutChangeEvent,
 } from 'react-native';
@@ -18,7 +17,7 @@ import type { DailyLog } from '@/entities/medication/model/types';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { MOTION } from '@/shared/constants';
 import { COPY } from '@/shared/copy';
-import { Icons } from '@/shared/ui';
+import { Caption, Icons } from '@/shared/ui';
 import { FamilyActivityFeedItem } from './FamilyActivityFeed';
 import { FamilyFeedDayHeader } from './FamilyFeedDayHeader';
 
@@ -242,7 +241,7 @@ export function FamilyActivityFeedStack({
         className="flex-row items-center justify-between pb-1 pt-1.5"
         hitSlop={LAYOUT.hitSlop.sm}
       >
-        <Text className="text-xs font-bold text-brand-muted">{title}</Text>
+        <Caption className="font-bold">{title}</Caption>
         <Animated.View style={chevronStyle}>
           <Icons.ChevronDown size={LAYOUT.icon.sm} color={COLORS.muted} />
         </Animated.View>

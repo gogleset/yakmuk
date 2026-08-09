@@ -1,8 +1,8 @@
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import type { InvitePeek } from '@/entities/user/api/peek-invite';
 import { ROLE_LABEL } from '@/entities/user';
 import { COPY } from '@/shared/copy';
-import { Body, Caption, KokiIllustration } from '@/shared/ui';
+import { Body, Caption, KokiIllustration, SectionTitle } from '@/shared/ui';
 
 type Props = {
   peek: InvitePeek;
@@ -22,9 +22,9 @@ export function FamilyPeekCard({ peek }: Props) {
     <View className="flex-row items-center gap-3 rounded-xl bg-surface-soft px-3.5 py-3">
       <KokiIllustration variant="family" size={56} />
       <View className="min-w-0 flex-1 gap-0.5">
-        <Text className="text-base font-bold text-text" numberOfLines={1}>
+        <SectionTitle tone="text" numberOfLines={1}>
           {title}
-        </Text>
+        </SectionTitle>
         {members ? (
           <Body className="text-sm" numberOfLines={2}>
             {members}

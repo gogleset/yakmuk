@@ -1,4 +1,4 @@
-/** 모션 — docs/design.md §10 */
+/** 모션 — docs/design/motion.md */
 export const MOTION = {
   duration: {
     instant: 100,

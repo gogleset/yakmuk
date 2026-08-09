@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { Text as RNText, type TextProps } from 'react-native';
 import { cn } from '@/shared/lib/cn';
 
-/** design.md §7 — size/weight/leading only */
+/** design/typography.md — size/weight/leading only */
 export const textRoleVariants = cva('', {
   variants: {
     role: {
@@ -28,7 +28,7 @@ export const textRoleVariants = cva('', {
   },
 });
 
-/** design.md §7 — color only */
+/** design/typography.md — color only */
 export const textToneVariants = cva('', {
   variants: {
     tone: {
@@ -83,7 +83,7 @@ type AliasProps = BaseProps & {
 };
 
 type TextComponentProps = BaseProps & {
-  /** Typography role (design.md §7). a11y는 accessibilityRole 사용. */
+  /** Typography role (design/typography.md). a11y는 accessibilityRole 사용. */
   role: TextRole;
   tone?: TextTone | false;
 };

@@ -1,4 +1,4 @@
-/** 디자인 토큰 — docs/design.md SoT (light, soft 틸) */
+/** 디자인 토큰 — docs/design/color.md SoT (light, soft 틸) */
 export { LAYOUT, LIMITS, MOTION, NAV, OVERLAY } from "@/shared/constants";
 
 export const COLORS = {
@@ -33,7 +33,7 @@ export const COLORS = {
   white: "#FFFFFF",
 } as const;
 
-/** 케어/주의 톤 outline — fill 금지. design.md §8.1 Tone outline */
+/** 케어/주의 톤 outline — fill 금지. docs/design/surface.md Tone outline */
 export const TONE_OUTLINE = {
   width: 1,
   warning: { borderWidth: 1, borderColor: COLORS.warningBorder },

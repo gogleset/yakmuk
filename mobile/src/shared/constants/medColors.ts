@@ -1,4 +1,4 @@
-/** 약 구분 색 — docs/design.md soft 팔레트와 맞춘 앱 전용 키 */
+/** 약 구분 색 — docs/design/color.md soft 팔레트와 맞춘 앱 전용 키 */
 export const MED_COLOR_DEFAULT = 'teal' as const;
 
 export const MED_COLORS = [

@@ -6,7 +6,7 @@ export const LIMITS = {
   nicknameMaxLength: 10,
   familyNameMaxLength: 20,
   /** 가족당 초대 슬롯 (DB unified invite limit과 동기) */
-  maxFamilyInvites: 4,
+  maxFamilyInvites: 6,
   /** 하루 복용 시간 슬롯 상한 */
   maxTimeSlots: 6,
   /** 복약 기본 시각 (HH:MM) */

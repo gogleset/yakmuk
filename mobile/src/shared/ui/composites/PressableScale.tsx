@@ -1,6 +1,5 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import {
-  AccessibilityInfo,
   Pressable,
   type PressableProps,
   type StyleProp,
@@ -13,6 +12,9 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { MOTION } from '@/shared/constants';
+import { motionMs } from '@/shared/lib/motion/motionMs';
+import type { MotionsOfKind } from '@/shared/lib/motion/styles';
+import { useResolvedMotionStyle } from '@/shared/lib/motion/useResolvedMotionStyle';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -20,6 +22,7 @@ type Props = Omit<PressableProps, 'style'> & {
   children: ReactNode;
   style?: StyleProp<ViewStyle>;
   className?: string;
+  motion?: false | MotionsOfKind<'press'>;
 };
 
 /** 탭 시 살짝 줄어드는 press feedback */
@@ -30,25 +33,21 @@ export function PressableScale({
   disabled,
   style,
   className,
+  motion,
   ...rest
 }: Props) {
+  const { style: motionStyle, styleName } = useResolvedMotionStyle({
+    component: 'pressableScale',
+    allowedKind: 'press',
+    motion,
+  });
   const scale = useSharedValue(1);
-  const [reduceMotion, setReduceMotion] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    void AccessibilityInfo.isReduceMotionEnabled().then((enabled) => {
-      if (!cancelled) setReduceMotion(enabled);
-    });
-    const sub = AccessibilityInfo.addEventListener(
-      'reduceMotionChanged',
-      setReduceMotion,
-    );
-    return () => {
-      cancelled = true;
-      sub.remove();
-    };
-  }, []);
+  const active = styleName !== 'none';
+  const pressScale =
+    motionStyle.kind === 'press' ? motionStyle.scale : MOTION.press.scale;
+  const durationKey =
+    motionStyle.kind === 'press' ? motionStyle.duration : 'instant';
+  const duration = motionMs(active, durationKey);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -61,18 +60,18 @@ export function PressableScale({
       className={className}
       style={[animatedStyle, style]}
       onPressIn={(e) => {
-        if (!reduceMotion && !disabled) {
-          scale.value = withTiming(MOTION.press.scale, {
-            duration: MOTION.duration.instant,
+        if (active && !disabled) {
+          scale.value = withTiming(pressScale, {
+            duration,
             easing: Easing.out(Easing.quad),
           });
         }
         onPressIn?.(e);
       }}
       onPressOut={(e) => {
-        if (!reduceMotion) {
+        if (active) {
           scale.value = withTiming(1, {
-            duration: MOTION.duration.instant,
+            duration,
             easing: Easing.out(Easing.quad),
           });
         }

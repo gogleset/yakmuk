@@ -15,11 +15,13 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, LAYOUT, OVERLAY } from '@/shared/config/theme';
-import { MOTION } from '@/shared/constants';
 import {
   sheetKeyboardLayout,
   subscribeKeyboardBottomInset,
 } from '@/shared/lib/keyboardBottomInset';
+import { motionMs } from '@/shared/lib/motion/motionMs';
+import type { MotionsOfKind } from '@/shared/lib/motion/styles';
+import { useResolvedMotionStyle } from '@/shared/lib/motion/useResolvedMotionStyle';
 import { scrollYToRevealField } from '@/shared/lib/scrollToRevealField';
 import { Icons } from '@/shared/ui/primitives/Icon';
 import { TitleLg, TitleXl } from '@/shared/ui/primitives/Typography';
@@ -40,6 +42,7 @@ type SheetProps = {
    * overlay = 투명 스택 absolute (약 등록 — nested Modal 애니 깨짐 방지)
    */
   presentation?: 'modal' | 'overlay';
+  motion?: false | MotionsOfKind<'sheet'>;
 };
 
 /** 하단 시트 — 시트 슬라이드 + 배경 페이드 (MOTION 토큰) */
@@ -52,7 +55,20 @@ export function BottomSheet({
   header,
   footer,
   presentation = 'modal',
+  motion,
 }: SheetProps) {
+  const { style: motionStyle, styleName } = useResolvedMotionStyle({
+    component: 'bottomSheet',
+    allowedKind: 'sheet',
+    motion,
+  });
+  const sheetActive = styleName !== 'none';
+  const presentKey =
+    motionStyle.kind === 'sheet' ? motionStyle.present : 'normal';
+  const dismissKey =
+    motionStyle.kind === 'sheet' ? motionStyle.dismiss : 'fast';
+  const presentMs = motionMs(sheetActive, presentKey);
+  const dismissMs = motionMs(sheetActive, dismissKey);
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = useWindowDimensions();
   const screenHeight = Dimensions.get('screen').height;
@@ -173,16 +189,21 @@ export function BottomSheet({
 
       let openAnim: Animated.CompositeAnimation | null = null;
       const frame = requestAnimationFrame(() => {
+        if (presentMs === 0) {
+          backdropOpacity.setValue(1);
+          sheetTranslateY.setValue(0);
+          return;
+        }
         openAnim = Animated.parallel([
           Animated.timing(backdropOpacity, {
             toValue: 1,
-            duration: MOTION.duration.normal,
+            duration: presentMs,
             easing: Easing.out(Easing.quad),
             useNativeDriver: true,
           }),
           Animated.timing(sheetTranslateY, {
             toValue: 0,
-            duration: MOTION.duration.normal,
+            duration: presentMs,
             easing: Easing.out(Easing.cubic),
             useNativeDriver: true,
           }),
@@ -198,16 +219,24 @@ export function BottomSheet({
 
     if (!mounted) return;
 
+    if (presentMs === 0 && dismissMs === 0) {
+      backdropOpacity.setValue(0);
+      sheetTranslateY.setValue(windowHeight);
+      setMounted(false);
+      onClosedRef.current?.();
+      return;
+    }
+
     const closeAnim = Animated.parallel([
       Animated.timing(backdropOpacity, {
         toValue: 0,
-        duration: MOTION.duration.fast,
+        duration: dismissMs,
         easing: Easing.in(Easing.quad),
         useNativeDriver: true,
       }),
       Animated.timing(sheetTranslateY, {
         toValue: windowHeight,
-        duration: MOTION.duration.normal,
+        duration: presentMs || dismissMs,
         easing: Easing.in(Easing.cubic),
         useNativeDriver: true,
       }),
@@ -221,7 +250,14 @@ export function BottomSheet({
 
     return () => closeAnim.stop();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible, windowHeight, sheetTranslateY, backdropOpacity]);
+  }, [
+    visible,
+    windowHeight,
+    sheetTranslateY,
+    backdropOpacity,
+    presentMs,
+    dismissMs,
+  ]);
 
   if (!mounted) return null;
 

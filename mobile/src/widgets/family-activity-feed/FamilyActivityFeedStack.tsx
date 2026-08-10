@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import {
-  AccessibilityInfo,
   Pressable,
   StyleSheet,
   View,
@@ -14,9 +13,10 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import type { DailyLog } from '@/entities/medication/model/types';
+import { useMotion } from '@/providers/MotionProvider';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
-import { MOTION } from '@/shared/constants';
 import { COPY } from '@/shared/copy';
+import { motionMs } from '@/shared/lib/motion/motionMs';
 import { Caption, Icons } from '@/shared/ui';
 import { FamilyActivityFeedItem } from './FamilyActivityFeed';
 import { FamilyFeedDayHeader } from './FamilyFeedDayHeader';
@@ -68,8 +68,8 @@ export function FamilyActivityFeedStack({
   items,
   onItemPress,
 }: Props) {
+  const { motionActive } = useMotion();
   const [expanded, setExpanded] = useState(false);
-  const [reduceMotion, setReduceMotion] = useState(false);
   /** 접힘·애니메이션 중만 clip — 펼침 완료 후 visible이라 카드 shadow 안 잘림 */
   const [clipBlind, setClipBlind] = useState(true);
   const canStack = items.length > 1;
@@ -84,21 +84,6 @@ export function FamilyActivityFeedStack({
   const hasMeasured = useSharedValue(0);
   /** 1=접힘(peek), 0=펼침 */
   const peekReveal = useSharedValue(1);
-
-  useEffect(() => {
-    let cancelled = false;
-    void AccessibilityInfo.isReduceMotionEnabled().then((enabled) => {
-      if (!cancelled) setReduceMotion(enabled);
-    });
-    const sub = AccessibilityInfo.addEventListener(
-      'reduceMotionChanged',
-      setReduceMotion,
-    );
-    return () => {
-      cancelled = true;
-      sub.remove();
-    };
-  }, []);
 
   const itemsKey = items.map((item) => item.id).join(',');
   useEffect(() => {
@@ -121,7 +106,7 @@ export function FamilyActivityFeedStack({
     // 접을 땐 바로 clip — 펼침 중 아래 카드가 비치지 않게
     if (!nextExpanded) setClipBlind(true);
 
-    const duration = reduceMotion ? 0 : MOTION.duration.normal;
+    const duration = motionMs(motionActive, 'normal');
     const target = nextExpanded ? opened : collapsed;
 
     if (duration === 0) {
@@ -147,7 +132,7 @@ export function FamilyActivityFeedStack({
       easing: BLIND_EASING,
     });
     chevronRotation.value = withTiming(nextExpanded ? 180 : 0, {
-      duration: MOTION.duration.fast,
+      duration: motionMs(motionActive, 'fast'),
       easing: BLIND_EASING,
     });
   };

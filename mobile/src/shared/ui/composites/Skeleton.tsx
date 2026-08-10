@@ -1,9 +1,5 @@
 import { useEffect } from 'react';
-import {
-  AccessibilityInfo,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native';
+import { type StyleProp, type ViewStyle } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -11,41 +7,57 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import { MOTION } from '@/shared/constants/motion';
 import { cn } from '@/shared/lib/cn';
+import { motionMs } from '@/shared/lib/motion/motionMs';
+import type { MotionsOfKind } from '@/shared/lib/motion/styles';
+import { useResolvedMotionStyle } from '@/shared/lib/motion/useResolvedMotionStyle';
 
 type Props = {
   className?: string;
   style?: StyleProp<ViewStyle>;
-  /** 접근성 — 기본 true면 reduce-motion 시 pulse 끔 */
+  /** false면 pulse 끔 (레거시) — motion={false} 권장 */
   pulse?: boolean;
+  motion?: false | MotionsOfKind<'loop'>;
 };
 
 /**
  * 로딩 bone — empty(`Fallback`)와 별개.
- * fill: `bg-surface-soft` · pulse: MOTION.duration.normal
+ * fill: `bg-surface-soft` · pulse: skeletonPulse
  */
-export function Skeleton({ className, style, pulse = true }: Props) {
+export function Skeleton({
+  className,
+  style,
+  pulse = true,
+  motion,
+}: Props) {
+  const { styleName, style: motionStyle } = useResolvedMotionStyle({
+    component: 'skeleton',
+    allowedKind: 'loop',
+    motion,
+  });
   const opacity = useSharedValue(1);
+  const active = pulse && styleName !== 'none';
+  const durationKey =
+    motionStyle.kind === 'loop' ? motionStyle.duration : 'normal';
+  const duration = motionMs(active, durationKey);
 
   useEffect(() => {
-    if (!pulse) return;
-    let cancelled = false;
-    void AccessibilityInfo.isReduceMotionEnabled().then((reduce) => {
-      if (cancelled || reduce) return;
-      opacity.value = withRepeat(
-        withTiming(0.45, {
-          duration: MOTION.duration.normal,
-          easing: Easing.inOut(Easing.ease),
-        }),
-        -1,
-        true,
-      );
-    });
+    if (!active || duration === 0) {
+      opacity.value = 1;
+      return;
+    }
+    opacity.value = withRepeat(
+      withTiming(0.45, {
+        duration,
+        easing: Easing.inOut(Easing.ease),
+      }),
+      -1,
+      true,
+    );
     return () => {
-      cancelled = true;
+      opacity.value = 1;
     };
-  }, [opacity, pulse]);
+  }, [opacity, active, duration]);
 
   const animStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
 

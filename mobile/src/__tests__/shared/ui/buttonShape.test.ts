@@ -1,4 +1,4 @@
-import { buttonVariants } from '@/shared/ui/primitives/Button';
+import { buttonVariants } from '@/shared/ui/primitives/buttonVariants';
 
 describe('buttonVariants shape', () => {
   it('default — rounded-xl', () => {

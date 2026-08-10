@@ -284,10 +284,10 @@ export const COPY = {
     startScreen: '첫 화면',
     startScreenHome: '기록',
     startScreenFamily: '가족',
-    careGlance: '가족 한눈 알림',
+    careGlance: '가족 알림',
     weeklyDigest: '주간 안부',
-    optOn: '켜짐',
-    optOff: '꺼짐',
+    animations: '애니메이션',
+    animationsHint: '저전력일 때는 자동으로 꺼져요',
   },
 
   common: {

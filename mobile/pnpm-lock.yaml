@@ -38,6 +38,9 @@ dependencies:
   expo-auth-session:
     specifier: ~57.0.3
     version: 57.0.3(expo@57.0.6)(react-native@0.86.0)(react@19.2.3)
+  expo-battery:
+    specifier: ~57.0.1
+    version: 57.0.1(expo@57.0.6)(react@19.2.3)
   expo-constants:
     specifier: ~57.0.5
     version: 57.0.5(expo@57.0.6)(react-native@0.86.0)
@@ -4122,6 +4125,16 @@ packages:
     transitivePeerDependencies:
       - expo
       - supports-color
+    dev: false
+
+  /expo-battery@57.0.1(expo@57.0.6)(react@19.2.3):
+    resolution: {integrity: sha512-Q8WE1JedCs7XMFGLzShdtnGKC4ETjoV13DWXgN0lyWgicmIXOYN9+VlKm2g/lYzMObMP/r+psbPdnnOJhljZ/A==}
+    peerDependencies:
+      expo: '*'
+      react: '*'
+    dependencies:
+      expo: 57.0.6(@babel/core@7.29.7)(@expo/dom-webview@57.0.1)(@expo/metro-runtime@57.0.5)(expo-router@57.0.6)(react-dom@19.2.7)(react-native-worklets@0.10.0)(react-native@0.86.0)(react@19.2.3)(typescript@6.0.3)
+      react: 19.2.3
     dev: false
 
   /expo-constants@57.0.5(expo@57.0.6)(react-native@0.86.0):

@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { useAuth } from "@/providers/AuthProvider";
+import { useMotion } from "@/providers/MotionProvider";
 import { ROLE_LABEL } from "@/entities/user";
 import {
   useFamilyInfoQuery,
@@ -89,6 +90,7 @@ function startTabLabel(tab: StartTab): string {
 /** 설정 루트 — grouped list만. 무거운 ops는 서브/시트 */
 export function SettingsPage() {
   const { profile, refreshProfile } = useAuth();
+  const { animationsEnabled, setAnimationsEnabled } = useMotion();
   const signOut = useSignOutMutation();
   const withdraw = useWithdrawAccountMutation();
   const familyId = profile?.familyId;
@@ -239,8 +241,7 @@ export function SettingsPage() {
     void openAndroidFullScreenIntentSettings();
   };
 
-  const onToggleCareGlance = () => {
-    const next = !careGlanceOn;
+  const onCareGlanceSwitchChange = (next: boolean) => {
     setCareGlanceOn(next);
     void (async () => {
       if (next) {
@@ -258,8 +259,7 @@ export function SettingsPage() {
     })();
   };
 
-  const onToggleWeeklyDigest = () => {
-    const next = !weeklyDigestOn;
+  const onWeeklyDigestSwitchChange = (next: boolean) => {
     setWeeklyDigestOn(next);
     void setWeeklyDigestOpt(next);
   };
@@ -480,23 +480,19 @@ export function SettingsPage() {
               />
             ) : null}
             {showCareOpts ? (
-              <SettingsRow
+              <SettingsSwitchRow
                 label={COPY.settings.careGlance}
-                value={
-                  careGlanceOn ? COPY.settings.optOn : COPY.settings.optOff
-                }
+                value={careGlanceOn}
                 icon={Icons.Bell}
-                onPress={onToggleCareGlance}
+                onValueChange={onCareGlanceSwitchChange}
               />
             ) : null}
             {showCareOpts ? (
-              <SettingsRow
+              <SettingsSwitchRow
                 label={COPY.settings.weeklyDigest}
-                value={
-                  weeklyDigestOn ? COPY.settings.optOn : COPY.settings.optOff
-                }
+                value={weeklyDigestOn}
                 icon={Icons.Home}
-                onPress={onToggleWeeklyDigest}
+                onValueChange={onWeeklyDigestSwitchChange}
               />
             ) : null}
             {__DEV__ ? (
@@ -544,7 +540,16 @@ export function SettingsPage() {
               icon={Icons.Home}
               onPress={onStartScreenPress}
             />
+            <SettingsSwitchRow
+              label={COPY.settings.animations}
+              value={animationsEnabled}
+              icon={Icons.Activity}
+              onValueChange={(next) => {
+                void setAnimationsEnabled(next);
+              }}
+            />
           </SettingsGroup>
+          <Caption className="px-1">{COPY.settings.animationsHint}</Caption>
 
           <SectionHeader title="고객지원" />
           <SettingsGroup>

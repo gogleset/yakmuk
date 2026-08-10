@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Switch, View } from 'react-native';
 import { COLORS, LAYOUT } from '@/shared/config/theme';
 import { cn } from '@/shared/lib/cn';
+import type { MotionsOfKind } from '@/shared/lib/motion/styles';
 import { Card } from '@/shared/ui/primitives/Card';
 import { Icons, type IconComponent } from '@/shared/ui/primitives/Icon';
 import { PressableScale } from '@/shared/ui/composites/PressableScale';
@@ -36,6 +37,7 @@ type SettingsRowProps = {
   showChevron?: boolean;
   disabled?: boolean;
   onPress?: () => void;
+  motion?: false | MotionsOfKind<'press'>;
 };
 
 /** 설정 리스트 row */
@@ -47,6 +49,7 @@ export function SettingsRow({
   showChevron = true,
   disabled = false,
   onPress,
+  motion,
 }: SettingsRowProps) {
   const interactive = !!onPress && !disabled;
 
@@ -89,6 +92,7 @@ export function SettingsRow({
       accessibilityLabel={label}
       disabled={disabled}
       onPress={onPress}
+      motion={motion}
     >
       {content}
     </PressableScale>

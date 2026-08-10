@@ -5,6 +5,7 @@ import { MedicationNotificationSync } from '@/features/medication-notifications'
 import { CareGlanceSync } from '@/features/care-glance-notification';
 import { AuthProvider } from '@/providers/AuthProvider';
 import { ExceptionFeedbackProvider } from '@/providers/ExceptionFeedbackProvider';
+import { MotionProvider } from '@/providers/MotionProvider';
 
 export function AppProviders({ children }: { children: ReactNode }) {
   const [client] = useState(
@@ -20,11 +21,13 @@ export function AppProviders({ children }: { children: ReactNode }) {
     <SafeAreaProvider>
       <QueryClientProvider client={client}>
         <AuthProvider>
-          <ExceptionFeedbackProvider>
-            <MedicationNotificationSync />
-            <CareGlanceSync />
-            {children}
-          </ExceptionFeedbackProvider>
+          <MotionProvider>
+            <ExceptionFeedbackProvider>
+              <MedicationNotificationSync />
+              <CareGlanceSync />
+              {children}
+            </ExceptionFeedbackProvider>
+          </MotionProvider>
         </AuthProvider>
       </QueryClientProvider>
     </SafeAreaProvider>

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, View } from 'react-native';
+import { useMotion } from '@/providers/MotionProvider';
 import { cn } from '@/shared/lib/cn';
 import {
   TitleLg,
@@ -12,17 +13,22 @@ type Props = {
   className?: string;
   /** 한 방향 스크롤에 걸리는 시간 (넘칠 때만) */
   durationMs?: number;
+  /** false면 루프 정지 */
+  motion?: false;
 };
 
 /**
  * 긴 타이틀용 — 컨테이너보다 길면 좌우로 천천히 왕복.
- * 짧으면 그대로 표시.
+ * 짧으면 그대로 표시. Gate/`motion={false}`로 루프 off.
  */
 export function MarqueeTitle({
   text,
   className,
   durationMs = 4500,
+  motion,
 }: Props) {
+  const { motionActive } = useMotion();
+  const loopAllowed = motionActive && motion !== false;
   const [containerWidth, setContainerWidth] = useState(0);
   const [textWidth, setTextWidth] = useState(0);
   const offset = useRef(new Animated.Value(0)).current;
@@ -33,7 +39,7 @@ export function MarqueeTitle({
   useEffect(() => {
     offset.stopAnimation();
     offset.setValue(0);
-    if (!overflow || travel <= 0) return;
+    if (!loopAllowed || !overflow || travel <= 0) return;
 
     const loop = Animated.loop(
       Animated.sequence([
@@ -58,7 +64,7 @@ export function MarqueeTitle({
       loop.stop();
       offset.stopAnimation();
     };
-  }, [overflow, travel, durationMs, offset]);
+  }, [loopAllowed, overflow, travel, durationMs, offset]);
 
   return (
     <View

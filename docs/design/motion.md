@@ -3,7 +3,7 @@
 ← [README](README.md)
 
 구현 토큰: [`mobile/src/shared/constants/motion.ts`](../../mobile/src/shared/constants/motion.ts) (`MOTION`).  
-런타임 Gate·`motion` prop·StyleRegistry는 **후속 foundation** — 이 절이 API·원칙 SoT.
+런타임 Gate·`motion` prop·StyleRegistry — **foundation 적용됨** (`MotionProvider` · `shared/lib/motion`).
 
 ## 10.1 톤 · 금지 (유지)
 
@@ -118,15 +118,15 @@ motion?: false | MotionsOfKind<'enter'>     // FadeInView
 | Copy (foundation) | `COPY.settings.animations` · `animationsHint` (저전력 시 자동 off 안내, 짧게) |
 | FSD | registry·resolve·pref = `shared` · Provider = `providers` · `motion` prop = `shared/ui` (+ 필요 시 widget이 shared 계약) |
 
-## 10.9 범위 밖 · 후속 foundation 순서
+## 10.9 범위 밖 · foundation 상태
 
 **범위 밖:** kind당 스타일 쇼핑몰 · bounce/spring · 서버 sync pref · 비Surface에 `motion` 강제 · Sheet Reanimated 재작성.
 
-**Foundation 착수 순서**
+**Foundation (적용됨)**
 
 1. `MOTION_STYLES` + `resolveMotionStyle` + 단위 테스트 (`mobile/src/__tests__/`)  
-2. `MotionProvider` + pref (reduceMotion만으로도 Gate 가능)  
-3. 러너 press·enter → Button / PressableScale / FadeInView  
+2. `MotionProvider` + pref + OS reduceMotion  
+3. press·enter → Button / PressableScale / FadeInView / Fab / ChoiceCard  
 4. Sheet · Skeleton · Feed · Marquee  
-5. 설정 스위치  
+5. 설정 스위치 (`COPY.settings.animations`)  
 6. `expo-battery` 저전력 리스너 (미지원=false 가드)

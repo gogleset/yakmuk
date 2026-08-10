@@ -41,6 +41,7 @@ export {
 } from "./composites/useScrollFadeEdges";
 export { FadeInView } from "./composites/FadeInView";
 export { Fallback } from "./composites/Fallback";
+export { ScreenLoading } from "./composites/ScreenLoading";
 export { Skeleton } from "./composites/Skeleton";
 export { FunnelShell } from "./composites/FunnelShell";
 export { InviteCodeInput } from "./composites/InviteCodeInput";

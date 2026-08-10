@@ -3,7 +3,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "@/providers/AuthProvider";
 import { ROUTES } from "@/shared/config/routes";
 import { COLORS, NAV } from "@/shared/config/theme";
-import { Icons } from "@/shared/ui";
+import { Icons, ScreenLoading } from "@/shared/ui";
 
 export default function AppTabsLayout() {
   const { loading, profile } = useAuth();
@@ -15,7 +15,7 @@ export default function AppTabsLayout() {
     role: profile?.role ?? null,
     userId: profile?.id ?? null,
   });
-  if (loading) return null;
+  if (loading) return <ScreenLoading />;
   if (!profile?.familyId) {
     console.warn("[auth-debug] tabs → Redirect welcome (no familyId)");
     return <Redirect href={ROUTES.welcome} />;

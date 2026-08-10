@@ -10,9 +10,11 @@ export function CareAlertSkeleton() {
       style={LAYOUT.shadow.sameFill}
     >
       <Skeleton className="h-28 w-28 rounded-full" />
-      <View className="min-w-0 flex-1 gap-2.5">
-        <Skeleton className="h-5 w-40 rounded-md" />
-        <Skeleton className="h-4 w-28 rounded-md" />
+      <View className="min-w-0 flex-1 gap-3">
+        <View className="gap-1.5">
+          <Skeleton className="h-5 w-40 rounded-md" />
+          <Skeleton className="h-4 w-28 rounded-md" />
+        </View>
         <Skeleton className="mt-1 h-8 w-24 self-end rounded-full" />
       </View>
     </View>

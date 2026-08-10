@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Redirect, useRootNavigationState, type Href } from 'expo-router';
-import { ActivityIndicator, View } from 'react-native';
 import { notifDebug } from '@/features/medication-notifications/notifDebug';
 import { resolveColdStartAlarmHref } from '@/features/medication-notifications/resolveColdStartAlarmHref';
 import { useAuth } from '@/providers/AuthProvider';
 import { ROUTES } from '@/shared/config/routes';
 import { getStartTab, startTabHref, type StartTabHref } from '@/shared/lib/startTab';
+import { ScreenLoading } from '@/shared/ui';
 
 export default function Index() {
   const { loading, profile, sessionUserId } = useAuth();
@@ -41,11 +41,7 @@ export default function Index() {
 
   // auth · 첫 화면 pref · cold-start 알람 조회 · 네비 준비까지 대기
   if (loading || startHref == null || alarmHref === undefined || !navReady) {
-    return (
-      <View className="flex-1 items-center justify-center bg-canvas">
-        <ActivityIndicator />
-      </View>
-    );
+    return <ScreenLoading />;
   }
 
   if (!sessionUserId || !profile?.familyId) {

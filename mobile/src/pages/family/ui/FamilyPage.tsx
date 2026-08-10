@@ -51,6 +51,9 @@ import {
 /** UI 확인용 — true면 가족 그리드·최근 소식 empty 강제 */
 const FAMILY_TAB_EMPTY_UI_PREVIEW = false;
 
+/** UI 확인용 — true면 알림·주간·그리드·피드 스켈레톤 강제 */
+const FAMILY_TAB_SKELETON_UI_PREVIEW = false;
+
 /** 가족 — 케어 알림 · 가족 그리드 · 최근 소식 프리뷰 */
 export function FamilyPage() {
   const { profile, refreshProfile } = useAuth();
@@ -95,10 +98,16 @@ export function FamilyPage() {
   };
 
   const statusLoading =
-    statusQuery.isLoading && !FAMILY_TAB_EMPTY_UI_PREVIEW && !statusQuery.data;
+    FAMILY_TAB_SKELETON_UI_PREVIEW ||
+    (statusQuery.isLoading &&
+      !FAMILY_TAB_EMPTY_UI_PREVIEW &&
+      !statusQuery.data);
   const alertsLoading =
-    alertsQuery.isLoading && !FAMILY_ALERT_UI_MOCK && !alertsQuery.data;
-  const feedLoading = feedQuery.isLoading && !feedQuery.data;
+    FAMILY_TAB_SKELETON_UI_PREVIEW ||
+    (alertsQuery.isLoading && !FAMILY_ALERT_UI_MOCK && !alertsQuery.data);
+  const feedLoading =
+    FAMILY_TAB_SKELETON_UI_PREVIEW ||
+    (feedQuery.isLoading && !feedQuery.data);
 
   const statusMembers = FAMILY_TAB_EMPTY_UI_PREVIEW
     ? []
@@ -208,7 +217,7 @@ export function FamilyPage() {
             />
           )}
 
-          {weekly.showSkeleton ? (
+          {FAMILY_TAB_SKELETON_UI_PREVIEW || weekly.showSkeleton ? (
             <WeeklyDigestSkeleton />
           ) : weekly.visible && weekly.digest ? (
             <FamilyWeeklyDigestCard

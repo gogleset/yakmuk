@@ -86,6 +86,7 @@ export {
 } from './ui/MedicationMetaFields';
 export type { MedicationMetaFormState } from './ui/MedicationMetaFields';
 export { TimeSlotMedAccordion } from './ui/TimeSlotMedAccordion';
+export { TimeSlotAccordionSkeleton } from './ui/TimeSlotAccordionSkeleton';
 export { DaysModeToggle } from './ui/DaysModeToggle';
 export { WeekdayPicker } from './ui/WeekdayPicker';
 export { TimePicker } from './ui/TimePicker';

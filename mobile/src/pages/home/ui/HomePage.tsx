@@ -27,13 +27,16 @@ import {
   Screen,
   ScreenScrollView,
 } from '@/shared/ui';
-import { MedicationCalendarPanel } from '@/widgets/medication-calendar-panel';
+import { MedicationCalendarPanel, CalendarPanelSkeleton } from '@/widgets/medication-calendar-panel';
 import { PastDayMedicationPanel } from '@/widgets/past-day-medication-panel';
 import {
   PastDayPanelSkeleton,
   TodayMedicationPanel,
   TodayPanelSkeleton,
 } from '@/widgets/today-medication-panel';
+
+/** UI 확인용 — true면 오늘 패널 스켈레톤 강제 */
+const HOME_SKELETON_UI_PREVIEW = false;
 
 /** 홈(기록) — 역할 무관 동일 UI (가족장·보호자·피보호자) */
 export function HomePage() {
@@ -183,6 +186,8 @@ export function HomePage() {
     selectedDayEntries.length === 0 &&
     (calendarMedsQuery.isLoading || logsQuery.isLoading || logsQuery.isFetching);
 
+  const panelLoading = HOME_SKELETON_UI_PREVIEW || medsLoading;
+
   return (
     <Screen
       fadeTop={LAYOUT.fade.top}
@@ -211,16 +216,20 @@ export function HomePage() {
         <FadeInView
           className={hasRegisteredMeds ? 'gap-3' : 'flex-1 gap-3'}
         >
-          <MedicationCalendarPanel
-            visibleMonth={visibleMonth}
-            markedDates={markedDates}
-            showStreak={hasRegisteredMeds && streakDays >= 3}
-            streakDays={streakDays}
-            onDayPress={(day) => setSelectedDate(day.dateString)}
-            onMonthChange={onMonthChange}
-          />
+          {panelLoading ? (
+            <CalendarPanelSkeleton />
+          ) : (
+            <MedicationCalendarPanel
+              visibleMonth={visibleMonth}
+              markedDates={markedDates}
+              showStreak={hasRegisteredMeds && streakDays >= 3}
+              streakDays={streakDays}
+              onDayPress={(day) => setSelectedDate(day.dateString)}
+              onMonthChange={onMonthChange}
+            />
+          )}
 
-          {medsLoading ? (
+          {panelLoading ? (
             <TodayPanelSkeleton />
           ) : !hasRegisteredMeds ? (
             <Fallback
@@ -244,7 +253,7 @@ export function HomePage() {
             />
           ) : null}
 
-          {showTodayCheck ? (
+          {!panelLoading && showTodayCheck ? (
             <TodayMedicationPanel
               meds={todayMeds}
               takenMedIds={takenMedIds}
@@ -273,7 +282,7 @@ export function HomePage() {
             />
           ) : null}
 
-          {showPastDay ? (
+          {!panelLoading && showPastDay ? (
             pastDayLoading ? (
               <PastDayPanelSkeleton />
             ) : (

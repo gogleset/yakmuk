@@ -25,7 +25,7 @@ import {
   StackHeader,
 } from '@/shared/ui';
 import { GuardianMedManagePanel, MedManageListSkeleton } from '@/widgets/guardian-med-manage-panel';
-import { MedicationCalendarPanel } from '@/widgets/medication-calendar-panel';
+import { MedicationCalendarPanel, CalendarPanelSkeleton } from '@/widgets/medication-calendar-panel';
 import { canManageMemberMeds } from '@/entities/user';
 
 /** 가족 멤버 — 캘린더 이력 + 등록 약 관리 (체크는 본인 홈만) */
@@ -114,15 +114,19 @@ export function FamilyMemberPage() {
           ) : (
             <>
               <FadeInView step={0}>
-                <MedicationCalendarPanel
-                  visibleMonth={visibleMonth}
-                  markedDates={markedDates}
-                  onDayPress={(day) => setSelectedDate(day.dateString)}
-                  onMonthChange={(month) => {
-                    const ym = `${month.year}-${String(month.month).padStart(2, '0')}`;
-                    setVisibleMonth(ym);
-                  }}
-                />
+                {medsQuery.isLoading && !medsQuery.data ? (
+                  <CalendarPanelSkeleton />
+                ) : (
+                  <MedicationCalendarPanel
+                    visibleMonth={visibleMonth}
+                    markedDates={markedDates}
+                    onDayPress={(day) => setSelectedDate(day.dateString)}
+                    onMonthChange={(month) => {
+                      const ym = `${month.year}-${String(month.month).padStart(2, '0')}`;
+                      setVisibleMonth(ym);
+                    }}
+                  />
+                )}
               </FadeInView>
 
               {canManageMeds ? (

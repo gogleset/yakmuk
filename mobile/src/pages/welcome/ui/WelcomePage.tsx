@@ -26,6 +26,7 @@ import {
   Caption,
   Text,
   Body,
+  ScreenLoading,
 } from '@/shared/ui';
 
 type Path = 'choose' | 'leader';
@@ -175,6 +176,8 @@ export function WelcomePage() {
       }
     })();
   };
+
+  if (loading) return <ScreenLoading />;
 
   // P1 가족 만들기 퍼널
   if (needsFamilySetup) {

@@ -1,6 +1,5 @@
 export { FamilyCareAlertCarousel } from './FamilyCareAlertCarousel';
 export { FamilyCareAlertCard } from './FamilyCareAlertCard';
-export { FamilyCareAlertEmpty } from './FamilyCareAlertEmpty';
 export { CareAlertSkeleton } from './CareAlertSkeleton';
 export { MOCK_CARE_ALERTS } from './mockAlerts';
 export { mapFamilyAlertsToSlides } from './mapFamilyAlertsToSlides';

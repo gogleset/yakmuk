@@ -9,7 +9,7 @@ export const ACTIONS = {
   save: '저장',
   edit: '수정',
   export: '내보내기',
-  reissue: '재발급',
+  reissue: '새로 주기',
   ack: '확인했어요',
   reset: '초기화',
   confirm: '확인',

@@ -22,7 +22,10 @@ export function FamilyCareAlertCard({ slide, onAck, width }: Props) {
         className="min-h-[148px] flex-row items-center gap-3 rounded-2xl bg-surface px-4 py-5"
         style={[LAYOUT.shadow.sameFill, outline]}
       >
-        <KokiIllustration variant="worried" size={112} />
+        <KokiIllustration
+          variant={slide.tone === 'stuck' ? 'worried' : 'thinking'}
+          size={112}
+        />
         <View className="min-w-0 flex-1 gap-3">
           <View className="gap-1.5">
             <SectionTitle tone="text" className="leading-6" numberOfLines={2}>

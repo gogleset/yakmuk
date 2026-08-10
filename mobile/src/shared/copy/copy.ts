@@ -80,6 +80,8 @@ export const COPY = {
     todayStatusFallback: '가족',
     manage: '관리',
     recentFeed: '최근 소식',
+    /** 벨 — 미읽 일자 있을 때 */
+    recentFeedUnreadA11y: '최근 소식, 읽지 않은 소식 있음',
     /** 다른 멤버 수 (본인 제외) */
     memberCount: (count: number) => `우리 가족 ${count}명`,
     seeMoreFeed: '더보기',
@@ -87,8 +89,11 @@ export const COPY = {
     feedStackExpandA11y: (title: string, count: number) =>
       `${title} 소식 ${count}개, 펼치려면 두 번 탭하세요`,
     emptyMembers: '아직 가족이 등록되지 않았어요',
-    emptyMembersMessage: '가족을 초대해서 서로의 하루를 챙겨보세요.',
-    inviteCta: '가족 초대하기',
+    emptyMembersMessage: '가족을 불러서 서로의 하루를 챙겨보세요.',
+    inviteCta: '가족 부르기',
+    manageTitle: '가족',
+    endFamily: '이 가족을 끝내기',
+    seatAddA11y: '한 분 더',
     emptyFeed: '아직 소식이 없어요',
     emptyFeedMessage: '가족이 약을 체크하면 여기에 보여요.',
     loadFailed: '가족 정보를 불러오지 못했어요',
@@ -116,7 +121,6 @@ export const COPY = {
     careBadTitle: (who: string) => `${who}의 컨디션이 걱정돼요`,
     careBadBody: (when: string, label: string) =>
       `${when} '${label}'으로 기록했어요`,
-    careEmpty: '서로의 하루를 응원해요',
     /** 푸시 카피용 — 닉네임 없을 때 */
     memberFallback: '가족',
     /** glance 알림 한 줄 — `이름 · 라벨` */
@@ -143,11 +147,11 @@ export const COPY = {
       `${who} 님 복약 체크가 멈춘 것 같아요`,
   },
 
-  /** P2 초대코드 조인 */
+  /** P2 초대장 조인 */
   join: {
-    codeTitle: '초대코드를 입력해 주세요',
-    codeHint: '가족장이 준 초대코드 6자리',
-    peekLoading: '초대 확인 중…',
+    codeTitle: '초대장 여섯 글자를 적어 주세요',
+    codeHint: '가족이 전해 준 여섯 글자',
+    peekLoading: '초대장 확인 중…',
     nicknameTitle: '콕이는\n뭐라고 불러드릴까요?',
     nicknamePlaceholder: '예) 엄마, 언니, 아들 등 (선택)',
     later: '나중에 할게요',
@@ -163,7 +167,7 @@ export const COPY = {
     title: '안녕하세요.\n저는 콕이에요',
     subtitle: '멀리 있어도\n가족의 안부를 함께\n살펴볼게요.',
     createFamily: '가족을 만들어요',
-    hasInvite: '초대코드를 받았어요',
+    hasInvite: '초대장을 받았어요',
     loginTitle: '안부를 나누기 위해\n로그인이 필요해요',
     continueGoogle: 'Google로 계속',
     continueApple: 'Apple로 계속',
@@ -176,27 +180,49 @@ export const COPY = {
   },
 
   invite: {
-    claimedCannotDeleteTitle: '연결된 초대예요',
+    claimedCannotDeleteTitle: '이미 함께하는 자리예요',
     claimedCannotDeleteBody:
-      '이미 연결된 초대·다시 들어오기 대기는 지울 수 없어요.',
-    deleteTitle: '초대를 삭제할까요?',
-    reissueTitle: '코드를 재발급할까요?',
-    reissueBody: '기존 코드·QR은 더 이상 쓸 수 없어요.',
+      '이미 함께하는 자리·다시 오는 길은 지울 수 없어요.',
+    deleteTitle: '이 자리를 비울까요?',
+    reissueTitle: '초대장을 새로 줄까요?',
+    reissueBody: '기존 초대장·QR은 더 이상 쓸 수 없어요.',
     reissueConnectedBody:
-      '새 코드로 바뀌고, 지금 들어와 있는 기기는 로그아웃돼요. 새 코드로 다시 들어와야 약·기록이 이어져요.',
-    reissueAction: '코드 재발급',
-    statusWaiting: '대기',
-    statusConnected: '연결됨',
-    statusReentry: '다시 들어오기 대기',
-    limitTitle: '초대가 가득 찼어요',
+      '새 초대장으로 바뀌고, 지금 들어와 있는 기기는 로그아웃돼요. 새 초대장으로 다시 들어와야 약·기록이 이어져요.',
+    reissueAction: '초대장 새로 주기',
+    statusWaiting: '아직 안 오셨어요',
+    statusConnected: '함께 있어요',
+    statusReentry: '다시 오는 길',
+    limitTitle: '자리가 가득 찼어요',
     labelAlertTitle: '호칭을 알려 주세요',
     labelAlertBody: '예: 아빠, 할머니',
+    funnelWhoTitle: '누구를 부를까요?',
+    funnelRoleHint: '역할을 골라 주세요',
+    funnelLabelHint: '호칭을 선택해 주세요',
+    funnelCustomLabel: '직접 입력',
+    funnelCreateCta: '초대장 만들기',
+    funnelCreating: '만드는 중…',
+    funnelReadyTitle: '초대장을 준비했어요',
+    funnelReadyBody: '아래 여섯 글자 또는 QR을 가족에게 알려주세요.',
+    funnelShare: '공유하기',
+    funnelDone: '완료',
+    viewDetail: '상세보기',
+    detailNotFound: '초대장을 찾을 수 없어요',
+    labelChips: [
+      '엄마',
+      '아빠',
+      '할머니',
+      '할아버지',
+      '이모',
+      '삼촌',
+      '형',
+      '누나',
+    ] as const,
   },
 
   auth: {
     forceSignOutTitle: '다시 로그인이 필요해요',
     forceSignOutBody:
-      '가족장이 초대코드를 바꿨어요. 새 코드로 다시 들어와 주세요.',
+      '가족이 초대장을 바꿨어요. 새 초대장으로 다시 들어와 주세요.',
   },
 
   alert: {

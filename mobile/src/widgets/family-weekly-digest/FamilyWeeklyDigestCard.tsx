@@ -6,6 +6,7 @@ import {
 import { LAYOUT } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
 import { Body, KokiIllustration, LabelSm, LabelXs, SectionTitle } from '@/shared/ui';
+import { kokiForWeeklyDigest } from './kokiForWeeklyDigest';
 
 type Props = {
   digest: WeeklyDigestView;
@@ -16,13 +17,14 @@ type Props = {
 export function FamilyWeeklyDigestCard({ digest, onAck }: Props) {
   const anomalyLines = formatWeeklyAnomalyLines(digest.anomalyDays);
   const hasAnomaly = anomalyLines.length > 0;
+  const koki = kokiForWeeklyDigest(digest);
 
   return (
     <View
       className="min-h-[120px] flex-row items-center gap-3 rounded-2xl bg-surface px-4 py-5"
       style={LAYOUT.shadow.sameFill}
     >
-      <KokiIllustration variant="cheer" size={96} />
+      <KokiIllustration variant={koki} size={96} />
       <View className="min-w-0 flex-1 gap-2">
         <LabelXs tone="muted">{COPY.family.weeklyTitle}</LabelXs>
         <SectionTitle tone="text" className="leading-6" numberOfLines={2}>

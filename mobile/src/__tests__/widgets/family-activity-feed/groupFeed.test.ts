@@ -5,7 +5,7 @@ import {
   filterFamilyFeedLastDays,
   groupFamilyFeedByDate,
   sliceFamilyFeedSections,
-} from '@/widgets/family-activity-feed';
+} from '@/widgets/family-activity-feed/lib/groupFeed';
 
 function log(partial: Partial<DailyLog> & { id: number; logDate: string }): DailyLog {
   return {

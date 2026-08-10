@@ -4,8 +4,7 @@ export type { InvitePeek, JoinPeekKind } from './api/peek-invite';
 export type { MemberRecoveryCode } from './api/member-recovery';
 export { getProfile } from './api/get-profile';
 export { signInGuardianDev } from './api/sign-in-guardian-dev';
-export { signInGuardianNative } from './api/sign-in-guardian-native';
-export type { NativeSignInResult } from './api/sign-in-guardian-native';
+/** Google/Apple native — 배럴 금지 (Expo Go에서 RNGoogleSignin crash). `@/entities/user/api/sign-in-guardian-native` 직접 import */
 export { signOut } from './api/sign-out';
 export { withdrawMyAccount } from './api/withdraw-my-account';
 export { createFamily } from './api/create-family';

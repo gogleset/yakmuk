@@ -102,7 +102,7 @@ export function TodayMedicationPanel({
           />
         ) : null}
         <Fallback
-          image={<KokiIllustration variant="thinking" size={88} />}
+          image={<KokiIllustration variant="empty" size={88} />}
           message={emptyMessage ?? emptyHint ?? COPY.med.emptyToday}
         />
         {conditionForm}

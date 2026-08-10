@@ -1,88 +1,37 @@
-import { Pressable, View } from 'react-native';
-import type { CareRecipientTodayStatus } from '@/entities/family/model/types';
-import { COLORS, LAYOUT, TONE_OUTLINE } from '@/shared/config/theme';
 import { COPY } from '@/shared/copy';
 import {
   Fallback,
-  Icons,
-  InitialAvatar,
   KokiIllustration,
-  Caption,
   LabelSm,
 } from '@/shared/ui';
-import { memberStatusLabel } from './lib/memberStatus';
 
-type Props = {
-  members: CareRecipientTodayStatus[];
-  /** 섹션 제목 — 가족장이 설정한 가족명 */
+type HeaderProps = {
   sectionTitle: string;
+};
+
+/** 가족 탭 자리표 섹션 헤더 — 가족명만 */
+export function FamilyRosterSectionHeader({ sectionTitle }: HeaderProps) {
+  return (
+    <LabelSm tone="text" className="font-bold" numberOfLines={1}>
+      {sectionTitle}
+    </LabelSm>
+  );
+}
+
+type EmptyProps = {
   showInviteCta?: boolean;
-  onPressMember: (userId: string, nickname: string) => void;
   onInviteCtaPress?: () => void;
-  /** leader만 전달 — 멤버 있을 때 「관리」노출 */
-  onManagePress?: () => void;
   isError?: boolean;
   onRetry?: () => void;
 };
 
-type MemberCardProps = {
-  member: CareRecipientTodayStatus;
-  onPress: () => void;
-};
-
-/** 가족 그리드 카드 — 중앙 아바타 · 이름 · 상태 한 줄 */
-function FamilyMemberStatusCard({ member, onPress }: MemberCardProps) {
-  const status = memberStatusLabel(member);
-  // pending(오늘 진행)은 위험 아님 — stuck/BAD 알림만 경고
-  const showWarn = member.hasUnackedAlert || member.condition === 'BAD';
-  // 호칭이 닉과 같으면 한 번만
-  const invitedAs = member.invitedAs?.trim() || null;
-  const nameLabel =
-    invitedAs && invitedAs !== member.nickname
-      ? COPY.family.memberTitle(member.nickname, invitedAs)
-      : member.nickname;
-
-  return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={onPress}
-      className="w-[48%]"
-    >
-      <View
-        className="items-center gap-1.5 rounded-xl bg-surface px-2.5 py-3"
-        style={showWarn ? TONE_OUTLINE.warning : undefined}
-      >
-        <InitialAvatar nickname={member.nickname} size="md" />
-        <LabelSm
-          tone="text"
-          className="text-center font-bold"
-          numberOfLines={1}
-        >
-          {nameLabel}
-        </LabelSm>
-        <Caption
-          tone={showWarn ? 'warning' : 'muted'}
-          className="text-center"
-          numberOfLines={1}
-        >
-          {status}
-        </Caption>
-      </View>
-    </Pressable>
-  );
-}
-
-/** 가족 2×2 그리드 (+ empty/로드실패). 케어 알림은 FamilyCareAlertCarousel */
-export function FamilyGuardianDashboard({
-  members,
-  sectionTitle,
+/** 가족 탭 empty / 로드실패 */
+export function FamilyRosterEmpty({
   showInviteCta = false,
-  onPressMember,
   onInviteCtaPress,
-  onManagePress,
   isError = false,
   onRetry,
-}: Props) {
+}: EmptyProps) {
   if (isError) {
     return (
       <Fallback
@@ -94,50 +43,13 @@ export function FamilyGuardianDashboard({
     );
   }
 
-  // empty: 헤더 없이 CTA만 (관리는 멤버 있을 때만)
-  if (members.length === 0) {
-    return (
-      <Fallback
-        image={<KokiIllustration variant="family" size={120} />}
-        message={COPY.family.emptyMembers}
-        ctaLabel={showInviteCta ? COPY.family.inviteCta : undefined}
-        onCtaPress={showInviteCta ? onInviteCtaPress : undefined}
-      />
-    );
-  }
-
   return (
-    <View className="gap-2.5">
-      <View className="flex-row items-center justify-between gap-2">
-        <LabelSm
-          tone="text"
-          className="min-w-0 flex-1 font-bold"
-          numberOfLines={1}
-        >
-          {sectionTitle}
-        </LabelSm>
-        {onManagePress ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={COPY.family.manage}
-            hitSlop={LAYOUT.hitSlop.md}
-            onPress={onManagePress}
-            className="flex-row items-center gap-0.5"
-          >
-            <Caption>{COPY.family.manage}</Caption>
-            <Icons.ChevronRight size={LAYOUT.icon.sm} color={COLORS.muted} />
-          </Pressable>
-        ) : null}
-      </View>
-      <View className="flex-row flex-wrap justify-between gap-y-2 rounded-2xl bg-surface-soft p-2.5">
-        {members.map((member) => (
-          <FamilyMemberStatusCard
-            key={member.userId}
-            member={member}
-            onPress={() => onPressMember(member.userId, member.nickname)}
-          />
-        ))}
-      </View>
-    </View>
+    <Fallback
+      fill
+      image={<KokiIllustration variant="family" size={120} />}
+      message={COPY.family.emptyMembers}
+      ctaLabel={showInviteCta ? COPY.family.inviteCta : undefined}
+      onCtaPress={showInviteCta ? onInviteCtaPress : undefined}
+    />
   );
 }

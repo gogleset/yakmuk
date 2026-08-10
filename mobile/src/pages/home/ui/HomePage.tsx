@@ -234,7 +234,12 @@ export function HomePage() {
           ) : !hasRegisteredMeds ? (
             <Fallback
               fill
-              image={<KokiIllustration variant="thinking" size={112} />}
+              image={
+                <KokiIllustration
+                  variant={medsQuery.isError ? 'thinking' : 'empty'}
+                  size={112}
+                />
+              }
               message={
                 medsQuery.isError
                   ? COPY.med.loadFailed

@@ -28,7 +28,7 @@ export function PastDayMedicationPanel({
   if (entries.length === 0 && conditionLogs.length === 0) {
     return (
       <Fallback
-        image={<KokiIllustration variant="thinking" size={72} />}
+        image={<KokiIllustration variant="empty" size={72} />}
         message={COPY.med.emptyPastDay}
       />
     );

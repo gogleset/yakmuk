@@ -21,6 +21,8 @@ export const ROUTES = {
   medicationAlarm: '/medication-alarm',
   /** P5 초대 생성 퍼널 */
   inviteCreate: '/invite-create',
+  /** 초대장 상세 (코드·QR) */
+  inviteDetail: '/invite-detail',
 } as const;
 
 export type AppRoute = (typeof ROUTES)[keyof typeof ROUTES];
@@ -100,4 +102,8 @@ export function familyMemberRoute(
 /** 딥링크 페이로드 */
 export function joinDeepLink(inviteCode: string): string {
   return `${appScheme}://join?code=${inviteCode}`;
+}
+
+export function inviteDetailRoute(inviteId: string): string {
+  return `${ROUTES.inviteDetail}?inviteId=${encodeURIComponent(inviteId)}`;
 }

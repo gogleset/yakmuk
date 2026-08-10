@@ -1,4 +1,7 @@
-export { FamilyGuardianDashboard } from './FamilyGuardianDashboard';
+export {
+  FamilyRosterSectionHeader,
+  FamilyRosterEmpty,
+} from './FamilyGuardianDashboard';
 export {
   FamilyFeedSectionHeader,
   FamilyTabHeader,

@@ -54,6 +54,7 @@ export default function RootLayout() {
           <Stack.Screen name="join" />
           <Stack.Screen name="join-link" />
           <Stack.Screen name="invite-create" />
+          <Stack.Screen name="invite-detail" options={familyPushOptions} />
           <Stack.Screen name="add-medication" options={sheetScreenOptions} />
           <Stack.Screen name="edit-medication" options={sheetScreenOptions} />
           <Stack.Screen name="view-medication" options={sheetScreenOptions} />

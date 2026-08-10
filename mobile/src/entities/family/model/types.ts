@@ -35,3 +35,11 @@ export type CareRecipientTodayStatus = {
   conditionMessage: string | null;
   hasUnackedAlert: boolean;
 };
+
+/** 보호자별 최근 소식 일자 읽음 */
+export type FamilyFeedDayRead = {
+  familyId: string;
+  userId: string;
+  logDate: string;
+  readAt: string;
+};

@@ -37,10 +37,16 @@ export function FamilyFeedSectionHeader({
 type PageHeaderProps = {
   dateLabel: string;
   onBellPress: () => void;
+  /** 최근 소식 미읽 일자 있으면 벨 점 */
+  hasUnread?: boolean;
 };
 
-/** 가족 탭 헤더 — 가운데 날짜·제목 · 우측 알림 (이미지 없음) */
-export function FamilyTabHeader({ dateLabel, onBellPress }: PageHeaderProps) {
+/** 가족 탭 헤더 — 가운데 날짜·제목 · 우측 최근 소식 */
+export function FamilyTabHeader({
+  dateLabel,
+  onBellPress,
+  hasUnread = false,
+}: PageHeaderProps) {
   return (
     <View className="relative items-center justify-center px-10 py-1">
       <SectionTitle tone="text" className="text-center">
@@ -49,12 +55,23 @@ export function FamilyTabHeader({ dateLabel, onBellPress }: PageHeaderProps) {
       <Body className="mt-0.5 text-center text-sm">{COPY.family.title}</Body>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel="알림"
+        accessibilityLabel={
+          hasUnread ? COPY.family.recentFeedUnreadA11y : COPY.family.recentFeed
+        }
         hitSlop={LAYOUT.hitSlop.md}
         onPress={onBellPress}
         className="absolute right-0 top-0.5 p-1"
       >
-        <Icons.Bell size={LAYOUT.icon.md} color={COLORS.text} />
+        <View>
+          <Icons.Bell size={LAYOUT.icon.md} color={COLORS.text} />
+          {hasUnread ? (
+            <View
+              accessibilityElementsHidden
+              importantForAccessibility="no"
+              className="absolute right-0 top-0 h-2 w-2 rounded-full bg-brand"
+            />
+          ) : null}
+        </View>
       </Pressable>
     </View>
   );

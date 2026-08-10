@@ -4,10 +4,13 @@ import { useCallback, useMemo, useState } from 'react';
 import { RefreshControl, View } from 'react-native';
 import { useAuth } from '@/providers/AuthProvider';
 import {
+  feedDayReadsByDate,
   invalidateFamilyActivity,
+  isFeedDayUnread,
   useFamilyFeedSubscription,
   useFamilyScreenQueries,
 } from '@/entities/family';
+import { useMarkFeedDayReadMutation } from '@/features/mark-feed-day-read';
 import { familyMemberRoute } from '@/shared/config/routes';
 import { todayKstDateString } from '@/shared/lib/kst';
 import { COLORS, LAYOUT, LIMITS } from '@/shared/config/theme';
@@ -27,7 +30,7 @@ import {
   type FamilyFeedSection,
 } from '@/widgets/family-activity-feed';
 
-/** 가족 최근 소식 전체 리스트 (최근 7일 · 날짜 그룹) */
+/** 가족 최근 소식 전체 리스트 (최근 7일 · 날짜 그룹 · 일자 읽음) */
 export function FamilyFeedPage() {
   const { profile, refreshProfile } = useAuth();
   const qc = useQueryClient();
@@ -35,13 +38,23 @@ export function FamilyFeedPage() {
   const today = todayKstDateString();
   const myUserId = profile?.id;
   const [refreshing, setRefreshing] = useState(false);
+  const markReadMut = useMarkFeedDayReadMutation();
 
-  const { feed: feedQuery, members: membersQuery } = useFamilyScreenQueries({
+  const {
+    feed: feedQuery,
+    members: membersQuery,
+    feedDayReads: feedDayReadsQuery,
+  } = useFamilyScreenQueries({
     familyId,
     todayKst: today,
   });
 
   useFamilyFeedSubscription(familyId, qc);
+
+  const readsByDate = useMemo(
+    () => feedDayReadsByDate(feedDayReadsQuery.data ?? []),
+    [feedDayReadsQuery.data],
+  );
 
   /** 한 섹션에 날짜 스택들을 넣어 헤더/아이템 분리 없이 렌더 */
   const listSections = useMemo(() => {
@@ -77,15 +90,41 @@ export function FamilyFeedPage() {
     [membersQuery.data, myUserId],
   );
 
+  const onDayOpened = useCallback(
+    (dateYmd: string) => {
+      if (!familyId) return;
+      markReadMut.mutate({ familyId, logDate: dateYmd });
+    },
+    [familyId, markReadMut.mutate],
+  );
+
+  const dayUnread = useCallback(
+    (section: FamilyFeedSection) => {
+      if (section.data.length === 0) return false;
+      let latest = section.data[0]!.createdAt;
+      for (const item of section.data) {
+        if (item.createdAt > latest) latest = item.createdAt;
+      }
+      return isFeedDayUnread({
+        readAt: readsByDate.get(section.dateYmd),
+        latestCreatedAt: latest,
+      });
+    },
+    [readsByDate],
+  );
+
   const renderItem = useCallback(
     ({ item }: { item: FamilyFeedSection }) => (
       <FamilyActivityFeedStack
         title={item.title}
+        dateYmd={item.dateYmd}
         items={item.data}
+        unread={dayUnread(item)}
         onItemPress={openMember}
+        onDayOpened={onDayOpened}
       />
     ),
-    [openMember],
+    [dayUnread, onDayOpened, openMember],
   );
 
   return (
@@ -120,7 +159,7 @@ export function FamilyFeedPage() {
             />
           ) : (
             <Fallback
-              image={<KokiIllustration variant="cheer" size={96} />}
+              image={<KokiIllustration variant="empty" size={96} />}
               message={COPY.family.emptyFeedMessage}
               fill
             />

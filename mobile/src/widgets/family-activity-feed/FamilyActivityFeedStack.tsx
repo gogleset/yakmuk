@@ -24,8 +24,14 @@ import { FamilyFeedDayHeader } from './FamilyFeedDayHeader';
 type Props = {
   /** 날짜 헤더 — 오늘 / 어제 / 날짜 */
   title: string;
+  /** YYYY-MM-DD — 읽음 마킹용 */
+  dateYmd: string;
   items: DailyLog[];
+  /** 미읽 일자 표시 */
+  unread?: boolean;
   onItemPress?: (userId: string, nickname: string | null) => void;
+  /** 펼침 또는 단건 노출 시 */
+  onDayOpened?: (dateYmd: string) => void;
 };
 
 const BLIND_EASING = Easing.out(Easing.cubic);
@@ -65,8 +71,11 @@ function StackPeeks({ count }: { count: number }) {
  */
 export function FamilyActivityFeedStack({
   title,
+  dateYmd,
   items,
+  unread = false,
   onItemPress,
+  onDayOpened,
 }: Props) {
   const { motionActive } = useMotion();
   const [expanded, setExpanded] = useState(false);
@@ -97,6 +106,12 @@ export function FamilyActivityFeedStack({
       blindHeight.value = firstHeight.value;
     }
   }, [itemsKey, chevronRotation, peekReveal, firstHeight, blindHeight]);
+
+  /** 단건(펼침 없음) — 보이면 읽음 (미읽일 때만) */
+  useEffect(() => {
+    if (canStack || items.length === 0 || !unread) return;
+    onDayOpened?.(dateYmd);
+  }, [canStack, dateYmd, items.length, onDayOpened, unread]);
 
   const animateBlindTo = (nextExpanded: boolean) => {
     const collapsed = firstHeight.value;
@@ -168,6 +183,7 @@ export function FamilyActivityFeedStack({
     const next = !expanded;
     setExpanded(next);
     animateBlindTo(next);
+    if (next && unread) onDayOpened?.(dateYmd);
   };
 
   const chevronStyle = useAnimatedStyle(() => ({
@@ -207,7 +223,7 @@ export function FamilyActivityFeedStack({
   if (!canStack) {
     return (
       <View className="gap-2.5">
-        <FamilyFeedDayHeader title={title} />
+        <FamilyFeedDayHeader title={title} unread={unread} />
         <FamilyActivityFeedItem item={items[0]!} onPress={onItemPress} />
       </View>
     );
@@ -226,7 +242,17 @@ export function FamilyActivityFeedStack({
         className="flex-row items-center justify-between pb-1 pt-1.5"
         hitSlop={LAYOUT.hitSlop.sm}
       >
-        <Caption className="font-bold">{title}</Caption>
+        <View className="flex-row items-center gap-1.5">
+          <Caption className="font-bold">{title}</Caption>
+          {unread && !expanded ? (
+            <View
+              accessibilityElementsHidden
+              importantForAccessibility="no"
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ backgroundColor: COLORS.brand }}
+            />
+          ) : null}
+        </View>
         <Animated.View style={chevronStyle}>
           <Icons.ChevronDown size={LAYOUT.icon.sm} color={COLORS.muted} />
         </Animated.View>

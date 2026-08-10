@@ -1,21 +1,29 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { useMemo, useState } from 'react';
-import { RefreshControl, View } from 'react-native';
+import { useCallback, useMemo, useState } from 'react';
+import { Alert, RefreshControl, View } from 'react-native';
 import { useAuth } from '@/providers/AuthProvider';
 import {
+  feedDayReadsByDate,
+  hasUnreadFeedDays,
   invalidateFamilyActivity,
+  isFeedDayUnread,
   useFamilyFeedSubscription,
+  useFamilyRosterSubscription,
   useFamilyScreenQueries,
 } from '@/entities/family';
 import { useAckFamilyAlertMutation } from '@/features/ack-family-alert';
 import { useFamilyWeeklyDigestCard } from '@/features/care-weekly-digest';
-import { useFamilyInfoQuery } from '@/features/family-ops';
+import {
+  useFamilyInfoQuery,
+  useRemoveFamilyMemberMutation,
+} from '@/features/family-ops';
+import { useMarkFeedDayReadMutation } from '@/features/mark-feed-day-read';
 import { familyMemberRoute, ROUTES } from '@/shared/config/routes';
 import { formatFriendlyDate } from '@/shared/lib/format';
 import { todayKstDateString } from '@/shared/lib/kst';
 import { COLORS, LAYOUT, LIMITS } from '@/shared/config/theme';
-import { COPY } from '@/shared/copy';
+import { ACTIONS, COPY } from '@/shared/copy';
 import {
   FadeInView,
   Fallback,
@@ -41,9 +49,11 @@ import {
   FamilyWeeklyDigestCard,
   WeeklyDigestSkeleton,
 } from '@/widgets/family-weekly-digest';
+import { FamilySeatGrid } from '@/features/family-invite';
 import {
   FamilyFeedSectionHeader,
-  FamilyGuardianDashboard,
+  FamilyRosterEmpty,
+  FamilyRosterSectionHeader,
   FamilyTabHeader,
   MemberGridSkeleton,
 } from '@/widgets/family-guardian-dashboard';
@@ -67,20 +77,23 @@ export function FamilyPage() {
   const [dismissedMockIds, setDismissedMockIds] = useState<string[]>([]);
 
   const {
-    status: statusQuery,
     alerts: alertsQuery,
     feed: feedQuery,
     members: membersQuery,
+    feedDayReads: feedDayReadsQuery,
   } = useFamilyScreenQueries({
     familyId,
     todayKst: today,
   });
 
   const familyInfoQuery = useFamilyInfoQuery(familyId);
+  const removeMember = useRemoveFamilyMemberMutation(familyId);
 
   useFamilyFeedSubscription(familyId, qc);
+  useFamilyRosterSubscription(familyId, qc);
 
   const ackMut = useAckFamilyAlertMutation();
+  const markReadMut = useMarkFeedDayReadMutation();
 
   const weekly = useFamilyWeeklyDigestCard({
     familyId,
@@ -97,11 +110,11 @@ export function FamilyPage() {
     }
   };
 
-  const statusLoading =
+  const membersLoading =
     FAMILY_TAB_SKELETON_UI_PREVIEW ||
-    (statusQuery.isLoading &&
+    (membersQuery.isLoading &&
       !FAMILY_TAB_EMPTY_UI_PREVIEW &&
-      !statusQuery.data);
+      !membersQuery.data);
   const alertsLoading =
     FAMILY_TAB_SKELETON_UI_PREVIEW ||
     (alertsQuery.isLoading && !FAMILY_ALERT_UI_MOCK && !alertsQuery.data);
@@ -109,11 +122,11 @@ export function FamilyPage() {
     FAMILY_TAB_SKELETON_UI_PREVIEW ||
     (feedQuery.isLoading && !feedQuery.data);
 
-  const statusMembers = FAMILY_TAB_EMPTY_UI_PREVIEW
+  const rosterMembers = FAMILY_TAB_EMPTY_UI_PREVIEW
     ? []
-    : statusQuery.isError
+    : membersQuery.isError
       ? []
-      : (statusQuery.data ?? []).filter((member) => member.userId !== myUserId);
+      : (membersQuery.data ?? []);
   const alerts = alertsQuery.isError
     ? []
     : (alertsQuery.data ?? []).filter((alert) => alert.userId !== myUserId);
@@ -127,7 +140,8 @@ export function FamilyPage() {
     return mapFamilyAlertsToSlides(alerts);
   }, [alerts, dismissedMockIds]);
 
-  const feedSections = useMemo(() => {
+  /** 벨 뱃지용 — 최근 N일 */
+  const weekFeedSections = useMemo(() => {
     if (FAMILY_TAB_EMPTY_UI_PREVIEW || feedQuery.isError) return [];
     const others = (feedQuery.data ?? []).filter(
       (item) => item.userId !== myUserId,
@@ -140,18 +154,67 @@ export function FamilyPage() {
     return groupFamilyFeedByDate(week, today);
   }, [feedQuery.data, feedQuery.isError, myUserId, today]);
 
+  /** 탭 프리뷰 — 오늘만 */
+  const feedSections = useMemo(() => {
+    if (FAMILY_TAB_EMPTY_UI_PREVIEW || feedQuery.isError) return [];
+    const others = (feedQuery.data ?? []).filter(
+      (item) => item.userId !== myUserId,
+    );
+    const todayOnly = filterFamilyFeedLastDays(others, today, 1);
+    return groupFamilyFeedByDate(todayOnly, today);
+  }, [feedQuery.data, feedQuery.isError, myUserId, today]);
+
+  const hasUnreadFeed = useMemo(() => {
+    if (feedDayReadsQuery.isError) return false;
+    return hasUnreadFeedDays(
+      weekFeedSections,
+      feedDayReadsByDate(feedDayReadsQuery.data ?? []),
+    );
+  }, [
+    feedDayReadsQuery.data,
+    feedDayReadsQuery.isError,
+    weekFeedSections,
+  ]);
+
+  const readsByDate = useMemo(
+    () => feedDayReadsByDate(feedDayReadsQuery.data ?? []),
+    [feedDayReadsQuery.data],
+  );
+
+  const isSectionUnread = useCallback(
+    (dateYmd: string, data: { createdAt: string }[]) => {
+      if (data.length === 0) return false;
+      let latest = data[0]!.createdAt;
+      for (const item of data) {
+        if (item.createdAt > latest) latest = item.createdAt;
+      }
+      return isFeedDayUnread({
+        readAt: readsByDate.get(dateYmd),
+        latestCreatedAt: latest,
+      });
+    },
+    [readsByDate],
+  );
+
   const feedCount = feedSections.reduce((n, s) => n + s.data.length, 0);
   const feedPreviewSections = sliceFamilyFeedSections(
     feedSections,
     LIMITS.familyFeedPreviewCount,
   );
-  const hasMembers = statusMembers.length > 0;
+  const hasMembers = rosterMembers.some((m) => m.role !== 'family_leader');
+  const familyEmpty =
+    !membersLoading &&
+    !FAMILY_TAB_EMPTY_UI_PREVIEW &&
+    !membersQuery.isError &&
+    !hasMembers &&
+    !isLeader;
   // 로딩 중에도 피드 자리 예약 (empty cheer 깜빡임 방지)
   const showFeedSection =
-    statusLoading ||
-    hasMembers ||
-    FAMILY_TAB_EMPTY_UI_PREVIEW ||
-    feedQuery.isError;
+    !familyEmpty &&
+    (membersLoading ||
+      hasMembers ||
+      FAMILY_TAB_EMPTY_UI_PREVIEW ||
+      feedQuery.isError);
 
   const sectionTitle =
     familyInfoQuery.data?.name?.trim() || COPY.family.todayStatusFallback;
@@ -167,9 +230,28 @@ export function FamilyPage() {
     router.push(ROUTES.familyFeed);
   };
 
-  const openFamilyManage = () => {
-    router.push(ROUTES.familyManage);
+  const onKick = (userId: string, nickname: string) => {
+    Alert.alert(
+      '멤버를 내보낼까요?',
+      `${nickname} 님은 가족에서 빠지고, 약·기록도 함께 삭제돼요.`,
+      [
+        { text: ACTIONS.cancel, style: 'cancel' },
+        {
+          text: ACTIONS.export,
+          style: 'destructive',
+          onPress: () => removeMember.mutate(userId),
+        },
+      ],
+    );
   };
+
+  const onDayOpened = useCallback(
+    (dateYmd: string) => {
+      if (!familyId) return;
+      markReadMut.mutate({ familyId, logDate: dateYmd });
+    },
+    [familyId, markReadMut.mutate],
+  );
 
   const onAckCareAlert = (slideId: string) => {
     if (FAMILY_ALERT_UI_MOCK) {
@@ -184,7 +266,11 @@ export function FamilyPage() {
   return (
     <Screen fadeTop={LAYOUT.fade.top} fadeBottom={LAYOUT.fade.bottomPlain}>
       <ScreenScrollView
-        contentContainerClassName="gap-3 px-5 pb-10 pt-2"
+        contentContainerClassName={
+          familyEmpty
+            ? 'min-h-full flex-grow gap-3 px-5 pb-10 pt-2'
+            : 'gap-3 px-5 pb-10 pt-2'
+        }
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -195,55 +281,64 @@ export function FamilyPage() {
         }
         keyboardShouldPersistTaps="handled"
       >
-        <FadeInView className="gap-3">
+        <FadeInView className={familyEmpty ? 'min-h-full flex-1 gap-3' : 'gap-3'}>
           <FamilyTabHeader
             dateLabel={formatFriendlyDate(today)}
-            onBellPress={() => router.push(ROUTES.settings)}
+            hasUnread={hasUnreadFeed}
+            onBellPress={openFeed}
           />
 
-          {alertsQuery.isError && !FAMILY_ALERT_UI_MOCK ? (
-            <Fallback
-              image={<KokiIllustration variant="thinking" size={72} />}
-              message={COPY.family.loadFailedAlerts}
-              ctaLabel={COPY.common.retry}
-              onCtaPress={() => void alertsQuery.refetch()}
-            />
-          ) : alertsLoading ? (
-            <CareAlertSkeleton />
-          ) : (
-            <FamilyCareAlertCarousel
-              slides={careSlides}
-              onAck={onAckCareAlert}
-            />
-          )}
+          {!familyEmpty &&
+            (alertsQuery.isError && !FAMILY_ALERT_UI_MOCK ? (
+              <Fallback
+                image={<KokiIllustration variant="thinking" size={72} />}
+                message={COPY.family.loadFailedAlerts}
+                ctaLabel={COPY.common.retry}
+                onCtaPress={() => void alertsQuery.refetch()}
+              />
+            ) : alertsLoading ? (
+              <CareAlertSkeleton />
+            ) : (
+              <FamilyCareAlertCarousel
+                slides={careSlides}
+                onAck={onAckCareAlert}
+              />
+            ))}
 
-          {FAMILY_TAB_SKELETON_UI_PREVIEW || weekly.showSkeleton ? (
-            <WeeklyDigestSkeleton />
-          ) : weekly.visible && weekly.digest ? (
-            <FamilyWeeklyDigestCard
-              digest={weekly.digest}
-              onAck={weekly.onAck}
-            />
-          ) : null}
+          {!familyEmpty &&
+            (FAMILY_TAB_SKELETON_UI_PREVIEW || weekly.showSkeleton ? (
+              <WeeklyDigestSkeleton />
+            ) : weekly.visible && weekly.digest ? (
+              <FamilyWeeklyDigestCard
+                digest={weekly.digest}
+                onAck={weekly.onAck}
+              />
+            ) : null)}
 
-          {statusLoading ? (
+          {membersLoading ? (
             <MemberGridSkeleton />
-          ) : (
-            <FamilyGuardianDashboard
-              members={statusMembers}
-              sectionTitle={sectionTitle}
-              showInviteCta={isLeader}
-              onPressMember={openMember}
-              onInviteCtaPress={openFamilyManage}
-              onManagePress={isLeader ? openFamilyManage : undefined}
-              isError={statusQuery.isError && !FAMILY_TAB_EMPTY_UI_PREVIEW}
-              onRetry={() => void statusQuery.refetch()}
+          ) : membersQuery.isError && !FAMILY_TAB_EMPTY_UI_PREVIEW ? (
+            <FamilyRosterEmpty
+              isError
+              onRetry={() => void membersQuery.refetch()}
             />
+          ) : !hasMembers && !isLeader ? (
+            <FamilyRosterEmpty />
+          ) : (
+            <View className="gap-2.5">
+              <FamilyRosterSectionHeader sectionTitle={sectionTitle} />
+              <FamilySeatGrid
+                layout="carousel"
+                isLeader={isLeader}
+                members={rosterMembers}
+                onKick={onKick}
+              />
+            </View>
           )}
 
           {showFeedSection ? (
             <View className="gap-2.5">
-              {feedLoading || statusLoading ? (
+              {feedLoading || membersLoading ? (
                 <FeedPreviewSkeleton />
               ) : (
                 <>
@@ -260,7 +355,7 @@ export function FamilyPage() {
                     />
                   ) : feedCount === 0 ? (
                     <Fallback
-                      image={<KokiIllustration variant="cheer" size={96} />}
+                      image={<KokiIllustration variant="empty" size={96} />}
                       message={COPY.family.emptyFeedMessage}
                     />
                   ) : (
@@ -269,8 +364,14 @@ export function FamilyPage() {
                         <FamilyActivityFeedStack
                           key={section.dateYmd}
                           title={section.title}
+                          dateYmd={section.dateYmd}
                           items={section.data}
+                          unread={isSectionUnread(
+                            section.dateYmd,
+                            section.data,
+                          )}
                           onItemPress={openMember}
+                          onDayOpened={onDayOpened}
                         />
                       ))}
                     </View>

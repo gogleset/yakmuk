@@ -8,7 +8,6 @@ import {
 import { COLORS, LIMITS } from '@/shared/config/theme';
 import { cn } from '@/shared/lib/cn';
 import { FamilyCareAlertCard } from './FamilyCareAlertCard';
-import { FamilyCareAlertEmpty } from './FamilyCareAlertEmpty';
 import type { CareAlertSlide } from './model/types';
 
 /** 슬라이드 간 간격 (paging 페이지 안쪽 paddingRight) */
@@ -69,7 +68,7 @@ export function FamilyCareAlertCarousel({ slides, onAck }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- goToPage는 width/pageCount에 묶임
   }, [pageCount, bannerWidth]);
 
-  if (slides.length === 0) return <FamilyCareAlertEmpty />;
+  if (slides.length === 0) return null;
 
   const onMomentumEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (bannerWidth <= 0) return;

@@ -22,7 +22,8 @@ const KOKI_SOURCES: Record<KokiVariant, number> = {
   thinking: require('../../../../assets/koki/v1/koki_thinking.png'),
   happy: require('../../../../assets/koki/v1/koki_thanks.png'),
   done: require('../../../../assets/koki/v1/koki_done.png'),
-  family: require('../../../../assets/koki/v1/koki_cheer.png'),
+  /** 가족 empty·초대 peek — cheer와 분리 */
+  family: require('../../../../assets/koki/v1/koki_wave.png'),
   streak: require('../../../../assets/koki/v1/koki_streak.png'),
   worried: require('../../../../assets/koki/v1/koki_worried.png'),
   cheer: require('../../../../assets/koki/v1/koki_cheer.png'),

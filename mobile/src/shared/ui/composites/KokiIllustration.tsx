@@ -12,22 +12,25 @@ export type KokiVariant =
   | 'cheer'
   | 'pill'
   | 'lantern'
-  | 'heart';
+  | 'heart'
+  | 'sleep'
+  | 'empty';
 
-// composites → ui → shared → src → mobile/assets
-// family/lantern/heart는 정식 컷 오기 전 기존 파일 유지
+// composites → ui → shared → src → mobile/assets/koki/v1
 const KOKI_SOURCES: Record<KokiVariant, number> = {
-  welcome: require('../../../../assets/koki/koki_wave.png'),
-  thinking: require('../../../../assets/koki/koki_thinking.png'),
-  happy: require('../../../../assets/koki/koki_thanks.png'),
-  done: require('../../../../assets/koki/koki_done.png'),
-  family: require('../../../../assets/koki/family.png'),
-  streak: require('../../../../assets/koki/koki_streak.png'),
-  worried: require('../../../../assets/koki/koki_worried.png'),
-  cheer: require('../../../../assets/koki/koki_cheer.png'),
-  pill: require('../../../../assets/koki/koki_medicine.png'),
-  lantern: require('../../../../assets/koki/lantern.png'),
-  heart: require('../../../../assets/koki/heart.png'),
+  welcome: require('../../../../assets/koki/v1/koki_wave.png'),
+  thinking: require('../../../../assets/koki/v1/koki_thinking.png'),
+  happy: require('../../../../assets/koki/v1/koki_thanks.png'),
+  done: require('../../../../assets/koki/v1/koki_done.png'),
+  family: require('../../../../assets/koki/v1/koki_cheer.png'),
+  streak: require('../../../../assets/koki/v1/koki_streak.png'),
+  worried: require('../../../../assets/koki/v1/koki_worried.png'),
+  cheer: require('../../../../assets/koki/v1/koki_cheer.png'),
+  pill: require('../../../../assets/koki/v1/koki_medicine.png'),
+  lantern: require('../../../../assets/koki/v1/koki_sleep.png'),
+  heart: require('../../../../assets/koki/v1/koki_thanks.png'),
+  sleep: require('../../../../assets/koki/v1/koki_sleep.png'),
+  empty: require('../../../../assets/koki/v1/koki_empty.png'),
 };
 
 type Props = {
@@ -37,7 +40,7 @@ type Props = {
   accessibilityLabel?: string;
 };
 
-/** 브랜드 컷 슬롯 — variant별 placeholder/정식 PNG */
+/** 브랜드 컷 슬롯 — variant별 koki/v1 PNG */
 export function KokiIllustration({
   variant,
   size = 160,

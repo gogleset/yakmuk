@@ -151,18 +151,17 @@ CTA: sticky `저장`.
 
 ---
 
-## P5 — 가족 초대 생성
+## P5 — 가족 부르기 (초대 생성)
 
-**진입:** Family / Settings → 초대  
-**콕이:** `family`
+**진입:** `/family-manage` 자리표 빈 칸 `+` → `/invite-create`  
+**얼굴:** 빈 원 플레이스홀더 (콕이 컷 없음)
 
 | Step | 질문 | UI | CTA |
 |------|------|-----|-----|
-| 1 | 누구를 초대할까요? | 역할 선택 (보호자/피보호자 등) | 다음 |
-| 2 | 초대할 분의 호칭은? | Input `invitedAs` | 초대코드 만들기 |
-| (3) | 코드 공유 | 코드 + 공유 CTA — 입력 퍼널 종료 beat | 완료 |
+| 1 | 누구를 부를까요? | 보호자/피보호자 + 호칭 칩·직접 입력 | 초대장 만들기 |
+| 2 | 초대장을 준비했어요 | 여섯 글자 + QR + 공유하기 | 완료 |
 
-훅: `FamilyInvitePanel.tsx`
+훅: `InviteCreateFunnel.tsx` · 자리표 `FamilySeatGrid.tsx` (max 6)
 
 ---
 

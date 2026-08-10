@@ -60,16 +60,16 @@ PRD 요약의 “보호자/피보호자” 이분법 → 코드는 **3역할**. 
 - **역할**: both (전 역할)
 - **진입**: 하단 탭 `가족` → `/(tabs)/family`
 - **관련 코드**: `pages/family` · `widgets/family-guardian-dashboard` · `entities/family` (`useFamilyScreenQueries`, Realtime `useFamilyFeedSubscription`)
-- **IA**: 하이브리드 — 멤버 있을 때만 피드 **프리뷰** (`LIMITS.familyFeedPreviewCount`) + `/family-feed` 전체
+- **IA**: 하이브리드 — 멤버 있을 때만 피드 **오늘 프리뷰** (`windowDays=1` · `LIMITS.familyFeedPreviewCount`) + 헤더 벨/`더보기` → `/family-feed` 전체(7일)
 
 | # | 스텝 | 화면/UI | 사용자 행동 | 시스템 반응 | 상태 |
 |---|------|---------|-------------|-------------|------|
-| 1 | 탭 진입 | FamilyPage | 가족 탭 탭 | 오늘 KST 기준 status·alerts·feed·members 쿼리 | implemented |
-| 2 | 헤더 | 날짜 + `가족 안부` (+ `우리 가족 N명` 이니셜 스택) | — | N = 다른 멤버 수(본인 제외). 탭 크롬(뒤로/종) 없음 | implemented |
+| 1 | 탭 진입 | FamilyPage | 가족 탭 탭 | 오늘 KST 기준 status·alerts·feed·members·feedDayReads 쿼리 | implemented |
+| 2 | 헤더 | 날짜 + `가족 안부` · 우측 벨 | 벨 → `/family-feed` | 7일 윈도우 미읽 일자 있으면 점. 설정 진입 아님 | implemented |
 | 3 | 알림 | stuck_escalate / BAD 케어 알림 캐러셀 | ack → F2 | 본인 alert 제외. 로드실패 시 칸 Fallback+재시도 | implemented |
 | 4 | 가족 그리드 | 섹션 제목=`{가족명}` · (leader)「관리」· 이니셜·닉·상태 | 타인 카드 → F4 / 관리 → F6 | 알림·BAD만 warning. 로드실패 시 칸 Fallback | implemented |
 | 5 | empty | Fallback + koki family | leader만 `가족 초대하기` → `/family-manage` | 멤버 0(본인만). **피드 섹션 숨김** | implemented |
-| 6 | 최근 소식 | 프리뷰 / 로드실패 Fallback / empty Fallback | 더보기 → 피드 | 섹션별 isError ≠ empty | implemented |
+| 6 | 최근 소식 | **오늘만** 프리뷰 / 로드실패 Fallback / empty Fallback | 더보기·벨 → 피드 | 섹션별 isError ≠ empty | implemented |
 | 7 | pull-to-refresh | RefreshControl | 당겨 새로고침 | profile + `invalidateFamilyActivity` | implemented |
 
 **분기**
@@ -89,8 +89,8 @@ flowchart TD
   D --> E
   E -->|no| F[Empty + leader면 초대 CTA]
   E -->|yes| G[멤버 카드 + 우리 가족 N명]
-  G --> H[최근 소식 프리뷰]
-  H -->|N개/더보기| I[family-feed 전체]
+  G --> H[최근 소식 오늘만]
+  H -->|더보기/벨| I[family-feed 7일]
 ```
 
 ---
@@ -122,34 +122,39 @@ flowchart TD
 
 ---
 
-### F3. 최근 소식 피드 · Realtime — `partial`
+### F3. 최근 소식 피드 · Realtime · 일자 읽음 — `implemented`
 
 - **역할**: both (멤버가 있을 때만 탭에 노출)
-- **진입**: 가족 탭 프리뷰 헤더/`더보기` → `/family-feed` · 또는 프리뷰 카드 직접
-- **관련 코드**: `widgets/family-activity-feed` · `pages/family-feed` · `useFamilyFeedSubscription`
+- **진입**: 헤더 벨 · 프리뷰 `더보기` → `/family-feed`
+- **관련 코드**: `widgets/family-activity-feed` · `pages/family-feed` · `family_feed_day_reads` · `useMarkFeedDayReadMutation` · `useFamilyFeedSubscription`
 
 | # | 스텝 | 화면/UI | 사용자 행동 | 시스템 반응 | 상태 |
 |---|------|---------|-------------|-------------|------|
-| 1 | 프리뷰 | 최근 2~3개 + `새로운 소식 N개` | 헤더/더보기 → 전체 | `sliceFamilyFeedPreview` | implemented |
-| 2 | 전체 | FamilyFeedPage FlatList | 뒤로 · pull refresh | 동일 queryKey 캐시 | implemented |
+| 1 | 프리뷰 | **오늘** 소식만 (최대 previewCount) | 더보기/벨 → 전체 | `filterFamilyFeedLastDays(..., 1)` | implemented |
+| 2 | 전체 | FamilyFeedPage · 날짜 스택 (7일) | 뒤로 · pull refresh | 동일 queryKey 캐시 | implemented |
 | 3 | empty | “아직 소식이 없어요” | — | 본인 제외 피드 0 | implemented |
-| 4 | 아이템 | 이니셜 · TAKEN/컨디션 · 상대시각 | 탭 → F4 멤버 | BAD면 warningBg | implemented |
-| 5 | Realtime | — | 타 기기 TAKEN 등 | 구독으로 피드 갱신 | partial — 코드 O, 2시뮬 검증 미완 |
+| 4 | 아이템 | 이니셜 · TAKEN/컨디션 · 상대시각 | 탭 → F4 멤버 | BAD면 warning outline | implemented |
+| 5 | 읽음 | 일자 점 · 벨 점 | 스택 **펼침** / 단건 **노출** | `family_feed_day_reads` upsert. 같은 날 새 로그면 재미읽 | implemented |
+| 6 | Realtime | — | 타 기기 TAKEN 등 | 구독으로 피드 갱신 | partial — 코드 O, 2시뮬 검증 미완 |
 
 **분기**
 
 - 피드 탭 → 멤버 상세 (본인 id면 openMember no-op)
+- 읽음은 보호자(`auth.uid`)별 · 기기 간 공유
+- 케어 알림 ack(`family_alerts.acked_at`)와 별개
 
 **Mermaid**
 
 ```mermaid
 flowchart TD
-  A[멤버 있음] --> B[프리뷰 2to3]
-  B -->|N개/더보기| C[family-feed]
-  B --> D[카드 탭 → 멤버]
-  C --> D
-  E[Realtime] -.->|partial 검증| B
-  E -.-> C
+  A[멤버 있음] --> B[오늘 프리뷰]
+  B -->|더보기/벨| C[family-feed 7일]
+  C --> D{스택?}
+  D -->|2plus 펼침| E[일자 read]
+  D -->|단건 노출| E
+  E --> F[벨 점 갱신]
+  G[Realtime] -.-> B
+  G -.-> C
 ```
 ---
 
@@ -323,3 +328,5 @@ flowchart TD
 | 2026-07-31 | 가족 탭 스코프 초안 (`FamilyPage`·멤버·초대·ops 코드 기준) |
 | 2026-07-31 | UI 하이브리드: 멤버 카드 · 피드 프리뷰+`/family-feed` · empty CTA |
 | 2026-08-01 | 설정 가족 행 제거 · 섹션 제목=가족명 · leader「관리」→ `/family-manage` |
+| 2026-08-10 | F5·F6 To-Be 구현: 자리표·한도6·부르기 퍼널 — [family-manage-seat-grid-flow-brief.md](./family-manage-seat-grid-flow-brief.md) |
+| 2026-08-10 | F3: 탭 오늘만 · 벨→피드 · `family_feed_day_reads` 일자 읽음 |

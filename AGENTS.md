@@ -12,6 +12,7 @@ yakmuk/
 ├── AGENTS.md                 # 이 파일
 ├── TRACK.md                  # 트랙·스테이지
 ├── docs/design/              # 시각·톤·카피 원칙 (섹션별)
+├── docs/migration/           # Kotlin Android 이전 체크리스트
 ├── docs/product/             # 제품 목표 · 안심 구독 (신뢰→glance→주간요약)
 ├── docs/brand/               # 약콕·콕이 브랜드 플랜 (갭·beat·토스형 퍼널·design 수정안)
 ├── docs/prd/                 # PRD 요약

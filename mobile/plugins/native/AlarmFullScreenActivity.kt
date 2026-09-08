@@ -121,9 +121,9 @@ class AlarmFullScreenActivity : Activity() {
         "${Uri.encode(k)}=${Uri.encode(v)}"
       }
     return if (query.isEmpty()) {
-      "yakmuk://medication-alarm"
+      "yakok://medication-alarm"
     } else {
-      "yakmuk://medication-alarm?$query"
+      "yakok://medication-alarm?$query"
     }
   }
 

@@ -6,6 +6,8 @@ alwaysApply: false
 
 # Feature-Sliced Design (mobile)
 
+**RN freeze:** 새 UI는 `android-app/`. 이 규칙은 스펙 대조·thaw 때만.
+
 코드는 **기술 기준이 아니라 비즈니스 책임**으로 나눈다.  
 경로: `mobile/` (Expo Router `app/` + FSD `src/`).
 

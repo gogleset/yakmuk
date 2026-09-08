@@ -29,7 +29,7 @@ In-app / Webhook / Schedule -> start|resume run (idempotent)
 HostedRDB: runs/turns + daily_logs
 Verifier -> metrics / alerts
 Stuck -> notify channel
-daily_logs INSERT -> Edge -> Expo Push (deduped)
+daily_logs INSERT -> Edge -> FCM (`users.push_token`, deduped)
 EAS -> TestFlight / Play internal / stores
 ```
 

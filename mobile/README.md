@@ -1,4 +1,7 @@
-# yakmuk pre — 로컬 개발
+# yakmuk pre — RN freeze 스펙
+
+**현재 앱은 [`android-app/`](../android-app/) (Kotlin Compose).**  
+이 폴더는 패리티 스펙만. **기능 추가·삭제 금지** (freeze 2026-09-08).
 
 ## 전제
 
@@ -89,11 +92,11 @@ docker compose run --rm --service-ports yakmuk pnpm exec expo start --web --host
 ### Edge 푸시 · 로컬 알림
 
 - **약 알림:** 폰 로컬만 (`expo-notifications` / Android Notifee). 서버가 보내지 않음. 앱 시작·복귀 시 서버 스케줄과 reconcile. 로그: `[yakmuk:notif]`
-- **안심 푸시:** 복용(`taken`)·stuck → Edge `care-push` → 동가족 `users.expo_push_token`.
-  - 클라이언트: EAS `projectId` + Android **`google-services.json`** (`app.json` → `android.googleServicesFile`). Firebase 앱 **패키지 = `com.jinlabs.yakok`** 이어야 함.
-  - 서버 발송(Expo→FCM V1): EAS Credentials에 **Service Account** JSON 업로드 (로컬 `google-services.json`과 별개, gitignore).
-  - 미설정 시 `[yakmuk:push] register failed` / skip.
-- **공지:** Edge `announce-push` (service_role / secret) — care와 분리.
+- **안심 푸시:** 복용(`taken`)·stuck → Edge `care-push` → FCM HTTP v1 → 동가족 `users.push_token`.
+  - 클라이언트: Android **`google-services.json`** (패키지 `com.jinlabs.yakok`). RN은 `app.json` → `android.googleServicesFile`.
+  - 서버: `FIREBASE_SERVICE_ACCOUNT` (Firebase 서비스 계정 JSON, `google-services.json`과 별개). 없으면 Edge skip.
+  - 미설정 시 `[yakmuk:push] skip` / `{ sent: 0, message: 'fcm not configured' }`.
+- **공지:** Edge `announce-push` (service_role / secret) — 같은 FCM 경로. care와 분리.
 
 ```bash
 supabase db reset   # 스키마 재적용

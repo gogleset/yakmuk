@@ -62,50 +62,49 @@ Metro: med **10** · `alarmClock scheduled` · `10|daily|16:29|clk4` · TAKEN �
 ### 로그로 이미 보이는 것
 
 - [x] `POST .../functions/v1/care-push` kind=`taken` (피보호자 → Edge)
-- [ ] Expo 전송 성공 — Edge **503** `name resolution failed` (`exp.host` DNS/네트워크)
-- [ ] 보호자 `expo_push_token` — FCM 없어 자동 등록 실패
+- [x] FCM 전송 성공 — 에뮬 (2026-09-08): Edge `configured: true, sent: 1, failed: 0` · 쉐이드 `care-taken`
+- [x] 보호자 `push_token` — 에뮬 자동 등록 확인
+- [ ] **실기기** 2폰 T4 — 보류. G0.4 공식 PASS 아님
 
-| 결과 | **보류** |
-| 막힌 지점 | 1) ~~패키지 불일치~~ → 앱 `package`를 `com.jinlabs.yakok`으로 맞춤 2) Edge→Expo DNS 3) EAS FCM V1 service account |
-| 일시 | 2026-08-06 |
+| 결과 | **에뮬 PASS** · **실기기 보류** |
+| 막힌 지점 | 실기기 수신 전. 에뮬 경로 OK. **가짜 PASS 아님.** |
+| 일시 | 2026-09-08 |
 
-`app.json`에 `googleServicesFile: ./google-services.json` 연결됨. **패키지 맞는 파일로 교체 후** `npx expo run:android` 재빌드 필수.
+Kotlin `android-app`: `google-services.json` (gitignore, 없으면 `mobile/google-services.json` 복사). 패키지 `com.jinlabs.yakok`.  
+Edge: `supabase/.env`에 `FIREBASE_SERVICE_ACCOUNT=<서비스계정 JSON 한 줄>` 후 `supabase functions serve care-push --env-file supabase/.env`.
 
-### expo_push_token 수동 넣기
+### push_token 수동 넣기
 
-앱이 FCM 없이도 DB에만 넣으면, Edge가 그 토큰으로 Expo에 쏘는 경로를 시험할 수 있다.  
-**가짜 문자열은 안 됨** — 실제 `ExponentPushToken[...]` 필요.
+앱이 FCM 없이도 DB에만 넣으면, Edge가 그 토큰으로 쏘는 경로를 시험할 수 있다.  
+**가짜 문자열은 안 됨.**
 
 **1) 토큰 구하기**
 
-- FCM/`google-services.json` 붙인 빌드에서 한 번 성공한 토큰, 또는
-- 다른 Expo 프로젝트/기기에서 이미 발급된 토큰 복사, 또는
-- (임시) Expo 푸시 도구에 쓸 수 있는 유효 토큰
+- FCM/`google-services.json` 붙인 빌드에서 한 번 성공한 토큰
 
 **2) 보호자 row에 UPDATE**
 
 ```sql
 -- 가족 멤버 확인
-select id, nickname, role, expo_push_token
+select id, nickname, role, push_token
 from public.users
 where family_id = '74bbba22-a283-4cc8-9097-f16200818545';
 
 -- 보호자 id로 교체
 update public.users
-set expo_push_token = 'ExponentPushToken[여기에붙여넣기]'
+set push_token = '<fcm-device-token>'
 where id = '<guardian-uuid>';
 ```
 
-Studio: Table Editor → `users` → 보호자 행 → `expo_push_token` 편집도 동일.
+Studio: Table Editor → `users` → 보호자 행 → `push_token` 편집도 동일.
 
 **3) 다시 TAKEN**
 
-피보호자에서 복용 체크 → care-push가 보호자 토큰으로 `https://exp.host/--/api/v2/push/send` 호출.
+피보호자에서 복용 체크 → care-push가 보호자 `push_token`으로 발송.
 
-지금 Edge가 `name resolution failed`면 **토큰을 넣어도 실패**한다.  
-`supabase functions serve` 컨테이너/호스트에서 `exp.host` 해석·아웃바운드가 되는지 먼저 고친다.
+**정석:** Android FCM 자격 증명 → 앱이 `users.push_token`에 등록. 수동 SQL은 우회 테스트용.
 
-**정석:** Android FCM 자격 증명 + `googleServicesFile` → 앱이 알아서 `updateExpoPushToken` 호출. 수동 SQL은 우회 테스트용.
+칼럼 이력: `expo_push_token` → `push_token` (migration `20260908191700`).
 
 ---
 
@@ -116,4 +115,4 @@ Studio: Table Editor → `users` → 보호자 행 → `expo_push_token` 편집�
 | T1 | **PASS** | S3 |
 | T2 | **PASS** | **G0.3** |
 | T3 | 미실행 | |
-| T4 | 보류 | G0.4 |
+| T4 | 에뮬 PASS (2026-09-08) · 실기기 보류 | G0.4 |

@@ -55,8 +55,8 @@
 | 1 | 이름 | 상단 Input/저장 (리더) | 저장 | updateFamilyName | implemented |
 | 2 | 자리표 | 2열 · max 6 · 함께/대기/빈(+) | — | members∪pending∪empty | implemented |
 | 3 | 빈 칸 | `+`만 | 탭 | `/invite-create` · 한도 Alert | implemented |
-| 4 | 사람 칸 | 빈 원 · 호칭 · 역할 | 메뉴 | 내보내기 · 초대장 새로 주기 | implemented |
-| 5 | 대기 칸 | dashed 원 · 아직 안 오셨어요 | 메뉴 | 새로 주기 · 삭제 | implemented |
+| 4 | 사람 칸 | 빈 원 · 호칭 · 역할 | ⋯ 메뉴 | 내보내기 · **초대장 새로 주기**(연결됨 → 강제 로그아웃+재입장). Android 가족 탭 가로 자리표도 동일 | implemented |
+| 5 | 대기 칸 | dashed 원 · 아직 안 오셨어요 | ⋯ 메뉴 | 새로 주기 · 삭제(다시 오는 길은 삭제 불가) | implemented |
 | 6 | 끝내기 | 맨 아래 round destructive | Confirm | welcome | implemented |
 
 **Mermaid**
@@ -152,3 +152,4 @@ flowchart TD
 |------|------|
 | 2026-08-10 | 초안(To-Be missing) |
 | 2026-08-10 | 구현: 한도6 · FamilySeatGrid · 역할+호칭 퍼널 · 초대장 카피 |
+| 2026-09-08 | Android 가족 탭 자리표 멤버 칸에서도 초대장 새로 주기 (연결됨 포함) |

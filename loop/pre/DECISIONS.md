@@ -4,10 +4,10 @@
 |------|------|------|
 | 시작 stage | **pre** (mvp 스킵) | 가족 연동 테스트에 공유 DB 필수 |
 | promote mvp→pre | **N/A** | 의도적 스킵 · 캠프 promote-template 해당 구간 생략 |
-| 클라이언트 | Expo RN | PRD |
+| 클라이언트 | **Kotlin Compose Android** (`android-app/`) · RN `mobile/` **freeze 스펙** (2026-09-08) | Android-only · iOS 나중에 |
 | 스토어 | local `supabase start` | 멀티 클라 공유 |
-| 아키텍처 | FSD + Atomic `shared/ui` | PRD |
-| 상태관리 | TanStack Query | Optimistic + Realtime |
+| 아키텍처 | Kotlin `:app` + `:core` · RN FSD는 스펙만 | 패리티 대조 |
+| 상태관리 | ViewModel + StateFlow (RN 스펙은 TanStack Query) | Optimistic + Realtime |
 | **Auth 가족장** | **네이티브 ID 토큰** (Google: Android+iOS · Apple: iOS만) → Supabase `signInWithIdToken` · 로컬 `supabase/.env` + config enable | 가족 생성·관리 계정 · Android Apple 버튼 숨김 |
 | **Auth 보호자·피보호자** | **초대코드 6자리 + QR** (anon) · 닉네임 선택 | Low Friction · 호칭은 리더가 사전 지정 |
 | 역할 | `users.role` = `family_leader` \| `guardian` \| `care_recipient` | 3역할 |
@@ -17,15 +17,15 @@
 | **멤버 로그아웃** | **즉시 signOut** (코드 미표시) | 다시 들어오려면 리더가 초대 재발급 |
 | **강제 로그아웃** | `force_sign_out_at` + auth 세션 revoke + 클라 Alert | 초대 재발급(클레임/재입장대기) 시 |
 | 조인 세션 | 코드/QR + 선택 닉네임 → claim | 비우면 invited_as |
-| QR 페이로드 | deep link `yakmuk://join?code=XXXXXX` (또는 Universal Link) | 스캔 = 코드 입력과 동일 |
+| QR 페이로드 | deep link `yakok://join?code=XXXXXX` (또는 Universal Link) | 스캔 = 코드 입력과 동일 |
 | bound | `max_iterations=10` + 당일 KST 윈도우 | — |
 | stuck | 미복용 해시 3회 → escalate | — |
 | verifier | 순수 함수 + SQL (reference) | — |
 | escalate | 로그 + `family_alerts` (가족 탭 배너) | — |
 | trigger | 인앱 버튼 + HTTP webhook | — |
-| 로컬 알림 | expo-notifications (iOS) · Notifee FSI (Android) · 앱 시작/AppState reconcile · `[yakmuk:notif]` | FR-05 |
+| 로컬 알림 | **AlarmClock → Receiver → FSI** (Kotlin Android) · BootReceiver · fingerprint reconcile. RN 스펙: expo-notifications / Notifee | FR-05 |
 | 약 알림 on/off | `medications.notification_enabled` (슬롯 단위) · 서버 push 아님 | FR-05 |
-| 원격 푸시 | Edge `care-push`(taken/stuck) + `announce-push` 공지 · `users.expo_push_token` · EAS projectId 없으면 등록 skip · 약 스케줄 서버 발송 안 함 | FR-05 |
+| 원격 푸시 | Edge `care-push`(taken/stuck) + `announce-push` 공지 · `users.push_token` · FCM HTTP v1 (`FIREBASE_SERVICE_ACCOUNT`) · 앱 FCM 등록 · 약 스케줄 서버 발송 안 함 | FR-05 |
 | 알림 시각 | 디바이스 로컬 시계 (`scheduled_time` TZ 없음 · KST 전제) | — |
 | HTTP trigger | `supabase/functions/loop-trigger` | pre CONTRACT || RLS | 동일 `family_id`만 · runs는 owner | Two-tier |
 | 컨디션 | goal 필수 · message 선택 | FR-03 |
@@ -51,4 +51,4 @@
 
 ## 다음
 
-- prod: hosted Supabase, EAS, OAuth 프로덕션 키, bound 하드캡, 스토어
+- prod: hosted Supabase, Play (Kotlin), OAuth 프로덕션 키, bound 하드캡. iOS/EAS 나중에

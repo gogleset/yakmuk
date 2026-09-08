@@ -7,9 +7,11 @@ description: >-
 
 # Add FSD feature (yakmuk mobile)
 
+**RN freeze (2026-09-08):** 새 기능은 `android-app/`. 이 스킬은 `mobile/` thaw 때만.
+
 ## When
 
-- 새 사용자 행동(mutation + UI)
+- **thaw 후** 새 사용자 행동(mutation + UI)
 - 기존 entity에 api/query 추가 후 feature에서 소비
 - 새 화면(page) + 라우트 wrapper
 

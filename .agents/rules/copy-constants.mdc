@@ -6,6 +6,8 @@ alwaysApply: false
 
 # Copy & constants
 
+**현재 앱:** `android-app/core/.../copy` · `constants`. 아래는 RN freeze 스펙.
+
 ## 어디에 두나
 
 | 종류 | 위치 |

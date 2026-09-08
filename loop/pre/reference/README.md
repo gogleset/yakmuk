@@ -35,7 +35,7 @@ Guardian/CareRecipient: scan QR | type code + optional nickname
 All: same family_id -> RLS
 ```
 
-QR: `yakmuk://join?code=XXXXXX`. 표시명 = nickname (없으면 invited_as).
+QR: `yakok://join?code=XXXXXX`. 표시명 = nickname (없으면 invited_as).
 
 ## Postgres 스키마 스케치
 
@@ -63,7 +63,7 @@ CREATE TABLE users (
   invited_as text,                   -- 리더는 null
   role text NOT NULL CHECK (role IN ('family_leader', 'guardian', 'care_recipient')),
   family_id uuid REFERENCES families(id),
-  expo_push_token text
+  push_token text                    -- 구 expo_push_token. Android FCM
 );
 ```
 
@@ -185,7 +185,7 @@ B guardian: OAuth -> Realtime feed sees event
 ## 푸시 (로컬)
 
 ```text
-daily_logs INSERT -> webhook -> Edge -> Expo Push (family tokens)
+daily_logs INSERT -> webhook -> Edge -> FCM (`users.push_token`)
 ```
 
 SQLite 전환 가이드는 참고만: `ai-engineering-base/tracks/_meta/sqlite-to-local-supabase.md` (본 프로젝트는 DDL 직행).

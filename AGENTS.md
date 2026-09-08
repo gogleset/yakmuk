@@ -1,7 +1,8 @@
 # yakmuk — Agent guide
 
 가족 건강 안부 · 복약 체크 앱 (**약콕**).  
-stage: **pre** · store: **local-supabase** · app: Expo RN 57.
+stage: **pre** · store: **local-supabase** · app: **Kotlin Compose** (`android-app/`).  
+RN [`mobile/`](mobile/) = **freeze 스펙** (2026-09-08) — 기능 추가·삭제 금지. 패리티 참조만.
 
 이 파일이 에이전트 진입점이다. 세부 규칙은 `.agents/rules/`, 워크플로는 `.agents/skills/`를 본다.
 
@@ -12,13 +13,15 @@ yakmuk/
 ├── AGENTS.md                 # 이 파일
 ├── TRACK.md                  # 트랙·스테이지
 ├── docs/design/              # 시각·톤·카피 원칙 (섹션별)
+├── docs/migration/           # Kotlin Android 이전 체크리스트
 ├── docs/product/             # 제품 목표 · 안심 구독 (신뢰→glance→주간요약)
 ├── docs/brand/               # 약콕·콕이 브랜드 플랜 (갭·beat·토스형 퍼널·design 수정안)
 ├── docs/prd/                 # PRD 요약
 ├── docs/flows/               # 화면 플로우 브리프
 ├── loop/pre/                 # CONTRACT · CHECKLIST · DECISIONS
 ├── supabase/                 # migrations · functions · seed
-├── mobile/                   # Expo Router + FSD
+├── android-app/              # Kotlin Compose (Android) — **현재 앱**
+├── mobile/                   # Expo RN **freeze 스펙** (기능 추가·삭제 금지)
 │   ├── app/                  # 라우트 thin wrapper만
 │   └── src/                  # providers · pages · widgets · features · entities · shared
 ├── .agents/
@@ -33,13 +36,16 @@ yakmuk/
 
 | 영역 | 기술 |
 |------|------|
-| App | Expo ~57 · Expo Router · NativeWind · TanStack Query · Supabase JS |
+| App | Kotlin · Compose · Hilt · supabase-kt (`android-app/`) |
+| Spec | Expo ~57 FSD (`mobile/`) — freeze. 새 기능은 여기 넣지 말 것 |
 | DB | Supabase local (`supabase start`) · SQL migrations · RPC |
 | Loop | `run=(user_id, date_kst)` · verify/stuck — [loop/pre/CONTRACT.md](loop/pre/CONTRACT.md) |
 
-## Mobile (FSD)
+## Mobile (FSD) — freeze 스펙
 
-경로: `mobile/src/`. 상세: [`.agents/rules/fsd-architecture.mdc`](.agents/rules/fsd-architecture.mdc) · 안티패턴: [`.agents/rules/rn-fsd-anti-patterns.mdc`](.agents/rules/rn-fsd-anti-patterns.mdc)
+경로: `mobile/src/`. **새 화면·기능은 `android-app/`.** 패리티 대조할 때만 FSD 규칙:
+
+상세: [`.agents/rules/fsd-architecture.mdc`](.agents/rules/fsd-architecture.mdc) · 안티패턴: [`.agents/rules/rn-fsd-anti-patterns.mdc`](.agents/rules/rn-fsd-anti-patterns.mdc)
 
 ```
 providers/ → pages/ → widgets/ → features/ → entities/ → shared/
@@ -57,7 +63,7 @@ Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 ## Supabase
 
 - 스키마 변경 = `supabase/migrations/` 새 파일 (기존 마이그레이션 수정 금지)
-- 사용자 메시지 키(raise exception) ↔ `mobile/src/shared/copy/errors.ts` 동기
+- 사용자 메시지 키(raise exception) ↔ `android-app/core/.../Errors.kt` · (`mobile/src/shared/copy/errors.ts` freeze 스펙)
 - 상세: [`.agents/rules/supabase.mdc`](.agents/rules/supabase.mdc)
 
 ## Product goals (안심 루프)
@@ -76,7 +82,7 @@ Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 
 ## Design & copy
 
-- 구현 토큰 먼저: [`theme.ts`](mobile/src/shared/config/theme.ts) (`COLORS` · `TONE_OUTLINE`) · [`shared/constants/`](mobile/src/shared/constants/) · tailwind
+- 구현 토큰 먼저: [`Colors.kt`](android-app/core/src/main/kotlin/com/jinlabs/yakok/core/theme/Colors.kt) · copy/constants는 `:core`. RN 스펙: [`theme.ts`](mobile/src/shared/config/theme.ts) freeze
 - 원칙: [docs/design/](docs/design/README.md) ([color](docs/design/color.md) · [surface](docs/design/surface.md) Tone outline·카피)
 - UI 작업 규칙: [`.agents/rules/design.mdc`](.agents/rules/design.mdc)
 - 상수/문구: [`.agents/rules/copy-constants.mdc`](.agents/rules/copy-constants.mdc)
@@ -98,7 +104,7 @@ Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 | Skill | 언제 |
 |-------|------|
 | [product-goals](.agents/skills/product-goals/SKILL.md) | 안심 구독·유료·우선순위 · [docs/product/](docs/product/) |
-| [add-fsd-feature](.agents/skills/add-fsd-feature/SKILL.md) | mobile feature/entity/page 추가 |
+| [add-fsd-feature](.agents/skills/add-fsd-feature/SKILL.md) | RN freeze — thaw 때만. 새 기능은 `android-app/` |
 | [add-supabase-migration](.agents/skills/add-supabase-migration/SKILL.md) | RPC·테이블·한도 변경 |
 | [document-user-flows](.agents/skills/document-user-flows/SKILL.md) | 사용자 플로우·갭 브리프 (GPT 이미지용) |
 | [store-review-check](.agents/skills/store-review-check/SKILL.md) | 스토어 심사 리젝 후보 스캔 |
@@ -120,25 +126,24 @@ Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 
 **Do**
 
-- FSD 의존 방향 지키기 · use-case feature 이름
-- 사용자 문구는 `shared/copy`, 매직넘버는 `shared/constants`
+- 새 앱 코드는 `android-app/` (`:core` JVM 테스트 + `:app`)
+- 사용자 문구는 `core/copy`, 매직넘버는 `core/constants` (RN 스펙은 `mobile/src/shared/` freeze)
 - 실패/Alert는 안부 톤 (`강퇴` → `내보내기` 등)
-- 구현과 함께 `mobile/src/__tests__/` 테스트 (TDD)
+- 구현과 함께 `:core` 테스트 (TDD)
 
 **Don’t**
 
-- `features/medication/` 같은 domain slice
-- pages에서 entity api 직접 / features에서 supabase client 직접
-- border 남발 · 설명 카피 남발 ([surface](docs/design/surface.md) — Tone outline·focus만)
+- `mobile/`에 기능 추가·삭제 (freeze)
+- `features/medication/` 같은 domain slice (RN 스펙 읽을 때)
 - 마이그레이션 in-place 수정 · 시크릿 커밋
-- 소스 옆에 `*.test.ts` 흩뿌리기
+- G0.4 실기기 수신 전 가짜 PASS
 
 ## Quick start
 
 ```bash
 supabase start
-# anon key → mobile/.env
-cd mobile && pnpm install && pnpm start
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home
+./gradlew -p android-app :core:test :app:assembleDebug
 ```
 
-상세: [mobile/README.md](mobile/README.md) · [README.md](README.md)
+상세: [README.md](README.md) · 스펙: [mobile/README.md](mobile/README.md)

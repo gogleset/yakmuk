@@ -6,6 +6,8 @@ alwaysApply: false
 
 # RN + FSD 안티패턴 (yakmuk)
 
+**RN freeze:** 새 화면은 `android-app/`. 이 규칙은 스펙 리뷰·thaw 때만.
+
 레이어·디렉터리 규칙: [fsd-architecture.mdc](fsd-architecture.mdc).  
 신규 슬라이스 워크플로: [add-fsd-feature](../skills/add-fsd-feature/SKILL.md).
 

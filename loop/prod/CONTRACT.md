@@ -33,7 +33,7 @@ pre CONTRACT의 **7축·도메인·Auth·어댑터를 유지**.
 ## Auth · 딥링크 (prod)
 
 - OAuth: 프로덕션 redirect / bundle id / 스토어 앱
-- QR: Universal Link (또는 App Link) → `…/join?code=` · 스킴 `yakmuk://` 폴백
+- QR: Universal Link (또는 App Link) → `…/join?code=` · 스킴 `yakok://` 폴백
 - 피보호자: 코드/QR만 조인 · nickname은 guardian이 슬롯 생성 시 설정
 - 피보호자 세션 Edge/RPC: rate limit·남용 방지
 

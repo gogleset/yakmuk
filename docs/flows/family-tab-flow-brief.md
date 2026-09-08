@@ -47,7 +47,7 @@ PRD 요약의 “보호자/피보호자” 이분법 → 코드는 **3역할**. 
 |----------------|----------|------|
 | 가족 탭 **초대 FAB** | CHECKLIST·PRD “초대 FAB” | partial — empty CTA(`가족 초대하기`) + 섹션「관리」→ `/family-manage`. 탭 상시 FAB 없음 (의도) |
 | 2시뮬 Realtime E2E | CHECKLIST 미체크 | partial — [gate0-trust-playbook](../product/gate0-trust-playbook.md) |
-| Edge 푸시 → 가족 알림 | DECISIONS stub / prod | **보류** (G0.4 · DNS/FCM) |
+| Edge 푸시 → 가족 알림 | DECISIONS care-push FCM | **보류** (G0.4 실수신) |
 | 보호자 glance 알림 | product Gate 1 | implemented — `care-glance` 고정/교체 알림 |
 | 주간 안부 인앱 카드 | product Gate 2 | implemented — 가족 탭 카드 · 설정 옵트 |
 
@@ -232,10 +232,10 @@ flowchart TD
 |---|------|---------|-------------|-------------|------|
 | 1 | 이름 | Input + 저장 | leader 저장 | updateFamilyName | implemented |
 | 2 | 내보내기 | 멤버 행 | Confirm → 내보내기 | 멤버·약·기록 삭제 | implemented |
-| 3 | 코드 재발급 | 초대 카드 dots | 재발급 Confirm | 미클레임·연결됨 모두 · 연결됨이면 멤버 강제 로그아웃 + 재입장 대기 | implemented |
+| 3 | 코드 재발급 | 초대 카드 dots **또는 자리표 ⋯** | 재발급 Confirm | 미클레임·연결됨 모두 · 연결됨이면 멤버 강제 로그아웃 + 재입장 대기. Android 가족 탭 `SeatCard` 멤버 칸도 동일 | implemented |
 | 4 | 가족 삭제 | destructive | Confirm | welcome으로 replace | implemented |
 
-**재진입 메모:** 멤버 행 복구 발급 없음. 재진입은 초대 슬롯 재발급만.
+**재진입 메모:** 멤버 행 복구 발급 없음. 재진입은 초대 슬롯 재발급만. 리더는 가족 탭 자리표(함께 있는 칸 ⋯)에서도 「초대장 새로 주기」.
 
 **Mermaid**
 
@@ -330,3 +330,4 @@ flowchart TD
 | 2026-08-01 | 설정 가족 행 제거 · 섹션 제목=가족명 · leader「관리」→ `/family-manage` |
 | 2026-08-10 | F5·F6 To-Be 구현: 자리표·한도6·부르기 퍼널 — [family-manage-seat-grid-flow-brief.md](./family-manage-seat-grid-flow-brief.md) |
 | 2026-08-10 | F3: 탭 오늘만 · 벨→피드 · `family_feed_day_reads` 일자 읽음 |
+| 2026-09-08 | Android 가족 탭 자리표 멤버 칸 ⋯: 초대장 새로 주기(연결됨 포함) · RN `FamilySeatGrid` 패리티 |

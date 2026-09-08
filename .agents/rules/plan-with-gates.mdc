@@ -45,7 +45,7 @@ Part B 자가점검: Part A 없이 Part B만 읽어도 “뭘·왜 나누는지�
 
 1. `Sk` 완료 직후 **`S(k-1)` 회귀** (S1은 자기 게이트만)
 2. 게이트 실패 시 `S(k+1)` 금지
-3. step마다 `mobile/src/__tests__/` ( [tdd.mdc](tdd.mdc) )
+3. step마다 `android-app` `:core:test` (RN freeze. thaw면 `mobile/src/__tests__/`)
 4. 끝날 때마다 게이트 결과(명령·pass/fail) 짧게 기록
 
 ## Todos 네이밍

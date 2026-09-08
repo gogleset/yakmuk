@@ -47,17 +47,17 @@ stuck 배너 + 빨간 경고 **병행 금지** (brand #4A와 동일 정신).
 
 ## #8 원격 푸시 (care-push)
 
-- **구현:** Edge `care-push` · mutation 성공 후 user JWT invoke · 토큰=`users.expo_push_token`
+- **구현:** Edge `care-push` · mutation 성공 후 user JWT invoke · 토큰=`users.push_token` (구 `expo_push_token`, 2026-09-08 rename. 값은 Android FCM). Edge는 **FCM HTTP v1** (`FIREBASE_SERVICE_ACCOUNT`). Expo `exp.host` 아님.
 - **이벤트:** `taken` + `stuck_escalate` · 행위자 제외 동가족
-- **가드:** EAS `projectId` 없으면 토큰 등록 skip · 푸시 실패해도 체크/stuck DB는 유지
+- **가드:** 토큰 없으면 skip · 서비스 계정 없으면 skip · 푸시 실패해도 체크/stuck DB는 유지
 - **후속:** DB webhook 트리거 · 다중 기기 토큰
 - G0.4 **실기기 수신** 확인 전 가짜 PASS 금지
-- **G0.4 보류 (2026-08-06):** 로컬 Edge→`exp.host` DNS 실패 · Android FCM/`google-services` 미정합으로 토큰 자동 등록·수신 E2E 미완. **가짜 PASS 아님.** 착수 조건: FCM 자격+재빌드 + Edge 아웃바운드 DNS 정상 후 [samsung-fsi-care-push-test.md](samsung-fsi-care-push-test.md) T4
+- **G0.4 보류:** 에뮬 T4 PASS (2026-09-08, Pixel 7+8 · `sent: 1`). **실기기 미완.** 칼럼 `push_token` 고정. 플레이북 [samsung-fsi-care-push-test.md](samsung-fsi-care-push-test.md) T4.
 
 ## #10 Glance 표면 (Gate 1)
 
 - **표면:** OS 홈 위젯 아님. 보호자 **고정/교체 알림** 한 줄 (`이름 · memberStatusLabel`)
-- **Android:** Notifee `ongoing` · 채널 `care-glance` · importance LOW
+- **Android:** Kotlin `CareGlanceNotifier` ongoing (`care-glance`, LOW). RN 스펙은 Notifee 동일 채널
 - **iOS:** 동일 notificationId로 내용 교체 (OS상 진짜 고정 불가 → 동등 표면)
 - **Stale:** 최대 30분 또는 TAKEN/stuck/포그라운드 시 갱신
 - **멤버 여러 명:** 알림 1개 — 안부(`hasUnackedAlert`) 우선, 없으면 첫 피보호자

@@ -16,7 +16,7 @@
 | TAKEN → 보호자 피드 | Realtime 구독 + DB TAKEN 확인 | **2클라 UI E2E 수동** | [playbook](gate0-trust-playbook.md) |
 | stuck → 가족 알림 | `family_alerts` · worried · soft outline | 실기기 stuck 시나리오 | playbook G0.2 |
 | 약 알람 → 체크 | 로컬 알림 + FSI | **PASS** (삼성 T2) | samsung-fsi |
-| 보호자 원격 푸시 | care-push Edge | **보류** (DNS·FCM) | decisions #8 |
+| 보호자 원격 푸시 | care-push Edge FCM | **보류** (실기기 T4) | decisions #8 |
 
 **한 줄:** 기능 추가 금지였음 → G0.3 PASS·G0.4 보류 후 glance/주간 **코드** 진행. G0.1·G0.2 수동은 플레이북.
 

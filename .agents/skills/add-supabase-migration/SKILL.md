@@ -19,9 +19,11 @@ description: >-
    이미 적용된 마이그레이션 수정 금지.
 2. RPC는 `security definer`/`invoker`·권한 검사 명확히. 가족장 전용은 SQL에서 검증.
 3. 사용자용 `raise exception 'key…'` 키는 앱과 맞출 것:
-   - [`mobile/src/shared/copy/errors.ts`](../../../mobile/src/shared/copy/errors.ts) `BACKEND_ERROR_MESSAGES`
+   - [`Errors.kt`](../../../android-app/core/src/main/kotlin/com/jinlabs/yakok/core/copy/Errors.kt)
+   - RN freeze 스펙: [`errors.ts`](../../../mobile/src/shared/copy/errors.ts)
 4. 숫자 한도 변경 시:
-   - [`mobile/src/shared/constants/limits.ts`](../../../mobile/src/shared/constants/limits.ts)
+   - [`Limits.kt`](../../../android-app/core/src/main/kotlin/com/jinlabs/yakok/core/constants/Limits.kt)
+   - RN freeze 스펙: [`limits.ts`](../../../mobile/src/shared/constants/limits.ts)
 5. 루프/검증 로직이면 [loop/pre/CONTRACT.md](../../../loop/pre/CONTRACT.md) · DECISIONS 확인.
 
 ## Verify

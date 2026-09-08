@@ -6,6 +6,8 @@ alwaysApply: false
 
 # TDD (mobile)
 
+**RN freeze:** 새 테스트는 `android-app/` `:core:test`. 이 규칙은 `mobile/` thaw 때만.
+
 코드를 추가·변경할 때 **테스트도 같이** 작성한다. 구현만 merge하지 않는다.
 
 ## 워크플로

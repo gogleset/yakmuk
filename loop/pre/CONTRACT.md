@@ -61,7 +61,7 @@ verify_day(user_id, date_kst) -> success | continue | failed_verify
 - 가족 운영: 닉네임·가족이름 수정 · 미클레임 코드 재발급 · 강퇴 · 가족삭제 · Join peek
 - 재진입: 리더가 초대 슬롯 **코드 재발급** (`reissue_invite_code`) → 클레임된 멤버는 `force_sign_out_at`+세션 revoke로 강제 로그아웃 → Join에서 새 코드 claim 시 `transfer_member_identity` (약·로그 유지)
 - 멤버 로그아웃은 즉시 signOut (복구코드 UI 없음). 기존 `member_recovery_codes` claim은 호환용으로만 유지
-- QR = 코드와 동일 (`yakmuk://join?code=…`)
+- QR = 코드와 동일 (`yakok://join?code=…`)
 - RLS: 동일 `family_id` · 1 family / user
 - 다중 가족 그룹 금지
 

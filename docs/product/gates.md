@@ -48,7 +48,7 @@
 | G0.1 | **partial** | 코드·DB OK · 플레이북 고정 · **2클라 UI 수동** ([playbook](gate0-trust-playbook.md)) |
 | G0.2 | **partial** | stuck→worried soft 경로 OK · 플레이북 고정 · **실기기 수동** |
 | G0.3 | **PASS** | 삼성 T1/T2 (2026-08-06) — fp `clk4` · 실약 시각 FSI→체크 |
-| G0.4 | **보류** | Edge invoke OK · 실수신 미완(DNS·FCM). decisions #8 · 가짜 PASS 아님 |
+| G0.4 | **보류** | 에뮬 T4 PASS (2026-09-08) · **실기기 미완**. decisions #8 · 가짜 PASS 아님 |
 
 가짜 PASS 없음. G0.1·G0.2 PASS + G0.4 보류(또는 PASS) 후 단계 `1`.
 

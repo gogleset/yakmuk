@@ -6,6 +6,9 @@ alwaysApply: false
 
 # Design system
 
+**현재 앱:** [`Colors.kt`](../../android-app/core/src/main/kotlin/com/jinlabs/yakok/core/theme/Colors.kt) · copy/constants는 `:core`.  
+아래 조회 순서는 RN freeze 스펙 (`mobile/`).
+
 UI·스타일·카피·테마 작업 시 **아래 순서로** 본다.
 
 ## 조회 순서 (토큰 먼저)

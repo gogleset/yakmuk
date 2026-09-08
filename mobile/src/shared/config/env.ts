@@ -32,7 +32,7 @@ export function getSupabaseAnonKey(): string {
 }
 
 export const appScheme =
-  Constants.expoConfig?.scheme?.toString() ?? 'yakmuk';
+  Constants.expoConfig?.scheme?.toString() ?? 'yakok';
 
 /**
  * Google 네이티브 Sign-In용 Web Client ID (Secret 아님).

@@ -7,7 +7,11 @@ export function mapUser(row: Record<string, unknown>): AppUser {
     invitedAs: row.invited_as ? String(row.invited_as) : null,
     role: row.role as AppUser['role'],
     familyId: row.family_id ? String(row.family_id) : null,
-    expoPushToken: row.expo_push_token ? String(row.expo_push_token) : null,
+    pushToken: row.push_token
+      ? String(row.push_token)
+      : row.expo_push_token
+        ? String(row.expo_push_token)
+        : null,
     forceSignOutAt: row.force_sign_out_at
       ? String(row.force_sign_out_at)
       : null,

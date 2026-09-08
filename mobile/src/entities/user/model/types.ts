@@ -8,7 +8,7 @@ export type AppUser = {
   invitedAs: string | null;
   role: UserRole;
   familyId: string | null;
-  expoPushToken: string | null;
+  pushToken: string | null;
   /** 리더 초대 재발급 등 — 설정 시 안내 후 강제 로그아웃 */
   forceSignOutAt: string | null;
 };

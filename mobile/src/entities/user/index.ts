@@ -1,4 +1,4 @@
-export { updateExpoPushToken } from './api/update-expo-push-token';
+export { updatePushToken, updateExpoPushToken } from './api/update-expo-push-token';
 export type { AppUser, FamilyInvite, InviteTargetRole, UserRole } from './model/types';
 export type { InvitePeek, JoinPeekKind } from './api/peek-invite';
 export type { MemberRecoveryCode } from './api/member-recovery';

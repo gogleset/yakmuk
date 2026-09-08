@@ -1,6 +1,6 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Platform } from 'react-native';
-import { updateExpoPushToken } from '@/entities/user/api/update-expo-push-token';
+import { updatePushToken } from '@/entities/user/api/update-expo-push-token';
 
 const isExpoGo =
   Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
@@ -81,7 +81,7 @@ export async function registerExpoPushToken(userId: string): Promise<void> {
       return;
     }
 
-    await updateExpoPushToken(userId, token);
+    await updatePushToken(userId, token);
     pushDebug('registered', { tokenPrefix: token.slice(0, 18) });
   } catch (e) {
     pushDebug('register failed', {
@@ -92,7 +92,7 @@ export async function registerExpoPushToken(userId: string): Promise<void> {
 
 export async function clearExpoPushToken(userId: string): Promise<void> {
   try {
-    await updateExpoPushToken(userId, null);
+    await updatePushToken(userId, null);
     pushDebug('cleared');
   } catch (e) {
     pushDebug('clear failed', {

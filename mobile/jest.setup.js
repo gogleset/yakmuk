@@ -8,5 +8,5 @@ jest.mock('react-native', () => ({
 
 jest.mock('expo-constants', () => ({
   __esModule: true,
-  default: { expoConfig: { scheme: 'yakmuk' } },
+  default: { expoConfig: { scheme: 'yakok' } },
 }));

@@ -8,10 +8,11 @@ describe('mapUser / mapFamilyInvite reentry fields', () => {
       invited_as: '아빠',
       role: 'care_recipient',
       family_id: 'f1',
-      expo_push_token: null,
+      push_token: null,
       force_sign_out_at: '2026-08-01T00:00:00Z',
     });
     expect(user.forceSignOutAt).toBe('2026-08-01T00:00:00Z');
+    expect(user.pushToken).toBeNull();
 
     const invite = mapFamilyInvite({
       id: 'i1',
@@ -34,10 +35,11 @@ describe('mapUser / mapFamilyInvite reentry fields', () => {
       invited_as: null,
       role: 'family_leader',
       family_id: 'f1',
-      expo_push_token: null,
+      push_token: null,
       force_sign_out_at: null,
     });
     expect(user.forceSignOutAt).toBeNull();
+    expect(user.pushToken).toBeNull();
 
     const invite = mapFamilyInvite({
       id: 'i1',
@@ -51,5 +53,24 @@ describe('mapUser / mapFamilyInvite reentry fields', () => {
     });
     expect(invite.reentryUserId).toBeNull();
     expect(invite.claimedBy).toBe('u2');
+  });
+
+  it('push_token · legacy expo_push_token', () => {
+    expect(
+      mapUser({
+        id: 'u1',
+        nickname: '리더',
+        role: 'family_leader',
+        push_token: 'fcm-1',
+      }).pushToken,
+    ).toBe('fcm-1');
+    expect(
+      mapUser({
+        id: 'u1',
+        nickname: '리더',
+        role: 'family_leader',
+        expo_push_token: 'legacy',
+      }).pushToken,
+    ).toBe('legacy');
   });
 });

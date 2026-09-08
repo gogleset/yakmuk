@@ -1,10 +1,11 @@
-// 공지 전용 Expo Push stub.
+// 공지 전용 FCM stub.
 // POST /functions/v1/announce-push
 // Headers: Authorization: Bearer <service_role> 또는 x-announce-secret: <ANNOUNCE_PUSH_SECRET>
 // body: { "title": "...", "body": "...", "user_ids"?: ["uuid", ...] }
-// 약 알림 스케줄러 아님.
+// 약 알림 스케줄러 아님. FCM HTTP v1 (`FIREBASE_SERVICE_ACCOUNT`).
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { fcmConfigured, sendFcmMany } from '../_shared/fcm.ts';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -61,8 +62,8 @@ Deno.serve(async (req) => {
 
     let query = admin
       .from('users')
-      .select('id, expo_push_token')
-      .not('expo_push_token', 'is', null);
+      .select('id, push_token')
+      .not('push_token', 'is', null);
 
     if (userIds && userIds.length > 0) {
       query = query.in('id', userIds);
@@ -74,37 +75,25 @@ Deno.serve(async (req) => {
     }
 
     const tokens = (rows ?? [])
-      .map((r: { expo_push_token: string | null }) => r.expo_push_token)
+      .map((r: { push_token: string | null }) => r.push_token)
       .filter((t: string | null): t is string => !!t && t.length > 0);
 
     if (tokens.length === 0) {
       return json({ sent: 0, message: 'no tokens' });
     }
 
-    const messages = tokens.map((to: string) => ({
-      to,
+    if (!fcmConfigured()) {
+      return json({ sent: 0, message: 'fcm not configured' });
+    }
+
+    const result = await sendFcmMany(
+      tokens,
       title,
-      body: message,
-      sound: 'default',
-      channelId: 'announcement',
-      data: { kind: 'announcement' },
-    }));
-
-    const pushRes = await fetch('https://exp.host/--/api/v2/push/send', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(messages),
-    });
-
-    const pushJson = await pushRes.json().catch(() => null);
-    return json({
-      sent: tokens.length,
-      expoStatus: pushRes.status,
-      expo: pushJson,
-    });
+      message,
+      'announcement',
+      { kind: 'announcement' },
+    );
+    return json(result);
   } catch (e) {
     return json(
       { error: e instanceof Error ? e.message : String(e) },

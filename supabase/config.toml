@@ -161,10 +161,10 @@ site_url = "http://127.0.0.1:3000"
 # The public URL that Auth serves on. Defaults to the API external URL with `/auth/v1` appended.
 # external_url = ""
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-# yakmuk:// — native ID token 본선과 무관해도 allowlist 정합 · 잔여/브라우저 폴백용
+# yakok:// — native ID token 본선과 무관해도 allowlist 정합 · 잔여/브라우저 폴백용
 additional_redirect_urls = [
   "https://127.0.0.1:3000",
-  "yakmuk://auth/callback",
+  "yakok://auth/callback",
 ]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600

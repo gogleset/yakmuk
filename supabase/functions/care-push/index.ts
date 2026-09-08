@@ -3,8 +3,10 @@
 // Authorization: Bearer <user JWT>
 // body: { kind, family_id, actor_user_id, title, body, data? }
 // 약 스케줄 발송 아님 · announce-push와 분리.
+// 발송: FCM HTTP v1 (`FIREBASE_SERVICE_ACCOUNT`). 미설정·실패해도 200.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { fcmConfigured, sendFcmMany } from '../_shared/fcm.ts';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -98,50 +100,56 @@ Deno.serve(async (req) => {
 
     const { data: rows, error: tokenErr } = await admin
       .from('users')
-      .select('id, expo_push_token')
+      .select('id, push_token')
       .eq('family_id', familyId)
       .neq('id', actorUserId)
-      .not('expo_push_token', 'is', null);
+      .not('push_token', 'is', null);
 
     if (tokenErr) {
       return json({ error: tokenErr.message }, 500);
     }
 
     const tokens = (rows ?? [])
-      .map((r: { expo_push_token: string | null }) => r.expo_push_token)
+      .map((r: { push_token: string | null }) => r.push_token)
       .filter((t: string | null): t is string => !!t && t.length > 0);
 
     if (tokens.length === 0) {
+      console.log('[care-push]', { kind, tokens: 0 });
       return json({ sent: 0, message: 'no tokens' });
+    }
+
+    if (!fcmConfigured()) {
+      console.log('[care-push]', { kind, tokens: tokens.length, configured: false });
+      return json({ sent: 0, message: 'fcm not configured' });
     }
 
     const channelId =
       kind === 'stuck_escalate' ? 'care-stuck' : 'care-taken';
+    const dataStrings: Record<string, string> = {
+      kind,
+      family_id: familyId,
+    };
+    for (const [k, v] of Object.entries(data)) {
+      if (v == null) continue;
+      dataStrings[k] = typeof v === 'string' ? v : String(v);
+    }
 
-    const messages = tokens.map((to: string) => ({
-      to,
+    const result = await sendFcmMany(
+      tokens,
       title,
-      body: message,
-      sound: 'default',
+      message,
       channelId,
-      data: { kind, family_id: familyId, ...data },
-    }));
-
-    const pushRes = await fetch('https://exp.host/--/api/v2/push/send', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(messages),
+      dataStrings,
+    );
+    console.log('[care-push]', {
+      kind,
+      tokens: tokens.length,
+      configured: fcmConfigured(),
+      sent: result.sent,
+      failed: result.failed,
+      errors: result.results.filter((r) => !r.ok).map((r) => r.status),
     });
-
-    const pushJson = await pushRes.json().catch(() => null);
-    return json({
-      sent: tokens.length,
-      expoStatus: pushRes.status,
-      expo: pushJson,
-    });
+    return json(result);
   } catch (e) {
     return json(
       { error: e instanceof Error ? e.message : String(e) },

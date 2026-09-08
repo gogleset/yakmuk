@@ -70,8 +70,8 @@ web_modules/
 .env.*
 !.env.example
 
-# Local DB artifacts / escalate logs
-data/
+# Local DB artifacts / escalate logs (repo-root only — not android-app/.../data)
+/data/
 *.sqlite
 *.sqlite-journal
 logs/loop-escalate.log
@@ -157,3 +157,14 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Android Compose (android-app/) — Expo mobile/android 는 생성물이라 여기 안 넣음
+android-app/.gradle/
+android-app/.kotlin/
+android-app/**/build/
+android-app/local.properties
+android-app/**/*.keystore
+android-app/**/google-services.json
+android-app/.idea/
+android-app/*.iml
+

@@ -1,0 +1,9 @@
+# Copy to local.properties (gitignored). sdk.dir 은 ANDROID_HOME으로도 됨.
+# 실기기 로컬 supabase:
+# SUPABASE_URL=http://192.168.x.x:54421
+# Google Web Client ID (가족장 로그인). 비우면 개발 이메일 로그인만.
+# GOOGLE_WEB_CLIENT_ID=123-web.apps.googleusercontent.com
+# 약 검색 (e약은요). 비우면 이름 직접 입력만.
+# DATA_GO_KR_SERVICE_KEY=
+sdk.dir=/Users/YOU/Library/Android/sdk
+

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 로컬 supabase HTTP (에뮬 10.0.2.2 · 실기기 LAN). release는 이 파일 없음. -->
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

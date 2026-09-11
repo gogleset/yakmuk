@@ -68,9 +68,17 @@ stuck 배너 + 빨간 경고 **병행 금지** (brand #4A와 동일 정신).
 - **내용:** 복약 대략 문장 + 특이일(놓침·BAD)만. 통계 대시보드 금지
 - **스팸:** `week_start`(KST) 기준 주당 1노출 · dismiss 후 같은 주 재노출 없음 · 설정 옵트
 
+## #12 1차 출시 = 로컬 알람 (2026-09)
+
+- 사용자 = **본인 폰만**. 저장 = 기기 Room. release에 Supabase / FCM / OAuth **없음**
+- 가족 탭 = 정적 미리보기 **한 화면**. 스토어 스크린샷·리스팅에 가족 안부 금지
+- 출시 게이트 = [gates.md](gates.md) **S5 실기기 FSI**. G0.4 원격 푸시·stuck/care-push = **2차**
+- 계정 없음 → 웹 탈퇴 URL 없음. 설정 「모든 기록 삭제」
+- 개인정보처리방침 URL = `BuildConfig.PRIVACY_POLICY_URL` (빈 값으로 스토어 올리지 않음)
+- 폰 바꾸면 기록 사라짐. 1차 UI에서 클라우드 백업 약속 금지
+
 ## #9 약 목적 태그 (purpose)
 
-- **Gate 0 전부 PASS 전 구현 금지** (스키마·UI 포함). Gate 1 필수 아님 · 3순위 later
-- **단일** `purpose` 선택 · 등록 필수 아님 · ATC/다중 자유 태그 금지
-- 인앱 통계 대시보드·배지로 쓰지 말 것 (#6)
-- SoT: [med-purpose-tags.md](med-purpose-tags.md)
+- **1차 로컬 알람:** 온보딩에서 optional 단일 선택 (등록 필수 아님). 라벨 SoT [med-purpose-tags.md](med-purpose-tags.md)
+- 가족 루프 트랙의 “Gate 0 전 구현 금지”는 **#12가 대체**. 인앱 통계 대시보드·배지는 여전히 금지 (#6)
+- ATC/다중 자유 태그 금지

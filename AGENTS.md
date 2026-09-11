@@ -1,8 +1,9 @@
 # yakmuk — Agent guide
 
 가족 건강 안부 · 복약 체크 앱 (**약콕**).  
-stage: **pre** · store: **local-supabase** · app: **Kotlin Compose** (`android-app/`).  
-RN [`mobile/`](mobile/) = **freeze 스펙** (2026-09-08) — 기능 추가·삭제 금지. 패리티 참조만.
+stage: **pre** · **로컬 알람 1차** · store: **device-room** · app: **Kotlin Compose** (`android-app/`).  
+RN [`mobile/`](mobile/) = **freeze 스펙** (2026-09-08) — 기능 추가·삭제 금지. 패리티 참조만.  
+1차 런타임에 `supabase start` 없음. 가족 탭 = 정적 미리보기.
 
 이 파일이 에이전트 진입점이다. 세부 규칙은 `.agents/rules/`, 워크플로는 `.agents/skills/`를 본다.
 
@@ -36,10 +37,10 @@ yakmuk/
 
 | 영역 | 기술 |
 |------|------|
-| App | Kotlin · Compose · Hilt · supabase-kt (`android-app/`) |
+| App | Kotlin · Compose · Hilt · Room (`android-app/`) |
 | Spec | Expo ~57 FSD (`mobile/`) — freeze. 새 기능은 여기 넣지 말 것 |
-| DB | Supabase local (`supabase start`) · SQL migrations · RPC |
-| Loop | `run=(user_id, date_kst)` · verify/stuck — [loop/pre/CONTRACT.md](loop/pre/CONTRACT.md) |
+| DB (1차) | 기기 Room. 호스트/로컬 Supabase는 **2차** |
+| Loop | 1차 호출 0. 2차 스펙: [loop/pre/CONTRACT.md](loop/pre/CONTRACT.md) |
 
 ## Mobile (FSD) — freeze 스펙
 
@@ -73,7 +74,7 @@ Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 | 문서 | 언제 |
 |------|------|
 | [thesis](docs/product/thesis.md) | 가치·무료/유료 경계 |
-| [gates](docs/product/gates.md) | 단계 게이트 (0 신뢰 → 1 glance → 2 주간 → 3 soft) |
+| [gates](docs/product/gates.md) | **1차 출시 = S5** · 가족 루프 0–3은 2차 |
 | [priorities](docs/product/priorities.md) | 보완 순서·코드 갭 |
 | [decisions](docs/product/decisions.md) | 잠근 결정 · 하지 말 것 |
 
@@ -136,14 +137,15 @@ Expo 문서: https://docs.expo.dev/versions/v57.0.0/
 - `mobile/`에 기능 추가·삭제 (freeze)
 - `features/medication/` 같은 domain slice (RN 스펙 읽을 때)
 - 마이그레이션 in-place 수정 · 시크릿 커밋
-- G0.4 실기기 수신 전 가짜 PASS
+- S5 실기기 FSI · G0.4 실기기 수신 전 가짜 PASS
 
 ## Quick start
 
 ```bash
-supabase start
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home
 ./gradlew -p android-app :core:test :app:assembleDebug
 ```
+
+1차: `supabase start` 불필요. 출시 게이트 S5는 [docs/product/local-alarm-device-test.md](docs/product/local-alarm-device-test.md).
 
 상세: [README.md](README.md) · 스펙: [mobile/README.md](mobile/README.md)

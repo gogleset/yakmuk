@@ -8,10 +8,12 @@
 | 파일 | 내용 |
 |------|------|
 | [thesis.md](thesis.md) | 가치 한 줄 · 누가 왜 내나 · 무료/유료 경계 |
-| [gates.md](gates.md) | 단계별 **목표·게이트** · 검토→실행 루프 |
+| [gates.md](gates.md) | **1차 출시 = S5** · 가족 루프 단계 0–3은 2차 |
 | [priorities.md](priorities.md) | 보완 우선순위 표 · 근거(코드/체크리스트) |
-| [decisions.md](decisions.md) | 잠긴 결정 · 하지 말 것 |
-| [med-purpose-tags.md](med-purpose-tags.md) | 약 목적 태그 later 스펙 (Gate 0 전 구현 금지) |
+| [decisions.md](decisions.md) | 잠긴 결정 · **#12 로컬 알람 1차** |
+| [med-purpose-tags.md](med-purpose-tags.md) | 약 목적 태그 (1차 온보딩 optional) |
+| [local-alarm-device-test.md](local-alarm-device-test.md) | S5 실기기 프로토콜 (가짜 PASS 금지) |
+| [play-checklist.md](play-checklist.md) | Play 클로즈드 제출 (코드 밖) |
 | [gate0-trust-playbook.md](gate0-trust-playbook.md) | G0.1·G0.2 수동 재현 |
 | [skeleton-family.md](skeleton-family.md) | 로딩 스켈레톤 · 가족 1·2depth |
 | [skeleton-home.md](skeleton-home.md) | 로딩 스켈레톤 · 기록 1·2depth |

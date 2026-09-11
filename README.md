@@ -2,21 +2,20 @@
 
 가족 건강 안부와 실시간 복약 현황을 잔소리 없이 챙기는 모바일 서비스.
 
-현재 stage: **pre** · store: **local-supabase** · app: [`android-app/`](android-app/) (Kotlin Compose)  
+현재 stage: **pre · 로컬 알람 1차** · store: **device-room** · app: [`android-app/`](android-app/) (Kotlin Compose)  
 RN [`mobile/`](mobile/) = **freeze 스펙** (기능 추가·삭제 금지).
 
 ## 빠른 시작
 
-1. Docker Desktop 실행  
-2. `supabase start`  
-3. Android:
+1차(본인 폰 알람)는 서버 없음. Room만.
 
 ```bash
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home
-./gradlew -p android-app :app:assembleDebug
+./gradlew -p android-app :core:test :app:assembleDebug
 ```
 
-에뮬: URL `http://10.0.2.2:54421` (debug 기본). 실기기: LAN IP로 재빌드.  
+Play 체크리스트: [docs/product/play-checklist.md](docs/product/play-checklist.md)  
+실기기 S5: [docs/product/local-alarm-device-test.md](docs/product/local-alarm-device-test.md)  
 RN 스펙 참고만: [mobile/README.md](mobile/README.md)
 
 ## 문서
@@ -35,5 +34,6 @@ RN 스펙 참고만: [mobile/README.md](mobile/README.md)
 ## Stage
 
 - ~~mvp~~ 스킵
-- **pre**: Kotlin Android + local Supabase · 보호자 OAuth/개발로그인 · 피보호자 코드/QR(닉네임 보호자 설정)
-- **prod**: hosted · Play · 심사 (iOS 나중에)
+- **pre / 로컬 알람 1차**: 기기 Room · 온보딩 · FSI 약 알람 · 가족 탭 미리보기
+- **2차**: hosted Supabase · 로그인 · 가족 안부 · 원격 푸시
+- **prod**: Play · 심사 (iOS 나중에)

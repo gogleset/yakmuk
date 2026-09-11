@@ -6,6 +6,28 @@
 다음 단계로 넘어가기 전에 **검토 → (미달이면) 실행 → 재검토**.  
 전부 PASS 전까지 **다음 단계 착수 금지**.
 
+---
+
+## 1차 출시 트랙 (로컬 알람) — 2026-09
+
+가족 루프(아래 단계 0–3)와 **축을 섞지 말 것**.  
+1차 스토어 = 본인 폰 복약 알림. 저장 = 기기 Room. 로그인/FCM 없음.
+
+**출시 게이트 = S5.** G0.4 원격 푸시는 **2차**.
+
+| 게이트 | PASS 조건 | 상태 (2026-09-11) |
+|--------|-----------|-------------------|
+| S1 | Room + 홈/알람/폼이 서버 없이 돈다. `:core:test` + `:app:assembleDebug` | **PASS** |
+| S2 | Welcome/Join 없음. 온보딩 나중에/완료 → 홈. 일일 컨디션 없음 | **PASS** (에뮬 「나중에」→ 빈 홈) |
+| S3 | 가족 탭 = 정적 미리보기 한 화면. 초대/피드/조인 없음. 네트워크 0 | **PASS** (에뮬 미리보기, logcat 네트워크 에러 0) |
+| S4 | 설정 로컬. 기록 삭제 → 재온보딩. release APK에 supabase/firebase 없음 | **PASS** (`assembleRelease`, dex에 supabase/firebase 없음. APK는 unsigned) |
+| S5 | 실기기: FSI 한 탭 TAKEN 유지 · 재부팅 알람 생존 · 비행기 모드 · 기록 삭제 | **미실행** — 가짜 PASS 아님 |
+
+실기기 프로토콜: [local-alarm-device-test.md](local-alarm-device-test.md) (삼성 T1/T2만. T4 care-push 범위 밖).  
+Play 제출(코드 밖): [play-checklist.md](play-checklist.md).
+
+아래 단계 0–3 · G0.4는 **2차(가족 안부)** 게이트로 유지한다.
+
 가치 SoT → [thesis.md](thesis.md)  
 우선순위·근거 → [priorities.md](priorities.md)  
 잠긴 결정 → [decisions.md](decisions.md)

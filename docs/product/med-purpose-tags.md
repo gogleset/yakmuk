@@ -1,11 +1,9 @@
-# 약 목적 태그 (purpose) — later 스펙
+# 약 목적 태그 (purpose)
 
-← [README](README.md) · 잠긴 결정: [decisions.md](decisions.md) **#9**
+← [README](README.md) · 잠긴 결정: [decisions.md](decisions.md) **#9 · #12**
 
-Gate 0(신뢰) **전부 PASS 전 구현 금지**.  
-Gate 1 glance 필수 아님. [priorities.md](priorities.md) **3순위 later**.
-
-상태: **스펙만** (스키마·UI·마이그레이션 없음). 착수 시 별도 S-step 플랜.
+**1차 로컬 알람:** 온보딩에서 optional 단일 선택 (등록 필수 아님). Room `medications.purpose`.  
+가족 루프 통계 대시보드·배지는 여전히 금지.
 
 ---
 

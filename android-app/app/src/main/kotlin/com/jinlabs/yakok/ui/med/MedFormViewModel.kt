@@ -2,6 +2,7 @@ package com.jinlabs.yakok.ui.med
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jinlabs.yakok.alarm.AlarmReconciler
 import com.jinlabs.yakok.core.constants.Limits
 import com.jinlabs.yakok.core.constants.MedColors
 import com.jinlabs.yakok.core.copy.Errors
@@ -12,10 +13,8 @@ import com.jinlabs.yakok.core.med.DrugSearchItem
 import com.jinlabs.yakok.core.med.Medication
 import com.jinlabs.yakok.core.med.MedicationMeta
 import com.jinlabs.yakok.core.med.MedicationMetaInput
-import com.jinlabs.yakok.alarm.AlarmReconciler
-import com.jinlabs.yakok.data.AuthRepository
 import com.jinlabs.yakok.data.DrugSearchClient
-import com.jinlabs.yakok.data.MedicationRepository
+import com.jinlabs.yakok.local.LocalMedStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -45,8 +44,7 @@ data class MedFormState(
 
 @HiltViewModel
 class MedFormViewModel @Inject constructor(
-    private val auth: AuthRepository,
-    private val meds: MedicationRepository,
+    private val store: LocalMedStore,
     private val search: DrugSearchClient,
     private val reconciler: AlarmReconciler,
 ) : ViewModel() {
@@ -62,7 +60,7 @@ class MedFormViewModel @Inject constructor(
     fun load(medicationId: Long?) {
         if (medicationId == null) return
         viewModelScope.launch {
-            val med = meds.getById(medicationId) ?: return@launch
+            val med = store.getById(medicationId) ?: return@launch
             applyMed(med)
         }
     }
@@ -125,9 +123,8 @@ class MedFormViewModel @Inject constructor(
         }
     }
 
-    fun save(replaceId: Long?, ownerUserId: String? = null) {
+    fun save(replaceId: Long?) {
         val s = _state.value
-        val uid = ownerUserId?.takeIf { it.isNotEmpty() } ?: auth.currentUserId() ?: return
         val name = s.name.trim()
         if (name.isEmpty()) {
             _messages.tryEmit(Errors.Med.NameRequired)
@@ -163,10 +160,10 @@ class MedFormViewModel @Inject constructor(
             runCatching {
                 if (replaceId != null && slots.size == 1) {
                     val slot = slots.first()
-                    meds.update(replaceId, name, slot.scheduledTime, slot.daysMask, meta)
+                    store.update(replaceId, name, slot.scheduledTime, slot.daysMask, meta)
                 } else {
-                    if (replaceId != null) meds.softDelete(replaceId)
-                    meds.add(uid, name, slots, meta)
+                    if (replaceId != null) store.softDelete(replaceId)
+                    store.add(name, slots, meta)
                 }
             }.onSuccess {
                 runCatching { reconciler.reconcile() }

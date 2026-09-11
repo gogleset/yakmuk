@@ -1,6 +1,8 @@
 package com.jinlabs.yakok.ui.settings
 
 import android.Manifest
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -15,9 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -48,36 +48,27 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.jinlabs.yakok.core.constants.Limits
 import com.jinlabs.yakok.core.copy.Copy
-import com.jinlabs.yakok.core.prefs.StartTab
 import com.jinlabs.yakok.core.theme.Colors
 import com.jinlabs.yakok.core.theme.Radius
-import com.jinlabs.yakok.ui.components.YakokButton
-import com.jinlabs.yakok.ui.components.YakokButtonVariant
-import com.jinlabs.yakok.ui.components.YakokField
+import com.jinlabs.yakok.ui.onboarding.DiscomfortChips
 
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
+fun SettingsScreen(
+    onWiped: () -> Unit,
+    viewModel: SettingsViewModel = hiltViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     val context = LocalContext.current
-    var nicknameOpen by remember { mutableStateOf(false) }
-    var nicknameDraft by remember { mutableStateOf("") }
-    var startTabOpen by remember { mutableStateOf(false) }
-    var withdrawOpen by remember { mutableStateOf(false) }
+    var wipeOpen by remember { mutableStateOf(false) }
     var exactAlarmOpen by remember { mutableStateOf(false) }
-    var glancePendingOn by remember { mutableStateOf(false) }
+    var discomfortOpen by remember { mutableStateOf(false) }
 
     val notifPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission(),
     ) { granted ->
         viewModel.onNotifGranted(granted)
-        if (glancePendingOn) {
-            glancePendingOn = false
-            if (granted) viewModel.setCareGlance(true)
-            else viewModel.setCareGlance(false)
-        }
         if (!granted) {
             runCatching { context.startActivity(viewModel.notificationSettingsIntent()) }
         }
@@ -86,6 +77,9 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     LifecycleResumeEffect(Unit) {
         viewModel.refresh()
         onPauseOrDispose { }
+    }
+    LaunchedEffect(state.wiped) {
+        if (state.wiped) onWiped()
     }
     LaunchedEffect(viewModel) {
         viewModel.messages.collect { snackbar.showSnackbar(it) }
@@ -113,53 +107,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                     fontSize = 24.sp,
                     color = Color(Colors.Text),
                 )
-
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(Radius.Lg.dp))
-                        .background(Color(Colors.SurfaceSoft))
-                        .clickable {
-                            nicknameDraft = state.nickname
-                            nicknameOpen = true
-                        }
-                        .padding(14.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Box(
-                        Modifier
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .background(Color(Colors.BrandSoft)),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            state.nickname.trim().firstOrNull()?.toString() ?: "?",
-                            fontWeight = FontWeight.Bold,
-                            color = Color(Colors.Brand),
-                        )
-                    }
-                    Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
-                        Text(
-                            state.nickname.ifBlank { Copy.Settings.NoName },
-                            fontWeight = FontWeight.Bold,
-                            color = Color(Colors.Text),
-                        )
-                        Text(state.familyLine, color = Color(Colors.Muted), fontSize = 13.sp)
-                        state.roleLabel?.let {
-                            Text(it, color = Color(Colors.Brand), fontSize = 12.sp)
-                        }
-                    }
-                    Icon(Icons.Outlined.ChevronRight, contentDescription = Copy.Settings.NicknameChange, tint = Color(Colors.Muted))
-                }
-
-                SectionLabel(Copy.Settings.Account)
-                SettingsGroup {
-                    SettingsRow(Copy.Settings.SignOut, showChevron = false, enabled = !state.busy) { viewModel.signOut() }
-                    SettingsRow(Copy.Settings.Withdraw, destructive = true, showChevron = false, enabled = !state.busy) {
-                        withdrawOpen = true
-                    }
-                }
+                Text(Copy.Settings.LocalOnlyHint, color = Color(Colors.Muted), fontSize = 13.sp)
 
                 SectionLabel(Copy.Settings.Notifications)
                 SettingsGroup {
@@ -188,37 +136,18 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                             },
                         )
                     }
-                    if (state.showCareOpts) {
-                        SettingsSwitchRow(
-                            label = Copy.Settings.CareGlance,
-                            checked = state.careGlanceOn,
-                            onCheckedChange = { next ->
-                                if (next && Build.VERSION.SDK_INT >= 33 && !state.notifGranted) {
-                                    glancePendingOn = true
-                                    notifPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
-                                } else {
-                                    viewModel.setCareGlance(next)
-                                }
-                            },
-                        )
-                        SettingsSwitchRow(
-                            label = Copy.Settings.WeeklyDigest,
-                            checked = state.weeklyOn,
-                            onCheckedChange = viewModel::setWeekly,
-                        )
-                    }
+                }
+
+                SectionLabel(Copy.Discomfort.Section)
+                SettingsGroup {
+                    SettingsRow(
+                        Copy.Discomfort.Change,
+                        value = state.discomfort?.let { Copy.Discomfort.label(it) },
+                    ) { discomfortOpen = true }
                 }
 
                 SectionLabel(Copy.Settings.App)
                 SettingsGroup {
-                    SettingsRow(
-                        label = Copy.Settings.StartScreen,
-                        value = if (state.startTab == StartTab.Family) {
-                            Copy.Settings.StartScreenFamily
-                        } else {
-                            Copy.Settings.StartScreenHome
-                        },
-                    ) { startTabOpen = true }
                     SettingsSwitchRow(
                         label = Copy.Settings.Animations,
                         checked = state.motionEnabled,
@@ -235,101 +164,58 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 SectionLabel(Copy.Settings.Info)
                 SettingsGroup {
                     SettingsRow(Copy.Settings.Version, value = state.version, showChevron = false)
+                    SettingsRow(Copy.Settings.Privacy) {
+                        val url = viewModel.privacyTapped()
+                        if (url != null) {
+                            runCatching {
+                                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                            }
+                        }
+                    }
+                    SettingsRow(Copy.Settings.Wipe, destructive = true, showChevron = false) {
+                        wipeOpen = true
+                    }
                 }
                 Spacer(Modifier.height(24.dp))
             }
         }
-
         SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp))
     }
 
-    if (nicknameOpen) {
+    if (discomfortOpen) {
         AlertDialog(
-            onDismissRequest = { nicknameOpen = false },
-            title = { Text(Copy.Settings.NicknameChange) },
+            onDismissRequest = { discomfortOpen = false },
+            title = { Text(Copy.Discomfort.Change) },
             text = {
-                YakokField(
-                    value = nicknameDraft,
-                    onValueChange = { nicknameDraft = it },
-                    placeholder = Copy.Welcome.NicknamePlaceholder,
-                    maxLength = Limits.NicknameMaxLength,
-                )
+                DiscomfortChips(state.discomfort) {
+                    viewModel.setDiscomfort(it)
+                    discomfortOpen = false
+                }
             },
             confirmButton = {
-                TextButton(
-                    enabled = !state.busy && nicknameDraft.trim().isNotEmpty() &&
-                        nicknameDraft.trim() != state.nickname,
-                    onClick = {
-                        viewModel.saveNickname(nicknameDraft)
-                        nicknameOpen = false
-                    },
-                ) { Text(Copy.Actions.Save, color = Color(Colors.Brand)) }
-            },
-            dismissButton = {
-                TextButton(onClick = { nicknameOpen = false }) {
-                    Text(Copy.Actions.Cancel, color = Color(Colors.Muted))
+                TextButton(onClick = { discomfortOpen = false }) {
+                    Text(Copy.Actions.Confirm, color = Color(Colors.Brand))
                 }
             },
         )
     }
 
-    if (startTabOpen) {
+    if (wipeOpen) {
         AlertDialog(
-            onDismissRequest = { startTabOpen = false },
-            title = { Text(Copy.Settings.StartScreen) },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    YakokButton(
-                        Copy.Settings.StartScreenHome,
-                        onClick = {
-                            viewModel.setStartTab(StartTab.Home)
-                            startTabOpen = false
-                        },
-                        variant = if (state.startTab == StartTab.Home) {
-                            YakokButtonVariant.Primary
-                        } else {
-                            YakokButtonVariant.Outline
-                        },
-                    )
-                    YakokButton(
-                        Copy.Settings.StartScreenFamily,
-                        onClick = {
-                            viewModel.setStartTab(StartTab.Family)
-                            startTabOpen = false
-                        },
-                        variant = if (state.startTab == StartTab.Family) {
-                            YakokButtonVariant.Primary
-                        } else {
-                            YakokButtonVariant.Outline
-                        },
-                    )
-                }
-            },
-            confirmButton = {},
-            dismissButton = {
-                TextButton(onClick = { startTabOpen = false }) {
-                    Text(Copy.Actions.Cancel, color = Color(Colors.Muted))
-                }
-            },
-        )
-    }
-
-    if (withdrawOpen) {
-        AlertDialog(
-            onDismissRequest = { withdrawOpen = false },
-            title = { Text(Copy.Settings.WithdrawTitle) },
-            text = { Text(state.withdrawBody) },
+            onDismissRequest = { wipeOpen = false },
+            title = { Text(Copy.Settings.WipeTitle) },
+            text = { Text(Copy.Settings.WipeBody) },
             confirmButton = {
                 TextButton(
                     enabled = !state.busy,
                     onClick = {
-                        withdrawOpen = false
-                        viewModel.withdraw()
+                        wipeOpen = false
+                        viewModel.wipe()
                     },
-                ) { Text(Copy.Settings.Withdraw, color = Color(Colors.Destructive)) }
+                ) { Text(Copy.Settings.Wipe, color = Color(Colors.Destructive)) }
             },
             dismissButton = {
-                TextButton(onClick = { withdrawOpen = false }) {
+                TextButton(onClick = { wipeOpen = false }) {
                     Text(Copy.Actions.Cancel, color = Color(Colors.Muted))
                 }
             },

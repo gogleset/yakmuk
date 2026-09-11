@@ -60,6 +60,7 @@ data class Medication(
     val doseAmount: Double?,
     val doseUnit: String?,
     val notificationEnabled: Boolean,
+    val purpose: MedPurpose? = null,
 )
 
 data class DailyLog(
@@ -109,6 +110,7 @@ data class MedicationMetaInput(
     val warning: String? = null,
     val doseAmount: Double? = null,
     val doseUnit: String? = null,
+    val purpose: MedPurpose? = null,
 )
 
 data class MedicationMetaFormFields(

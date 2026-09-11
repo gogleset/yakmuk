@@ -5,8 +5,7 @@ import android.util.Log
 import com.jinlabs.yakok.core.constants.MedAlarm
 import com.jinlabs.yakok.core.med.AlarmFingerprint
 import com.jinlabs.yakok.core.time.Kst
-import com.jinlabs.yakok.data.AuthRepository
-import com.jinlabs.yakok.data.MedicationRepository
+import com.jinlabs.yakok.local.LocalMedStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -17,8 +16,7 @@ enum class AlarmPrompt { None, Notifications, ExactAlarm, Fsi }
 @Singleton
 class AlarmReconciler @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val auth: AuthRepository,
-    private val meds: MedicationRepository,
+    private val store: LocalMedStore,
     private val scheduler: AlarmClockScheduler,
     private val permissions: AlarmPermissions,
 ) {
@@ -27,7 +25,6 @@ class AlarmReconciler @Inject constructor(
     @Volatile private var notifPrompted = false
 
     suspend fun reconcile(): AlarmPrompt {
-        auth.currentUserId() ?: return AlarmPrompt.None
         MedicationAlarmChannel.ensure(context)
 
         if (!permissions.hasPostNotifications()) {
@@ -41,13 +38,12 @@ class AlarmReconciler @Inject constructor(
             return consumePrompt(exactPrompted) { exactPrompted = true; AlarmPrompt.ExactAlarm }
         }
 
-        val uid = auth.currentUserId() ?: return AlarmPrompt.None
         val today = Kst.todayDateString(Clock.System.now())
-        val medications = runCatching { meds.listActive(uid) }.getOrElse {
+        val medications = runCatching { store.listActive() }.getOrElse {
             Log.w(MedAlarm.LogTag, "reconcile list meds failed", it)
             return AlarmPrompt.None
         }
-        val taken = runCatching { meds.listTodayTaken(uid, today) }.getOrElse {
+        val taken = runCatching { store.listTodayTaken(today) }.getOrElse {
             Log.w(MedAlarm.LogTag, "reconcile list taken failed", it)
             return AlarmPrompt.None
         }

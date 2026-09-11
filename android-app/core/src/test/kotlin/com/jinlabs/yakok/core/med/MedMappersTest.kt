@@ -47,12 +47,19 @@ class MedMappersTest {
         assertEquals(MedColors.DefaultId, med.color)
         assertTrue(med.notificationEnabled)
         assertNull(med.doseAmount)
+        assertNull(med.purpose)
     }
 
     @Test
     fun mapMedication_notificationOff() {
         val med = MedMappers.mapMedication(base + mapOf("notification_enabled" to false))
         assertFalse(med.notificationEnabled)
+    }
+
+    @Test
+    fun mapMedication_purpose() {
+        val med = MedMappers.mapMedication(base + mapOf("purpose" to "bp"))
+        assertEquals(MedPurpose.Bp, med.purpose)
     }
 
     @Test

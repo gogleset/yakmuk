@@ -9,6 +9,7 @@ object PrefKeys {
     const val WeeklyDigestOpt = "@yakmuk/weekly-digest-opt"
     const val WeeklyDigestDismissedWeek = "@yakmuk/weekly-digest-dismissed-week"
     const val PendingAlarmOpen = "yakmuk:pending_alarm_open"
+    const val OnboardingDone = "yakmuk.onboarding.done"
 }
 
 object CareGlance {

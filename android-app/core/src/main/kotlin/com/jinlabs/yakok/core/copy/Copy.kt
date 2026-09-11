@@ -9,9 +9,69 @@ object Copy {
         const val Settings = "설정"
     }
 
+    object Onboarding {
+        const val HasMedTitle = "지금 먹는 약이 있어요?"
+        const val HasMedYes = "있어요"
+        const val HasMedLater = "나중에"
+        const val NameTitle = "약 이름이 뭐예요?"
+        const val NamePlaceholder = "예) 혈압약, 타이레놀"
+        const val ScheduleTitle = "몇 시에 먹어요?"
+        const val PurposeTitle = "이 약은 어디 쪽이에요?"
+        const val PurposeSkip = "나중에 할게요"
+        const val DiscomfortTitle = "요즘 어디가 불편해요?"
+        const val DiscomfortSkip = "나중에 할게요"
+        const val PermissionTitle = "약 시간에 알려드릴게요"
+        const val PermissionCta = "알림 허용하기"
+        const val PermissionSkip = "나중에"
+        const val Next = "다음"
+        const val Done = "시작하기"
+    }
+
+    object Purpose {
+        const val Bp = "혈압"
+        const val Diabetes = "당뇨"
+        const val Heart = "심장"
+        const val Gi = "위장"
+        const val Pain = "진통·해열"
+        const val Other = "영양·기타"
+        const val Unknown = "잘 모르겠음"
+        fun label(purpose: com.jinlabs.yakok.core.med.MedPurpose): String = when (purpose) {
+            com.jinlabs.yakok.core.med.MedPurpose.Bp -> Bp
+            com.jinlabs.yakok.core.med.MedPurpose.Diabetes -> Diabetes
+            com.jinlabs.yakok.core.med.MedPurpose.Heart -> Heart
+            com.jinlabs.yakok.core.med.MedPurpose.Gi -> Gi
+            com.jinlabs.yakok.core.med.MedPurpose.Pain -> Pain
+            com.jinlabs.yakok.core.med.MedPurpose.Other -> Other
+            com.jinlabs.yakok.core.med.MedPurpose.Unknown -> Unknown
+        }
+    }
+
+    object Discomfort {
+        const val Head = "머리"
+        const val Chest = "가슴"
+        const val Belly = "배"
+        const val Joint = "관절"
+        const val None = "없어요"
+        const val Section = "불편한 곳"
+        const val Change = "불편한 곳 바꾸기"
+        fun label(value: com.jinlabs.yakok.core.med.Discomfort): String = when (value) {
+            com.jinlabs.yakok.core.med.Discomfort.Head -> Head
+            com.jinlabs.yakok.core.med.Discomfort.Chest -> Chest
+            com.jinlabs.yakok.core.med.Discomfort.Belly -> Belly
+            com.jinlabs.yakok.core.med.Discomfort.Joint -> Joint
+            com.jinlabs.yakok.core.med.Discomfort.None -> None
+        }
+    }
+
+    object FamilyPreview {
+        const val Banner = "이 버전은 이 폰에서만 약을 챙깁니다. 가족 안부는 다음 업데이트에서."
+        const val Title = "가족 안부"
+        const val Body = "나중에 가족이 약을 먹으면 여기에 안부가 보여요."
+    }
+
     object Welcome {
         const val Title = "안녕하세요.\n저는 콕이에요"
-        const val Subtitle = "멀리 있어도\n가족의 안부를 함께\n살펴볼게요."
+        const val Subtitle = "약 시간에 알려 드리고,\n한 번에 먹었다고 표시해요."
         const val CreateFamily = "가족을 만들어요"
         const val HasInvite = "초대장을 받았어요"
         const val LoginTitle = "안부를 나누기 위해\n로그인이 필요해요"
@@ -266,6 +326,13 @@ object Copy {
         const val AnimationsHint = "저전력일 때는 자동으로 꺼져요"
         const val Version = "앱 버전"
         const val Info = "정보"
+        const val Privacy = "개인정보처리방침"
+        const val PrivacySoon = "곧 공개할게요"
+        const val Wipe = "모든 기록 삭제"
+        const val WipeTitle = "기록을 지울까요?"
+        const val WipeBody =
+            "이 폰에 저장된 약·체크·불편 기록이 모두 사라져요. 되돌릴 수 없어요."
+        const val LocalOnlyHint = "기록은 이 폰에만 남아요. 폰을 바꾸면 가져올 수 없어요."
     }
 
     /** 한글 주격 조사 가/이 */

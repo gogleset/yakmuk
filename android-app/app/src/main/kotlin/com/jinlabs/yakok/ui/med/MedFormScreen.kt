@@ -53,7 +53,6 @@ fun MedFormScreen(
     medicationId: Long?,
     onBack: () -> Unit,
     onSaved: () -> Unit,
-    ownerUserId: String? = null,
     viewModel: MedFormViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -202,7 +201,7 @@ fun MedFormScreen(
         }
         YakokButton(
             if (state.busy) Copy.Welcome.PleaseWait else Copy.Actions.Save,
-            onClick = { viewModel.save(medicationId, ownerUserId) },
+            onClick = { viewModel.save(medicationId) },
             enabled = !state.busy,
             modifier = Modifier.padding(vertical = 16.dp),
         )

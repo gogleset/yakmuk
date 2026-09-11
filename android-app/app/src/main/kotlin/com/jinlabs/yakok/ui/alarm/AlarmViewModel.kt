@@ -1,10 +1,10 @@
 package com.jinlabs.yakok.ui.alarm
 
 import android.app.NotificationManager
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jinlabs.yakok.alarm.AlarmReconciler
-import com.jinlabs.yakok.alarm.CareGlanceController
 import com.jinlabs.yakok.alarm.PendingAlarmHold
 import com.jinlabs.yakok.alarm.PendingAlarmLaunch
 import com.jinlabs.yakok.core.constants.MedAlarm
@@ -14,17 +14,11 @@ import com.jinlabs.yakok.core.copy.Errors
 import com.jinlabs.yakok.core.copy.formatUserFacingError
 import com.jinlabs.yakok.core.med.AlarmMedItem
 import com.jinlabs.yakok.core.med.AlarmSlotResolver
-import com.jinlabs.yakok.core.med.LoopTrigger
-import com.jinlabs.yakok.core.med.MedCalendar
 import com.jinlabs.yakok.core.med.Medication
 import com.jinlabs.yakok.core.time.Kst
-import com.jinlabs.yakok.data.AuthRepository
-import com.jinlabs.yakok.data.CarePushClient
-import com.jinlabs.yakok.data.DayLoopRunner
-import com.jinlabs.yakok.data.MedicationRepository
+import com.jinlabs.yakok.local.LocalMedStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import android.content.Context
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,8 +29,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.buildJsonObject
 
 data class AlarmUiState(
     val loading: Boolean = true,
@@ -46,8 +38,6 @@ data class AlarmUiState(
     val takenIds: Set<Long> = emptySet(),
     val keepChecklist: Boolean = false,
     val busy: Boolean = false,
-    val familyId: String? = null,
-    val userId: String? = null,
 ) {
     val unchecked: List<AlarmMedItem> get() = items.filter { it.medicationId !in takenIds }
     val showChecklist: Boolean get() = keepChecklist && items.isNotEmpty()
@@ -57,13 +47,9 @@ data class AlarmUiState(
 @HiltViewModel
 class AlarmViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val auth: AuthRepository,
-    private val meds: MedicationRepository,
-    private val loop: DayLoopRunner,
+    private val store: LocalMedStore,
     private val reconciler: AlarmReconciler,
     private val pending: PendingAlarmHold,
-    private val glance: CareGlanceController,
-    private val carePush: CarePushClient,
 ) : ViewModel() {
 
     private val launch: PendingAlarmLaunch = pending.launch.also { pending.launch = null } ?: PendingAlarmLaunch()
@@ -84,21 +70,14 @@ class AlarmViewModel @Inject constructor(
 
     fun refresh() {
         viewModelScope.launch {
-            val uid = auth.currentUserId()
-            val profile = auth.getProfile()
-            val familyId = profile?.familyId
-            if (uid == null || familyId == null) {
-                _done.tryEmit(Unit)
-                return@launch
-            }
             val today = Kst.todayDateString(Clock.System.now())
             runCatching {
-                meds.listActive(uid) to meds.listTodayTaken(uid, today)
+                store.listActive() to store.listTodayTaken(today)
             }.onSuccess { (list, taken) ->
-                applySlot(list, taken, uid, familyId)
+                applySlot(list, taken)
             }.onFailure { e ->
                 _messages.tryEmit(formatUserFacingError(e, Copy.Med.LoadFailed))
-                applySlot(emptyList(), emptySet(), uid, familyId)
+                applySlot(emptyList(), emptySet())
             }
         }
     }
@@ -119,9 +98,6 @@ class AlarmViewModel @Inject constructor(
     }
 
     private fun take(ids: List<Long>, dismissIfSingle: Boolean) {
-        val s = _state.value
-        val uid = s.userId ?: return
-        val familyId = s.familyId ?: return
         val valid = ids.filter { it > 0 }
         if (valid.isEmpty()) {
             _done.tryEmit(Unit)
@@ -131,33 +107,9 @@ class AlarmViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching {
                 for (id in valid) {
-                    meds.toggleTaken(uid, familyId, id, currentlyTaken = false)
+                    store.toggleTaken(id, currentlyTaken = false)
                 }
-                val today = Kst.todayDateString(Clock.System.now())
-                val todayMeds = meds.listActive(uid).filter {
-                    MedCalendar.isMedScheduledOnDate(it, today)
-                }
-                val takenNow = meds.listTodayTaken(uid, today)
-                val pendingAfter = todayMeds.filter { it.id !in takenNow }.map { it.id }
-                if (todayMeds.isNotEmpty()) {
-                    meds.syncDayCompleteFeed(uid, familyId, pendingAfter.isEmpty())
-                }
-                loop.step(
-                    userId = uid,
-                    familyId = familyId,
-                    trigger = LoopTrigger.InApp,
-                    pendingMedicationIds = pendingAfter,
-                    plan = buildJsonObject {
-                        put("action", JsonPrimitive("alarm_take"))
-                    },
-                    result = buildJsonObject {
-                        put("kind", JsonPrimitive("alarm_take"))
-                        put("count", JsonPrimitive(valid.size))
-                    },
-                )
                 reconciler.reconcile()
-                runCatching { glance.syncForCurrentUser() }
-                carePush.notifyTaken(familyId, uid, valid.firstOrNull())
             }.onFailure { e ->
                 _state.update { it.copy(takenIds = it.takenIds - valid.toSet()) }
                 _messages.tryEmit(formatUserFacingError(e, Errors.Med.CheckFailed))
@@ -168,12 +120,7 @@ class AlarmViewModel @Inject constructor(
         }
     }
 
-    private fun applySlot(
-        list: List<Medication>,
-        taken: Set<Long>,
-        uid: String,
-        familyId: String?,
-    ) {
+    private fun applySlot(list: List<Medication>, taken: Set<Long>) {
         val slot = AlarmSlotResolver.resolve(list, scheduledTime = launch.scheduledTime.ifBlank { null })
         val items = slot?.items.orEmpty()
         if (items.isEmpty()) {
@@ -182,8 +129,6 @@ class AlarmViewModel @Inject constructor(
                 _state.update {
                     it.copy(
                         loading = false,
-                        userId = uid,
-                        familyId = familyId,
                         displayTime = fallback.scheduledTime,
                         items = listOf(fallback),
                         takenIds = taken,
@@ -191,7 +136,7 @@ class AlarmViewModel @Inject constructor(
                 }
                 return
             }
-            _state.update { it.copy(loading = false, userId = uid, familyId = familyId) }
+            _state.update { it.copy(loading = false) }
             _done.tryEmit(Unit)
             return
         }
@@ -203,8 +148,6 @@ class AlarmViewModel @Inject constructor(
         _state.update {
             it.copy(
                 loading = false,
-                userId = uid,
-                familyId = familyId,
                 displayTime = slot?.scheduledTime ?: launch.scheduledTime,
                 items = items,
                 takenIds = taken,

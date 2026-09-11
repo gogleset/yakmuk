@@ -1,6 +1,0 @@
-{
-  "project_info": {
-    "project_id": "YOUR_FIREBASE_PROJECT",
-    "comment": "S7 FCM. 커밋 금지. 없으면 Gradle이 mobile/google-services.json 을 여기로 복사."
-  }
-}

@@ -3,22 +3,16 @@ package com.jinlabs.yakok.ui.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jinlabs.yakok.BuildConfig
+import com.jinlabs.yakok.alarm.AlarmClockScheduler
 import com.jinlabs.yakok.alarm.AlarmPermissions
-import com.jinlabs.yakok.alarm.CareGlanceController
+import com.jinlabs.yakok.alarm.AlarmReconciler
 import com.jinlabs.yakok.alarm.ExactAlarmStatus
 import com.jinlabs.yakok.alarm.FsiStatus
 import com.jinlabs.yakok.core.copy.Copy
-import com.jinlabs.yakok.core.copy.Errors
-import com.jinlabs.yakok.core.copy.RoleLabels
 import com.jinlabs.yakok.core.copy.formatUserFacingError
-import com.jinlabs.yakok.core.family.Glance
-import com.jinlabs.yakok.core.prefs.StartTab
-import com.jinlabs.yakok.core.prefs.StartTabs
-import com.jinlabs.yakok.core.user.UserRole
-import com.jinlabs.yakok.data.AuthRepository
-import com.jinlabs.yakok.data.FamilyRepository
+import com.jinlabs.yakok.core.med.Discomfort
 import com.jinlabs.yakok.data.PrefsRepository
-import com.jinlabs.yakok.push.PushTokenRegistrar
+import com.jinlabs.yakok.local.LocalMedStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -32,45 +26,25 @@ import kotlinx.coroutines.launch
 
 data class SettingsUiState(
     val loading: Boolean = true,
-    val nickname: String = "",
-    val role: UserRole? = null,
-    val familyId: String? = null,
-    val familyName: String? = null,
+    val discomfort: Discomfort? = null,
     val notifGranted: Boolean = false,
     val fsiAllowed: Boolean = false,
     val fsiUnsupported: Boolean = true,
     val exactAlarmDisabled: Boolean = false,
-    val careGlanceOn: Boolean = true,
-    val weeklyOn: Boolean = true,
-    val showCareOpts: Boolean = false,
-    val startTab: StartTab = StartTabs.Default,
     val motionEnabled: Boolean = true,
     val version: String = BuildConfig.VERSION_NAME,
+    val privacyUrl: String = BuildConfig.PRIVACY_POLICY_URL,
+    val wiped: Boolean = false,
     val busy: Boolean = false,
-) {
-    val roleLabel: String? get() = role?.let { RoleLabels.label(it) }
-    val isLeader: Boolean get() = role == UserRole.FamilyLeader
-    val familyLine: String
-        get() {
-            val name = familyName?.trim()?.takeIf { it.isNotEmpty() }
-            return when {
-                name != null -> name
-                familyId != null -> Copy.Settings.FamilyConnected
-                else -> Copy.Settings.FamilyMissing
-            }
-        }
-    val withdrawBody: String
-        get() = if (isLeader) Copy.Settings.WithdrawLeader else Copy.Settings.WithdrawMember
-}
+)
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val auth: AuthRepository,
-    private val family: FamilyRepository,
+    private val store: LocalMedStore,
     private val prefs: PrefsRepository,
     private val permissions: AlarmPermissions,
-    private val glance: CareGlanceController,
-    private val pushTokens: PushTokenRegistrar,
+    private val reconciler: AlarmReconciler,
+    private val scheduler: AlarmClockScheduler,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsUiState())
@@ -92,41 +66,6 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch { load() }
     }
 
-    fun saveNickname(nickname: String) {
-        val trimmed = nickname.trim()
-        if (trimmed.isEmpty() || trimmed == _state.value.nickname) return
-        viewModelScope.launch {
-            _state.update { it.copy(busy = true) }
-            runCatching { auth.updateNickname(trimmed) }
-                .onSuccess { user ->
-                    _state.update { it.copy(nickname = user.nickname, busy = false) }
-                }
-                .onFailure { fail(Errors.Family.NicknameChangeFailed, it) }
-        }
-    }
-
-    fun signOut() {
-        viewModelScope.launch {
-            _state.update { it.copy(busy = true) }
-            runCatching { glance.cancel() }
-            runCatching { pushTokens.clear() }
-            runCatching { auth.signOut() }
-                .onFailure { fail(Errors.Auth.LogoutFailed, it) }
-            _state.update { it.copy(busy = false) }
-        }
-    }
-
-    fun withdraw() {
-        viewModelScope.launch {
-            _state.update { it.copy(busy = true) }
-            runCatching { glance.cancel() }
-            runCatching { pushTokens.clear() }
-            runCatching { auth.withdraw() }
-                .onFailure { fail(Errors.Auth.WithdrawFailed, it) }
-            _state.update { it.copy(busy = false) }
-        }
-    }
-
     fun onNotifGranted(granted: Boolean) {
         _state.update { it.copy(notifGranted = granted) }
         if (granted && !exactAlarmPrompted && permissions.exactAlarmStatus() == ExactAlarmStatus.Disabled) {
@@ -134,41 +73,44 @@ class SettingsViewModel @Inject constructor(
             _needExactAlarm.tryEmit(Unit)
         }
         refreshPermissions()
-        if (granted) pushTokens.sync()
-    }
-
-    fun setCareGlance(enabled: Boolean) {
-        viewModelScope.launch {
-            if (enabled && !permissions.hasPostNotifications()) {
-                _state.update { it.copy(careGlanceOn = false) }
-                prefs.setCareGlanceOpt(false)
-                _messages.tryEmit(Copy.Glance.PermissionHint)
-                return@launch
-            }
-            prefs.setCareGlanceOpt(enabled)
-            _state.update { it.copy(careGlanceOn = enabled) }
-            if (enabled) glance.syncForCurrentUser() else glance.cancel()
-        }
-    }
-
-    fun setWeekly(enabled: Boolean) {
-        viewModelScope.launch {
-            prefs.setWeeklyDigestOpt(enabled)
-            _state.update { it.copy(weeklyOn = enabled) }
-        }
-    }
-
-    fun setStartTab(tab: StartTab) {
-        viewModelScope.launch {
-            prefs.setStartTab(tab)
-            _state.update { it.copy(startTab = tab) }
-        }
+        if (granted) viewModelScope.launch { reconciler.reconcile() }
     }
 
     fun setMotion(enabled: Boolean) {
         viewModelScope.launch {
             prefs.setMotionEnabled(enabled)
             _state.update { it.copy(motionEnabled = enabled) }
+        }
+    }
+
+    fun setDiscomfort(value: Discomfort?) {
+        viewModelScope.launch {
+            store.setDiscomfort(value)
+            _state.update { it.copy(discomfort = value) }
+        }
+    }
+
+    fun privacyTapped(): String? {
+        val url = _state.value.privacyUrl.trim()
+        if (url.isEmpty()) {
+            _messages.tryEmit(Copy.Settings.PrivacySoon)
+            return null
+        }
+        return url
+    }
+
+    fun wipe() {
+        viewModelScope.launch {
+            _state.update { it.copy(busy = true) }
+            runCatching {
+                store.clearAll()
+                scheduler.cancelAll()
+            }.onSuccess {
+                _state.update { it.copy(busy = false, wiped = true) }
+            }.onFailure {
+                _state.update { it.copy(busy = false) }
+                _messages.tryEmit(formatUserFacingError(it, Copy.Settings.Wipe))
+            }
         }
     }
 
@@ -189,33 +131,16 @@ class SettingsViewModel @Inject constructor(
     fun fsiSettingsIntent() = permissions.fsiSettingsIntent()
 
     private suspend fun load() {
-        val profile = auth.getProfile()
-        if (profile == null) {
-            _state.update { it.copy(loading = false) }
-            return
-        }
-        val info = profile.familyId?.let { runCatching { family.getFamily(it) }.getOrNull() }
+        val profile = store.getProfile()
         refreshPermissions()
         _state.update {
             it.copy(
                 loading = false,
-                nickname = profile.nickname,
-                role = profile.role,
-                familyId = profile.familyId,
-                familyName = info?.name,
-                careGlanceOn = prefs.isCareGlanceOpt(),
-                weeklyOn = prefs.isWeeklyDigestOpt(),
-                showCareOpts = Glance.isViewer(profile.role),
-                startTab = prefs.getStartTab(),
+                discomfort = profile.discomfort,
                 motionEnabled = prefs.isMotionEnabled(),
                 version = BuildConfig.VERSION_NAME,
+                privacyUrl = BuildConfig.PRIVACY_POLICY_URL,
             )
         }
-    }
-
-    private fun fail(fallback: String, error: Throwable) {
-        val msg = formatUserFacingError(error, fallback)
-        _state.update { it.copy(busy = false) }
-        _messages.tryEmit(msg)
     }
 }

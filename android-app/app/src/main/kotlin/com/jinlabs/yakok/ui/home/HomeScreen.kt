@@ -58,7 +58,6 @@ import com.jinlabs.yakok.alarm.AlarmPrompt
 import com.jinlabs.yakok.core.constants.MedColors
 import com.jinlabs.yakok.core.constants.MedDoseUnits
 import com.jinlabs.yakok.core.copy.Copy
-import com.jinlabs.yakok.core.med.ConditionValue
 import com.jinlabs.yakok.core.med.Medication
 import com.jinlabs.yakok.core.med.TimeOfDaySlot
 import com.jinlabs.yakok.core.med.TimeSlots
@@ -67,7 +66,6 @@ import com.jinlabs.yakok.core.theme.Radius
 import com.jinlabs.yakok.ui.components.KokiImage
 import com.jinlabs.yakok.ui.components.KokiVariant
 import com.jinlabs.yakok.ui.components.YakokButton
-import com.jinlabs.yakok.ui.components.YakokField
 import java.time.YearMonth
 
 @Composable
@@ -130,9 +128,6 @@ fun HomeScreen(
                         onToggle = viewModel::toggleTaken,
                         onOpen = onOpenMed,
                         onDelete = { deleting = it },
-                        onCondition = viewModel::setCondition,
-                        onMessage = viewModel::setMessage,
-                        onSubmitCondition = viewModel::submitCondition,
                     )
                 } else if (state.showPastDay) {
                     PastPanel(state = state, onOpen = onOpenMed)
@@ -140,8 +135,7 @@ fun HomeScreen(
                 Spacer(Modifier.height(88.dp))
             }
         }
-        if (state.hasRegistered) {
-            FloatingActionButton(
+        FloatingActionButton(
                 onClick = onAdd,
                 containerColor = Color(Colors.Brand),
                 contentColor = Color(Colors.Ink),
@@ -151,7 +145,6 @@ fun HomeScreen(
             ) {
                 Icon(Icons.Filled.Add, contentDescription = Copy.Med.AddFab)
             }
-        }
         SnackbarHost(
             snackbar,
             modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 88.dp),
@@ -370,9 +363,6 @@ private fun TodayPanel(
     onToggle: (Long) -> Unit,
     onOpen: (Long) -> Unit,
     onDelete: (Medication) -> Unit,
-    onCondition: (ConditionValue) -> Unit,
-    onMessage: (String) -> Unit,
-    onSubmitCondition: () -> Unit,
 ) {
     val remaining = state.pendingIds.size
     Text(
@@ -402,57 +392,6 @@ private fun TodayPanel(
                 onDelete = { onDelete(med) },
             )
         }
-    }
-    val saved = state.todayCondition
-    if (saved != null) {
-        Text(
-            Copy.Condition.savedPrompt(conditionLabel(saved.condition)),
-            modifier = Modifier.padding(top = 20.dp),
-            color = Color(Colors.Text),
-            fontWeight = FontWeight.SemiBold,
-        )
-    } else {
-        Spacer(Modifier.height(16.dp))
-        Text(Copy.Condition.Prompt, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(), color = Color(Colors.Muted))
-        Row(Modifier.fillMaxWidth().padding(vertical = 12.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
-            ConditionValue.entries.forEach { c ->
-                val selected = state.condition == c
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.clickable { onCondition(c) },
-                ) {
-                    Box(
-                        Modifier
-                            .size(72.dp)
-                            .clip(CircleShape)
-                            .background(Color(if (selected) Colors.BrandSoft else Colors.SurfaceSoft))
-                            .then(
-                                if (selected) Modifier.border(2.dp, Color(Colors.Brand), CircleShape)
-                                else Modifier,
-                            ),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        KokiImage(
-                            when (c) {
-                                ConditionValue.Good -> KokiVariant.Happy
-                                ConditionValue.Normal -> KokiVariant.Thinking
-                                ConditionValue.Bad -> KokiVariant.Worried
-                            },
-                            56,
-                        )
-                    }
-                    Text(
-                        conditionLabel(c),
-                        color = Color(if (selected) Colors.Brand else Colors.Muted),
-                        fontSize = 13.sp,
-                        modifier = Modifier.padding(top = 4.dp),
-                    )
-                }
-            }
-        }
-        YakokField(state.message, onMessage, placeholder = Copy.Condition.MessagePlaceholder)
-        Spacer(Modifier.height(12.dp))
-        YakokButton(Copy.Condition.Submit, onSubmitCondition, enabled = !state.busy)
     }
 }
 
@@ -530,11 +469,4 @@ private fun slotLabel(slot: TimeOfDaySlot) = when (slot) {
     TimeOfDaySlot.Lunch -> Copy.Med.TimeSlot.Lunch
     TimeOfDaySlot.Afternoon -> Copy.Med.TimeSlot.Afternoon
     TimeOfDaySlot.Bedtime -> Copy.Med.TimeSlot.Bedtime
-}
-
-private fun conditionLabel(value: ConditionValue?) = when (value) {
-    ConditionValue.Good -> Copy.Condition.Good
-    ConditionValue.Normal -> Copy.Condition.Normal
-    ConditionValue.Bad -> Copy.Condition.Bad
-    null -> ""
 }

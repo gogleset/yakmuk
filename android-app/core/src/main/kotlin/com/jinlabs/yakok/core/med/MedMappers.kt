@@ -20,6 +20,7 @@ object MedMappers {
         doseAmount = row.doubleOrNull("dose_amount"),
         doseUnit = row.strOrNull("dose_unit"),
         notificationEnabled = row["notification_enabled"] != false,
+        purpose = MedPurpose.fromWire(row.strOrNull("purpose")),
     )
 
     fun mapDailyLog(row: Map<String, Any?>): DailyLog {

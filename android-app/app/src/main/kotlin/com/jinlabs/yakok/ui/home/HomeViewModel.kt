@@ -2,26 +2,19 @@ package com.jinlabs.yakok.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jinlabs.yakok.alarm.AlarmPermissions
+import com.jinlabs.yakok.alarm.AlarmPrompt
+import com.jinlabs.yakok.alarm.AlarmReconciler
 import com.jinlabs.yakok.core.copy.Copy
 import com.jinlabs.yakok.core.copy.Errors
 import com.jinlabs.yakok.core.copy.formatUserFacingError
 import com.jinlabs.yakok.core.med.CalendarMark
-import com.jinlabs.yakok.core.med.ConditionValue
 import com.jinlabs.yakok.core.med.DailyLog
 import com.jinlabs.yakok.core.med.DayMedicationEntry
-import com.jinlabs.yakok.core.med.LoopTrigger
 import com.jinlabs.yakok.core.med.MedCalendar
 import com.jinlabs.yakok.core.med.Medication
-import com.jinlabs.yakok.alarm.AlarmPermissions
-import com.jinlabs.yakok.alarm.AlarmPrompt
-import com.jinlabs.yakok.alarm.AlarmReconciler
 import com.jinlabs.yakok.core.time.Kst
-import com.jinlabs.yakok.alarm.CareGlanceController
-import com.jinlabs.yakok.data.AuthRepository
-import com.jinlabs.yakok.data.CarePushClient
-import com.jinlabs.yakok.data.DayLoopRunner
-import com.jinlabs.yakok.data.FamilyAlertRepository
-import com.jinlabs.yakok.data.MedicationRepository
+import com.jinlabs.yakok.local.LocalMedStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -33,8 +26,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.buildJsonObject
 
 data class HomeUiState(
     val loading: Boolean = true,
@@ -45,9 +36,6 @@ data class HomeUiState(
     val selectedDate: String = "",
     val visibleMonth: String = "",
     val today: String = "",
-    val familyId: String? = null,
-    val condition: ConditionValue = ConditionValue.Good,
-    val message: String = "",
     val busy: Boolean = false,
     val error: String? = null,
     val alarmPrompt: AlarmPrompt = AlarmPrompt.None,
@@ -68,22 +56,13 @@ data class HomeUiState(
         get() = MedCalendar.buildMarkedDates(visibleMonth, calendarMeds, logs, selectedDate, today)
     val pastEntries: List<DayMedicationEntry>
         get() = MedCalendar.buildDayMedicationEntries(selectedDate, calendarMeds, logs)
-    val todayCondition: DailyLog?
-        get() = logs.find { it.logDate == today && it.condition != null }
-    val selectedConditionLogs: List<DailyLog>
-        get() = logs.filter { it.logDate == selectedDate && it.condition != null }
 }
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val auth: AuthRepository,
-    private val meds: MedicationRepository,
-    private val loop: DayLoopRunner,
-    private val alerts: FamilyAlertRepository,
+    private val store: LocalMedStore,
     private val reconciler: AlarmReconciler,
     private val alarmPermissions: AlarmPermissions,
-    private val glance: CareGlanceController,
-    private val carePush: CarePushClient,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeUiState())
@@ -101,18 +80,18 @@ class HomeViewModel @Inject constructor(
             val today = Kst.todayDateString(Clock.System.now())
             val month = _state.value.visibleMonth.ifEmpty { MedCalendar.currentYearMonth(today) }
             val selected = _state.value.selectedDate.ifEmpty { today }
-            _state.update { it.copy(loading = it.meds.isEmpty(), today = today, visibleMonth = month, selectedDate = selected) }
-            val uid = auth.currentUserId() ?: return@launch
-            val familyId = auth.getProfile()?.familyId
+            _state.update {
+                it.copy(loading = it.meds.isEmpty(), today = today, visibleMonth = month, selectedDate = selected)
+            }
             runCatching {
                 val (from, to) = MedCalendar.monthRange(month)
                 val streakFrom = Kst.addDays(today, -60)
                 val rangeFrom = if (streakFrom < from) streakFrom else from
                 Triple(
-                    meds.listActive(uid),
-                    meds.listForCalendar(uid),
-                    meds.listLogsInRange(uid, rangeFrom, to),
-                ) to meds.listTodayTaken(uid, today)
+                    store.listActive(),
+                    store.listForCalendar(),
+                    store.listLogsInRange(rangeFrom, to),
+                ) to store.listTodayTaken(today)
             }.onSuccess { (triple, taken) ->
                 val (active, calendar, logs) = triple
                 _state.update {
@@ -123,7 +102,6 @@ class HomeViewModel @Inject constructor(
                         logs = logs,
                         takenIds = taken,
                         today = today,
-                        familyId = familyId,
                     )
                 }
                 runCatching { reconciler.reconcile() }
@@ -154,88 +132,18 @@ class HomeViewModel @Inject constructor(
         refresh()
     }
 
-    fun setCondition(value: ConditionValue) {
-        _state.update { it.copy(condition = value) }
-    }
-
-    fun setMessage(value: String) {
-        _state.update { it.copy(message = value) }
-    }
-
     fun toggleTaken(medicationId: Long) {
         val s = _state.value
         if (medicationId in s.takenIds) return
-        val uid = auth.currentUserId() ?: return
-        val familyId = s.familyId ?: return
-        val pendingAfter = s.pendingIds.filter { it != medicationId }
         _state.update { it.copy(takenIds = it.takenIds + medicationId, busy = true) }
         viewModelScope.launch {
-            val result = runCatching {
-                meds.toggleTaken(uid, familyId, medicationId, currentlyTaken = false)
-                val total = s.todayMeds.size
-                if (total > 0) {
-                    meds.syncDayCompleteFeed(uid, familyId, pendingAfter.isEmpty())
+            runCatching { store.toggleTaken(medicationId, currentlyTaken = false) }
+                .onFailure { e ->
+                    _state.update { it.copy(takenIds = it.takenIds - medicationId) }
+                    fail(Errors.Med.CheckFailed, e)
                 }
-                loop.step(
-                    userId = uid,
-                    familyId = familyId,
-                    trigger = LoopTrigger.InApp,
-                    pendingMedicationIds = pendingAfter,
-                    plan = buildJsonObject {
-                        put("action", JsonPrimitive("toggle_medication"))
-                        put("medicationId", JsonPrimitive(medicationId))
-                    },
-                    result = buildJsonObject {
-                        put("kind", JsonPrimitive("toggle_medication"))
-                    },
-                )
-            }
-            result.onFailure { e ->
-                _state.update { it.copy(takenIds = it.takenIds - medicationId) }
-                fail(Errors.Med.CheckFailed, e)
-            }
-            if (result.isSuccess) {
-                carePush.notifyTaken(familyId, uid, medicationId)
-            }
             _state.update { it.copy(busy = false) }
             refresh()
-            runCatching { glance.syncForCurrentUser() }
-        }
-    }
-
-    fun submitCondition() {
-        val s = _state.value
-        val uid = auth.currentUserId() ?: return
-        val familyId = s.familyId ?: return
-        viewModelScope.launch {
-            _state.update { it.copy(busy = true) }
-            runCatching {
-                meds.submitCondition(uid, familyId, s.condition, s.message)
-                if (s.condition == ConditionValue.Bad) {
-                    alerts.upsertBadCondition(
-                        familyId,
-                        uid,
-                        s.message.trim().ifEmpty { Copy.Condition.DefaultBadMessage },
-                        s.today,
-                    )
-                }
-                loop.step(
-                    userId = uid,
-                    familyId = familyId,
-                    trigger = LoopTrigger.InApp,
-                    pendingMedicationIds = s.pendingIds,
-                    plan = buildJsonObject {
-                        put("action", JsonPrimitive("submit_condition"))
-                        put("condition", JsonPrimitive(s.condition.wire))
-                    },
-                    result = buildJsonObject { put("kind", JsonPrimitive("submit_condition")) },
-                )
-            }.onSuccess {
-                _messages.tryEmit(Copy.Condition.SavedBody)
-            }.onFailure { fail(Errors.Condition.SaveFailed, it) }
-            _state.update { it.copy(busy = false) }
-            refresh()
-            runCatching { glance.syncForCurrentUser() }
         }
     }
 
@@ -248,7 +156,7 @@ class HomeViewModel @Inject constructor(
 
     fun deleteMedication(id: Long) {
         viewModelScope.launch {
-            runCatching { meds.softDelete(id) }
+            runCatching { store.softDelete(id) }
                 .onFailure { fail(Errors.Med.DeleteFailed, it) }
             refresh()
         }
